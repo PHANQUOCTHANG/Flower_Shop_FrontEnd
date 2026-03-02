@@ -28,10 +28,7 @@ export const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
             </span>
           )}
           {index < items.length - 1 && (
-            <ChevronRight
-              size={14}
-              className="text-[#ccc] dark:text-white/20"
-            />
+            <ChevronRight size={14} className="text-[#ccc] dark:text-white/20" />
           )}
         </div>
       ))}

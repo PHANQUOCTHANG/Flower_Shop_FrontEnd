@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/CartContext";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ProgressTracker } from "@/components/ui/ProgressTracker";
 import { checkoutEventTracker } from "@/features/checkout/hooks/checkoutEventTracker";
 import {
@@ -61,6 +62,15 @@ export default function CheckoutPage() {
       className={`min-h-screen bg-[#fcfbf9] dark:bg-[#1a0f12] text-[#1b0d11] dark:text-white transition-all duration-500 font-sans antialiased ${isNavigating ? "opacity-50 pointer-events-none" : "opacity-100"}`}
     >
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          items={[
+            { label: "Trang chủ", href: "/" },
+            { label: "Giỏ hàng", href: "/cart" },
+            { label: "Thanh toán" },
+          ]}
+        />
+
         {/* Progress Tracker */}
         <ProgressTracker currentStep="checkout" />
 

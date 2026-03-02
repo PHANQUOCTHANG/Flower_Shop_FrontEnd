@@ -1,7 +1,7 @@
 export const usePagination = (PRODUCTS: Product[], currentPage: number) => {
     
   // Cấu hình phân trang
-  const itemsPerPage = 3;
+  const itemsPerPage = 4;
   const totalPages = Math.ceil(PRODUCTS.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;

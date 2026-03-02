@@ -2,32 +2,23 @@
 
 import React, { useState, useMemo } from "react";
 import {
-  LayoutDashboard,
-  Package,
-  ShoppingBag,
   Users,
-  BarChart3,
-  Settings,
   PlusCircle,
   Search,
   Filter,
   ChevronLeft,
   ChevronRight,
-  Flower2,
   Bell,
   Eye,
-  UserPlus,
-  Star,
-  UserCheck,
-  UserX,
   Mail,
   Phone,
   Trash2,
   Edit,
+  Star,
 } from "lucide-react";
 
-// --- DỮ LIỆU GIẢ LẬP KHÁCH HÀNG ---
-const DANH_SACH_KHACH_HANG = [
+// Dữ liệu khách hàng
+const CUSTOMERS = [
   {
     id: "CUS-001",
     name: "Nguyễn Văn A",
@@ -90,82 +81,8 @@ const DANH_SACH_KHACH_HANG = [
   },
 ];
 
-// --- COMPONENT CON ---
-
-const SidebarLink = ({
-  icon: Icon,
-  label,
-  active = false,
-  badge,
-  onClick,
-}: {
-  icon: React.ComponentType<any>;
-  label: string;
-  active?: boolean;
-  badge?: number;
-  onClick?: () => void;
-}) => (
-  <button
-    onClick={onClick}
-    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${
-      active
-        ? "bg-[#13ec5b]/10 text-[#13ec5b] border border-[#13ec5b]/20 font-bold"
-        : "text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800 font-medium"
-    }`}
-  >
-    <Icon
-      size={20}
-      className={active ? "text-[#13ec5b]" : "group-hover:text-[#13ec5b]"}
-    />
-    <span className="text-sm">{label}</span>
-    {badge && (
-      <span className="ml-auto bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
-        {badge}
-      </span>
-    )}
-  </button>
-);
-
-const TheThongKeMini = ({
-  label,
-  value,
-  trend,
-  isUp,
-  icon: Icon,
-  colorClass,
-}: {
-  label: string;
-  value: string | number;
-  trend?: string;
-  isUp?: boolean;
-  icon: React.ComponentType<any>;
-  colorClass?: string;
-}) => (
-  <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm flex-1 min-w-[240px]">
-    <div className="flex justify-between items-start mb-4">
-      <div
-        className={`p-2.5 rounded-xl ${colorClass || "bg-[#13ec5b]/10 text-[#13ec5b]"}`}
-      >
-        <Icon size={22} />
-      </div>
-      {trend && (
-        <span
-          className={`text-xs font-bold flex items-center gap-1 ${isUp ? "text-[#13ec5b]" : "text-red-500"}`}
-        >
-          {isUp ? <TrendingUp size={14} /> : <TrendingDown size={14} />} {trend}
-        </span>
-      )}
-    </div>
-    <p className="text-slate-500 dark:text-zinc-400 text-xs font-bold uppercase tracking-wider">
-      {label}
-    </p>
-    <h3 className="text-slate-900 dark:text-white text-2xl font-black mt-1">
-      {value}
-    </h3>
-  </div>
-);
-
-const TierBadge = ({ tier }) => {
+// Badge hạng thể
+const TierBadge = ({ tier }: { tier: string }) => {
   const styles = {
     VIP: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200",
     Vàng: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200",
@@ -183,139 +100,111 @@ const TierBadge = ({ tier }) => {
   );
 };
 
-// --- COMPONENT CHÍNH ---
+// Component chính
+export default function CustomersPage() {
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [selectedTier, setSelectedTier] = useState("Tất cả");
 
-export default function App() {
-  const [tuKhoa, setTuKhoa] = useState("");
-  const [locHạng, setLocHang] = useState("Tất cả");
-
-  const khachHangLoc = useMemo(() => {
-    return DANH_SACH_KHACH_HANG.filter((cus) => {
+  // Lọc khách hàng theo tìm kiếm và hạng
+  const filteredCustomers = useMemo(() => {
+    return CUSTOMERS.filter((customer) => {
       const matchSearch =
-        cus.name.toLowerCase().includes(tuKhoa.toLowerCase()) ||
-        cus.phone.includes(tuKhoa) ||
-        cus.email.toLowerCase().includes(tuKhoa.toLowerCase());
-      const matchTier = locHạng === "Tất cả" || cus.tier === locHạng;
+        customer.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+        customer.phone.includes(searchKeyword) ||
+        customer.email.toLowerCase().includes(searchKeyword.toLowerCase());
+      const matchTier =
+        selectedTier === "Tất cả" || customer.tier === selectedTier;
       return matchSearch && matchTier;
     });
-  }, [tuKhoa, locHạng]);
+  }, [searchKeyword, selectedTier]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f6f8f6] dark:bg-[#102216] font-['Inter',_sans-serif] text-slate-900 dark:text-slate-100">
-      {/* Sidebar - Đồng bộ 100% */}
-      <aside className="hidden lg:flex w-72 flex-shrink-0 border-r border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex-col h-full">
-        <div className="p-8">
-          <div className="flex items-center gap-3">
-            <div className="bg-[#13ec5b]/20 p-2.5 rounded-xl">
-              <Flower2 className="text-[#13ec5b]" size={28} />
-            </div>
-            <div className="flex flex-col">
-              <h1 className="text-slate-900 dark:text-white text-xl font-black leading-none tracking-tight">
-                BloomAdmin
-              </h1>
-              <p className="text-slate-500 dark:text-zinc-500 text-[10px] font-bold uppercase tracking-widest mt-1">
-                Hệ thống quản lý
-              </p>
-            </div>
-          </div>
+    <div className="flex flex-col h-full overflow-hidden bg-[#f6f8f6] dark:bg-[#102216] font-['Inter',_sans-serif] text-slate-900 dark:text-slate-100">
+      {/* Header */}
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl px-8 py-5">
+        <h1 className="text-slate-900 dark:text-white text-2xl font-black tracking-tight uppercase">
+          Quản lý khách hàng
+        </h1>
+
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-2 bg-[#13ec5b] text-[#102216] px-6 py-2.5 rounded-xl text-sm font-black shadow-lg shadow-[#13ec5b]/30 hover:scale-105 active:scale-95 transition-all">
+            <PlusCircle size={18} />
+            <span>Thêm khách hàng</span>
+          </button>
         </div>
+      </header>
 
-        <nav className="flex-1 px-4 space-y-1.5 mt-2">
-          <SidebarLink icon={LayoutDashboard} label="Tổng quan" />
-          <SidebarLink icon={Package} label="Sản phẩm" />
-          <SidebarLink icon={ShoppingBag} label="Đơn hàng" badge="12" />
-          <SidebarLink icon={Users} label="Khách hàng" active />
-          <SidebarLink icon={BarChart3} label="Báo cáo" />
-          <div className="pt-4 mt-4 border-t border-slate-100 dark:border-zinc-800">
-            <SidebarLink icon={Settings} label="Cài đặt" />
-          </div>
-        </nav>
-
-        <div className="p-6 border-t border-slate-100 dark:border-zinc-800">
-          <div className="flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-zinc-800 rounded-2xl transition-all cursor-pointer group">
-            <img
-              className="size-11 rounded-full object-cover border-2 border-[#13ec5b]/20 group-hover:border-[#13ec5b] transition-all"
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80"
-              alt="Alex Rivera"
-            />
-            <div className="flex flex-col overflow-hidden">
-              <p className="text-sm font-bold truncate">Alex Rivera</p>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
-                Quản trị viên
-              </p>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      {/* Nội dung chính */}
-      <main className="flex-1 flex flex-col overflow-y-auto">
-        {/* Header - Đồng bộ 100% */}
-        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl px-8 py-5">
-          <div className="flex items-center gap-8">
-            <h2 className="text-slate-900 dark:text-white text-2xl font-black tracking-tight uppercase">
-              Quản lý khách hàng
-            </h2>
-            <div className="relative hidden md:block w-80">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                size={18}
-              />
-              <input
-                value={tuKhoa}
-                onChange={(e) => setTuKhoa(e.target.value)}
-                className="w-full pl-12 pr-4 py-2.5 border-none rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-white placeholder:text-slate-500 text-sm font-medium focus:ring-2 focus:ring-[#13ec5b] transition-all shadow-inner"
-                placeholder="Tìm tên, SĐT, email..."
-                type="text"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 bg-[#13ec5b] text-[#102216] px-6 py-2.5 rounded-xl text-sm font-black shadow-lg shadow-[#13ec5b]/30 hover:scale-105 active:scale-95 transition-all">
-              <UserPlus size={18} />
-              <span>Thêm khách hàng</span>
-            </button>
-          </div>
-        </header>
-
+      {/* Main content */}
+      <main className="flex-1 overflow-y-auto">
         <div className="p-8 max-w-[1440px] mx-auto w-full flex flex-col gap-8 animate-in fade-in duration-500">
-          {/* Thẻ thống kê */}
+          {/* Stat cards */}
           <div className="flex flex-wrap gap-6">
-            <TheThongKeMini
-              label="Tổng khách hàng"
-              value="1,284"
-              icon={Users}
-            />
-            <TheThongKeMini
-              label="Khách hàng mới"
-              value="+42"
-              icon={UserPlus}
-              colorClass="bg-blue-500/10 text-blue-500"
-            />
-            <TheThongKeMini
-              label="Thành viên VIP"
-              value="86"
-              icon={Star}
-              colorClass="bg-purple-500/10 text-purple-500"
-            />
-            <TheThongKeMini
-              label="Đang hoạt động"
-              value="1,120"
-              icon={UserCheck}
-              colorClass="bg-[#13ec5b]/10 text-[#13ec5b]"
-            />
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm flex-1 min-w-[240px]">
+              <div className="flex justify-between items-start mb-4">
+                <div className="p-2.5 rounded-xl bg-[#13ec5b]/10 text-[#13ec5b]">
+                  <Users size={22} />
+                </div>
+              </div>
+              <p className="text-slate-500 dark:text-zinc-400 text-xs font-bold uppercase tracking-wider">
+                Tổng khách hàng
+              </p>
+              <h3 className="text-slate-900 dark:text-white text-2xl font-black mt-1">
+                1,284
+              </h3>
+            </div>
+
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm flex-1 min-w-[240px]">
+              <div className="flex justify-between items-start mb-4">
+                <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-500">
+                  <Users size={22} />
+                </div>
+              </div>
+              <p className="text-slate-500 dark:text-zinc-400 text-xs font-bold uppercase tracking-wider">
+                Khách hàng mới
+              </p>
+              <h3 className="text-slate-900 dark:text-white text-2xl font-black mt-1">
+                +42
+              </h3>
+            </div>
+
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm flex-1 min-w-[240px]">
+              <div className="flex justify-between items-start mb-4">
+                <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-500">
+                  <Star size={22} />
+                </div>
+              </div>
+              <p className="text-slate-500 dark:text-zinc-400 text-xs font-bold uppercase tracking-wider">
+                Thành viên VIP
+              </p>
+              <h3 className="text-slate-900 dark:text-white text-2xl font-black mt-1">
+                86
+              </h3>
+            </div>
+
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm flex-1 min-w-[240px]">
+              <div className="flex justify-between items-start mb-4">
+                <div className="p-2.5 rounded-xl bg-[#13ec5b]/10 text-[#13ec5b]">
+                  <Users size={22} />
+                </div>
+              </div>
+              <p className="text-slate-500 dark:text-zinc-400 text-xs font-bold uppercase tracking-wider">
+                Đang hoạt động
+              </p>
+              <h3 className="text-slate-900 dark:text-white text-2xl font-black mt-1">
+                1,120
+              </h3>
+            </div>
           </div>
 
-          {/* Bộ lọc & Công cụ */}
+          {/* Filter section */}
           <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 p-5 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
             <div className="flex flex-wrap gap-2">
               {["Tất cả", "VIP", "Vàng", "Bạc", "Đồng"].map((tier) => (
                 <button
                   key={tier}
-                  onClick={() => setLocHang(tier)}
+                  onClick={() => setSelectedTier(tier)}
                   className={`px-5 py-2 rounded-xl text-xs font-bold transition-all border ${
-                    locHạng === tier
+                    selectedTier === tier
                       ? "bg-[#13ec5b] text-[#102216] border-[#13ec5b]"
                       : "bg-slate-50 dark:bg-zinc-800 border-slate-200 dark:border-zinc-700 text-slate-500"
                   }`}
@@ -332,7 +221,22 @@ export default function App() {
             </div>
           </div>
 
-          {/* Bảng khách hàng */}
+          {/* Search bar */}
+          <div className="relative">
+            <Search
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              size={18}
+            />
+            <input
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 border-none rounded-xl bg-white dark:bg-zinc-900 text-slate-900 dark:text-white placeholder:text-slate-500 text-sm font-medium focus:ring-2 focus:ring-[#13ec5b] transition-all shadow-sm"
+              placeholder="Tìm tên, SĐT, email..."
+              type="text"
+            />
+          </div>
+
+          {/* Customer table */}
           <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden mb-10">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
@@ -362,24 +266,24 @@ export default function App() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
-                  {khachHangLoc.map((cus) => (
+                  {filteredCustomers.map((customer) => (
                     <tr
-                      key={cus.id}
+                      key={customer.id}
                       className="hover:bg-slate-50/80 dark:hover:bg-zinc-800/40 transition-colors group"
                     >
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
                           <img
-                            src={cus.avatar}
+                            src={customer.avatar}
                             className="size-10 rounded-full object-cover border-2 border-slate-100 dark:border-zinc-700"
-                            alt={cus.name}
+                            alt={customer.name}
                           />
                           <div>
                             <p className="text-sm font-bold text-slate-900 dark:text-white">
-                              {cus.name}
+                              {customer.name}
                             </p>
                             <p className="text-[10px] font-black text-slate-400 uppercase">
-                              {cus.id}
+                              {customer.id}
                             </p>
                           </div>
                         </div>
@@ -388,35 +292,35 @@ export default function App() {
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-zinc-400">
                             <Mail size={12} className="text-slate-400" />
-                            {cus.email}
+                            {customer.email}
                           </div>
                           <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-zinc-400">
                             <Phone size={12} className="text-slate-400" />
-                            {cus.phone}
+                            {customer.phone}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-5 text-center">
-                        <TierBadge tier={cus.tier} />
+                        <TierBadge tier={customer.tier} />
                       </td>
                       <td className="px-6 py-5 text-right text-sm font-black text-[#13ec5b]">
-                        {cus.totalSpent.toLocaleString("vi-VN")}₫
+                        {customer.totalSpent.toLocaleString("vi-VN")}₫
                       </td>
                       <td className="px-6 py-5 text-center text-xs font-bold text-slate-500">
-                        {cus.lastOrder}
+                        {customer.lastOrder}
                       </td>
                       <td className="px-6 py-5 text-center">
                         <span
                           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold ${
-                            cus.status === "Đang hoạt động"
+                            customer.status === "Đang hoạt động"
                               ? "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-500"
                               : "bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-500"
                           }`}
                         >
                           <div
-                            className={`size-1.5 rounded-full ${cus.status === "Đang hoạt động" ? "bg-green-500" : "bg-red-500"}`}
+                            className={`size-1.5 rounded-full ${customer.status === "Đang hoạt động" ? "bg-green-500" : "bg-red-500"}`}
                           ></div>
-                          {cus.status}
+                          {customer.status}
                         </span>
                       </td>
                       <td className="px-6 py-5 text-right">
@@ -438,10 +342,10 @@ export default function App() {
               </table>
             </div>
 
-            {/* Phân trang */}
+            {/* Pagination */}
             <div className="bg-slate-50 dark:bg-zinc-800/50 border-t border-slate-200 dark:border-zinc-800 px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
               <span className="text-sm font-bold text-slate-500 dark:text-zinc-500">
-                Hiển thị {khachHangLoc.length} trên 1,284 khách hàng
+                Hiển thị {filteredCustomers.length} trên 1,284 khách hàng
               </span>
               <div className="flex items-center gap-2">
                 <button

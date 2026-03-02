@@ -15,7 +15,7 @@ export const Loading = () => {
       
       {/* Văn bản thông báo */}
       <div className="mt-8 text-center">
-        <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-widest">BloomAdmin</h2>
+        <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-widest">Quốc Thắng</h2>
         <div className="flex items-center justify-center gap-1.5 mt-2">
           <span className="text-xs font-bold text-slate-400">Đang tải dữ liệu</span>
           <div className="flex gap-0.5 mt-1">
