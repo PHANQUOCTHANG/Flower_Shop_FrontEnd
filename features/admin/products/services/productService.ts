@@ -1,4 +1,4 @@
-import { Product } from "@/features/products/types";
+import { Product } from "@/features/admin/products/types";
 import api from "@/lib/axios";
 import { ApiResponse } from "@/types/response";
 

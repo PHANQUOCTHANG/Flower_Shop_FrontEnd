@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React from "react";
 import { Product } from "../types";
 
@@ -20,7 +21,7 @@ export const Gallery: React.FC<GalleryProps> = ({
       {/* Ảnh chính */}
       <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-white shadow-sm border border-gray-100">
         <img
-          src={imageUrl}
+          src={imageUrl || undefined}
           alt={product.name}
           className="w-full h-full object-cover transition-all duration-500"
         />

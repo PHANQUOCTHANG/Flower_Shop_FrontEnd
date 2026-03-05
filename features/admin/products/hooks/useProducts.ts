@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { productService } from "@/features/products/services/productService";
 
+
+import { productService } from "@/features/admin/products/services/productService";
 import { useQuery } from "@tanstack/react-query";
 
 export const useProducts = (params?: {

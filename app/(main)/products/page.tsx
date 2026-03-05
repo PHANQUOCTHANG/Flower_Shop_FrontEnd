@@ -2,28 +2,31 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  ChevronRight,
-  ChevronLeft,
-  Filter,
-  CheckCircle,
-  LayoutGrid,
-  List,
-  Search,
-} from "lucide-react";
+import { Filter, CheckCircle, LayoutGrid, List, Search } from "lucide-react";
 import { useProducts } from "@/features/products/hooks/useProducts";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { FilterSection } from "@/features/products/components/FilterSection";
 import { ProductCard } from "@/features/products/components/ProductCard";
-import { usePagination } from "@/features/products/hooks/usePagination";
 import { useCategories } from "@/features/products/hooks/useCategories";
 import { Loading } from "@/components/ui/Loading";
+import { Pagination } from "@/components/ui/Pagination";
 
 const PRICE_RANGES = [
-  { label: "Dưới 500.000đ", min: 0, max: 500000 },
-  { label: "500.000đ - 1.000.000đ", min: 500000, max: 1000000 },
-  { label: "1.000.000đ - 2.000.000đ", min: 1000000, max: 2000000 },
-  { label: "Trên 2.000.000đ", min: 2000000, max: Infinity },
+  { value: "all", label: "Tất cả giá", min: null, max: null },
+  { value: "under-500k", label: "Dưới 500.000₫", min: 1, max: 499000 },
+  {
+    value: "500k-1m",
+    label: "500.000₫ - 1.000.000₫",
+    min: 500000,
+    max: 1000000,
+  },
+  {
+    value: "1m-2m",
+    label: "1.000.000₫ - 2.000.000₫",
+    min: 1000000,
+    max: 2000000,
+  },
+  { value: "above-2m", label: "Trên 2.000.000₫", min: 2000000, max: null },
 ];
 
 export default function FlowerCollection() {
@@ -32,97 +35,46 @@ export default function FlowerCollection() {
 
   // Lấy params từ URL
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
-  const selectedPriceRanges = searchParams.getAll("priceRange");
-  const selectedCategories = searchParams.getAll("category");
-  const sortBy = searchParams.get("sortBy") || "most-popular";
+  const minPrice = searchParams.get("minPrice")
+    ? parseInt(searchParams.get("minPrice") || "0")
+    : null;
+  const maxPrice = searchParams.get("maxPrice")
+    ? parseInt(searchParams.get("maxPrice") || "0")
+    : null;
+  const selectedCategories = searchParams.get("category") || "";
+  const sort = searchParams.get("sort") || "newest";
   const searchQuery = searchParams.get("search") || "";
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchInput, setSearchInput] = useState(searchQuery);
 
   // hooks
-  const { products, loading: productsLoading } = useProducts();
+  const {
+    products, 
+    loading: productsLoading,
+    totalPages = 1,
+  } = useProducts({
+    page: currentPage,
+    search: searchQuery || undefined,
+    priceMin: minPrice,
+    priceMax: maxPrice,
+    category: selectedCategories || undefined,
+    sort,
+  });
 
   const { categories, loading: categoriesLoading } = useCategories({
     limit: 6,
   });
 
-  // Filter theo tìm kiếm
-  const filterBySearch = (productList: typeof products) => {
-    if (!searchQuery.trim()) return productList;
-
-    return productList.filter((product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
-  };
-
-  // Filter theo giá
-  const filterByPrice = (productList: typeof products) => {
-    if (selectedPriceRanges.length === 0) return productList;
-
-    return productList.filter((product) => {
-      const price = parseInt(String(product.price));
-      return selectedPriceRanges.some((range) => {
-        const [min, max] = range.split("-").map(Number);
-        return price >= min && price <= max;
-      });
-    });
-  };
-
-  // Filter theo danh mục
-  const filterByCategory = (productList: typeof products) => {
-    if (selectedCategories.length === 0) return productList;
-
-    return productList.filter((product) => {
-      return selectedCategories.some((categoryId) =>
-        product.categories?.some((cat) => cat.id === categoryId),
-      );
-    });
-  };
-
-  // Sort products
-  const sortProducts = (productList: typeof products) => {
-    const sorted = [...productList];
-    switch (sortBy) {
-      case "price-asc":
-        return sorted.sort(
-          (a, b) => parseInt(String(a.price)) - parseInt(String(b.price)),
-        );
-      case "price-desc":
-        return sorted.sort(
-          (a, b) => parseInt(String(b.price)) - parseInt(String(a.price)),
-        );
-      case "newest":
-        return sorted.sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        );
-      case "most-popular":
-      default:
-        return sorted;
-    }
-  };
-
-  // Apply filters
-  let filteredProducts = filterBySearch(products);
-  filteredProducts = filterByPrice(filteredProducts);
-  filteredProducts = filterByCategory(filteredProducts);
-  filteredProducts = sortProducts(filteredProducts);
-
-  const { paginatedProducts, getPageNumbers, totalPages } = usePagination(
-    filteredProducts,
-    currentPage,
-  );
-
   // Helper function để tạo URL params
   const createQueryString = (
-    params: Record<string, string | number | string[]>,
+    params: Record<string, string | number | string[] | null>,
   ) => {
     const newParams = new URLSearchParams();
 
     Object.entries(params).forEach(([key, value]) => {
       if (Array.isArray(value)) {
         value.forEach((v) => newParams.append(key, String(v)));
-      } else if (value !== undefined) {
+      } else if (value !== undefined && value !== null) {
         newParams.set(key, String(value));
       }
     });
@@ -133,71 +85,111 @@ export default function FlowerCollection() {
   // Handle pagination
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages) return;
-    const params: Record<string, string | number | string[]> = { page };
-    if (selectedPriceRanges.length > 0) {
-      params.priceRange = selectedPriceRanges;
+    const params: Record<string, string | number | string[] | null> = { page };
+    if (minPrice !== null) {
+      params.minPrice = minPrice;
     }
-    if (selectedCategories.length > 0) {
+    if (maxPrice !== null) {
+      params.maxPrice = maxPrice;
+    }
+    if (selectedCategories) {
       params.category = selectedCategories;
     }
-    params.sortBy = sortBy;
+    params.sort = sort;
+    if (searchQuery) {
+      params.search = searchQuery;
+    }
     router.push(`/products${createQueryString(params)}`);
   };
 
   // Handle price filter
-  const handlePriceChange = (range: string, isChecked: boolean) => {
-    let newRanges = [...selectedPriceRanges];
-    if (isChecked) {
-      newRanges.push(range);
-    } else {
-      newRanges = newRanges.filter((r) => r !== range);
+  const handlePriceChange = (minVal: number | null, maxVal: number | null) => {
+    const params: Record<string, string | number | string[] | null> = {
+      page: 1,
+    };
+    if (minVal !== null) {
+      params.minPrice = minVal;
     }
-    router.push(
-      `/products${createQueryString({ priceRange: newRanges, category: selectedCategories, page: 1, sortBy })}`,
-    );
+    if (maxVal !== null) {
+      params.maxPrice = maxVal;
+    }
+    if (selectedCategories) {
+      params.category = selectedCategories;
+    }
+    params.sort = sort;
+    if (searchQuery) {
+      params.search = searchQuery;
+    }
+    router.push(`/products${createQueryString(params)}`);
   };
 
   // Handle category filter
-  const handleCategoryChange = (categoryId: string, isChecked: boolean) => {
-    let newCategories = [...selectedCategories];
+  const handleCategoryChange = (slug: string, isChecked: boolean) => {
+    let newCategory = "";
     if (isChecked) {
-      newCategories.push(categoryId);
-    } else {
-      newCategories = newCategories.filter((c) => c !== categoryId);
+      // Only allow one category selection
+      newCategory = slug;
     }
-    router.push(
-      `/products${createQueryString({ priceRange: selectedPriceRanges, category: newCategories, page: 1, sortBy })}`,
-    );
+    // If unchecked, newCategory stays empty
+
+    const params: Record<string, string | number | string[] | null> = {
+      page: 1,
+    };
+    if (minPrice !== null) {
+      params.minPrice = minPrice;
+    }
+    if (maxPrice !== null) {
+      params.maxPrice = maxPrice;
+    }
+    if (newCategory) {
+      params.category = newCategory;
+    }
+    params.sort = sort;
+    if (searchQuery) {
+      params.search = searchQuery;
+    }
+    router.push(`/products${createQueryString(params)}`);
   };
 
   // Handle search
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const params: Record<string, string | number | string[]> = { page: 1 };
+    const params: Record<string, string | number | string[] | null> = {
+      page: 1,
+    };
     if (searchInput.trim()) {
       params.search = searchInput;
     }
-    if (selectedPriceRanges.length > 0) {
-      params.priceRange = selectedPriceRanges;
+    if (minPrice !== null) {
+      params.minPrice = minPrice;
     }
-    if (selectedCategories.length > 0) {
+    if (maxPrice !== null) {
+      params.maxPrice = maxPrice;
+    }
+    if (selectedCategories) {
       params.category = selectedCategories;
     }
-    params.sortBy = sortBy;
+    params.sort = sort;
     router.push(`/products${createQueryString(params)}`);
   };
 
   // Handle sort
   const handleSort = (sort: string) => {
-    const params: Record<string, string | number | string[]> = {
-      sortBy: sort,
+    const params: Record<string, string | number | string[] | null> = {
+      sort: sort,
       page: 1,
     };
-    if (selectedPriceRanges.length > 0) {
-      params.priceRange = selectedPriceRanges;
+    if (minPrice !== null) {
+      params.minPrice = minPrice;
     }
-    if (selectedCategories.length > 0) {
+    if (maxPrice !== null) {
+      params.maxPrice = maxPrice;
+    }
+    if (selectedCategories) {
       params.category = selectedCategories;
+    }
+    if (searchQuery) {
+      params.search = searchQuery;
     }
     router.push(`/products${createQueryString(params)}`);
   };
@@ -230,19 +222,19 @@ export default function FlowerCollection() {
               <FilterSection title="Khoảng giá">
                 {PRICE_RANGES.map((range) => (
                   <label
-                    key={range.label}
+                    key={range.value}
                     className="flex items-center gap-3 cursor-pointer group/item"
                   >
                     <div className="relative flex items-center">
                       <input
                         type="checkbox"
-                        checked={selectedPriceRanges.includes(
-                          `${range.min}-${range.max}`,
-                        )}
+                        checked={
+                          minPrice === range.min && maxPrice === range.max
+                        }
                         onChange={(e) =>
                           handlePriceChange(
-                            `${range.min}-${range.max}`,
-                            e.target.checked,
+                            e.target.checked ? range.min : null,
+                            e.target.checked ? range.max : null,
                           )
                         }
                         className="peer appearance-none size-5 border-2 border-[#ccc] dark:border-white/20 rounded-md checked:bg-[#13ec5b] checked:border-[#13ec5b] transition-all"
@@ -268,9 +260,9 @@ export default function FlowerCollection() {
                     <div className="relative flex items-center">
                       <input
                         type="checkbox"
-                        checked={selectedCategories.includes(category.id)}
+                        checked={selectedCategories === category.slug}
                         onChange={(e) =>
-                          handleCategoryChange(category.id, e.target.checked)
+                          handleCategoryChange(category.slug, e.target.checked)
                         }
                         className="peer appearance-none size-5 border-2 border-[#ccc] dark:border-white/20 rounded-md checked:bg-[#13ec5b] checked:border-[#13ec5b] transition-all"
                       />
@@ -284,24 +276,6 @@ export default function FlowerCollection() {
                     </span>
                   </label>
                 ))}
-              </FilterSection>
-
-              <FilterSection title="Trạng thái hàng">
-                <label className="flex items-center gap-3 cursor-pointer group/item">
-                  <div className="relative flex items-center">
-                    <input
-                      type="checkbox"
-                      className="peer appearance-none size-5 border-2 border-[#ccc] dark:border-white/20 rounded-md checked:bg-[#13ec5b] checked:border-[#13ec5b] transition-all"
-                    />
-                    <CheckCircle
-                      size={12}
-                      className="absolute left-1 text-[#0d1b12] opacity-0 peer-checked:opacity-100 transition-opacity"
-                    />
-                  </div>
-                  <span className="typo-body-sm text-[#4c9a66] dark:text-white/60 group-hover/item:text-[#13ec5b] transition-colors">
-                    Còn hàng
-                  </span>
-                </label>
               </FilterSection>
             </div>
           </aside>
@@ -359,24 +333,23 @@ export default function FlowerCollection() {
 
                 <div className="flex-1 md:flex-none relative bg-white dark:bg-white/5 p-2 px-4 rounded-xl border border-[#e7f3eb] dark:border-white/10 flex items-center gap-3 min-w-50">
                   <span className="typo-caption-xs text-[#4c9a66] whitespace-nowrap">
-                    Sắp xếp:
+                    Sắp xếp: 
                   </span>
                   <select
-                    value={sortBy}
+                    value={sort}
                     onChange={(e) => handleSort(e.target.value)}
                     className="bg-transparent border-none typo-body-sm font-bold text-[#0d1b12] dark:text-white focus:ring-0 p-0 cursor-pointer w-full outline-none"
                   >
-                    <option value="most-popular">Được yêu thích</option>
+                    <option value="newest">Mới nhất</option>
                     <option value="price-asc">Giá: Thấp đến Cao</option>
                     <option value="price-desc">Giá: Cao đến Thấp</option>
-                    <option value="newest">Mới nhất</option>
                   </select>
                 </div>
               </div>
             </div>
 
             {/* Lưới sản phẩm */}
-            {paginatedProducts.length > 0 ? (
+            {products.length > 0 ? (
               <div
                 className={
                   viewMode === "grid"
@@ -384,7 +357,7 @@ export default function FlowerCollection() {
                     : "space-y-4"
                 }
               >
-                {paginatedProducts.map((product) => (
+                {products.map((product) => (
                   <ProductCard
                     key={product.id}
                     product={product}
@@ -401,46 +374,11 @@ export default function FlowerCollection() {
             )}
 
             {/* Phân trang */}
-            {totalPages > 1 && (
-              <div className="mt-20 flex justify-center items-center gap-4">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="size-12 rounded-full border-2 border-[#e7f3eb] dark:border-white/10 flex items-center justify-center text-[#4c9a66] dark:text-white/40 hover:border-[#13ec5b] hover:text-[#13ec5b] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <div className="flex gap-2">
-                  {getPageNumbers().map((page, idx) => (
-                    <button
-                      key={`${page}-${idx}`}
-                      onClick={() => {
-                        if (typeof page === "number") {
-                          handlePageChange(page);
-                        }
-                      }}
-                      disabled={page === "..."}
-                      className={`size-12 rounded-full typo-button-sm transition-all ${
-                        page === currentPage
-                          ? "bg-[#13ec5b] text-[#0d1b12] shadow-lg shadow-[#13ec5b]/30"
-                          : page === "..."
-                            ? "text-[#ccc] dark:text-white/20 cursor-default"
-                            : "text-[#0d1b12] dark:text-white hover:bg-[#e7f3eb] dark:hover:bg-white/5 cursor-pointer"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                </div>
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="size-12 rounded-full border-2 border-[#e7f3eb] dark:border-white/10 flex items-center justify-center text-[#4c9a66] dark:text-white/40 hover:border-[#13ec5b] hover:text-[#13ec5b] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <ChevronRight size={20} />
-                </button>
-              </div>
-            )}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           </div>
         </div>
       </div>

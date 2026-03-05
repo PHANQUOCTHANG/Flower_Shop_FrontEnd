@@ -4,20 +4,22 @@ import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationProps {
+  products: any[];
+  totalPages: number;
   currentPage: number;
-  totalPages?: number;
   totalItems?: number;
-  itemsPerPage?: number;
   onPageChange: (page: number) => void;
 }
 
 export const Pagination: React.FC<PaginationProps> = ({
+  products,
+  totalPages,
   currentPage,
-  totalPages = 3,
-  totalItems = 156,
-  itemsPerPage = 50,
+  totalItems = 0,
   onPageChange,
 }) => {
+
+
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       onPageChange(currentPage - 1);
@@ -54,11 +56,11 @@ export const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <div className="bg-slate-50 dark:bg-zinc-800/50 border-t border-slate-200 dark:border-zinc-800 px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <span className="text-sm font-bold text-slate-500 dark:text-zinc-500">
-        Hiển thị {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)}{" "}
-        đến {Math.min(currentPage * itemsPerPage, totalItems)} của {totalItems}{" "}
+      {/* <span className="text-sm font-bold text-slate-500 dark:text-zinc-500">
+        Hiển thị {Math.min((currentPage - 1) * products.length + 1, totalItems)}{" "}
+        đến {Math.min(currentPage * products.length, totalItems)} của {totalItems}{" "}
         mục
-      </span>
+      </span> */}
 
       <div className="flex items-center gap-2">
         <button
