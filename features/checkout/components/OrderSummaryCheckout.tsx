@@ -1,30 +1,23 @@
 import React from "react";
 import { ShoppingCart, ShieldCheck, Heart } from "lucide-react";
 import { formatCurrency } from "@/utils/format";
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
+import { CartItemResponse } from "@/features/cart/types/cart";
 
 interface OrderSummaryCheckoutProps {
-  cartItems: CartItem[];
+  cartItems: CartItemResponse[];
   subtotal: number;
-  discountAmount: number;
   total: number;
   onConfirmOrder: () => void;
+  isLoading?: boolean;
 }
 
 // Component hiển thị tóm tắt đơn hàng ở checkout
 export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
   cartItems,
   subtotal,
-  discountAmount,
   total,
   onConfirmOrder,
+  isLoading = false,
 }) => {
   return (
     <div className="lg:sticky lg:top-10 space-y-6">
@@ -64,7 +57,7 @@ export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
                   Số lượng: {item.quantity}
                 </p>
                 <p className="typo-heading-sm text-[#ee2b5b] mt-1">
-                  {formatCurrency(item.price)}
+                  {formatCurrency(item.product.price)}
                 </p>
               </div>
             </div>
@@ -84,16 +77,6 @@ export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
             <span className="text-gray-400">Phí vận chuyển</span>
             <span className="text-green-500 font-bold">MIỄN PHÍ</span>
           </div>
-
-          {/* Ưu đãi (nếu có) */}
-          {discountAmount > 0 && (
-            <div className="flex justify-between items-center typo-caption-xs">
-              <span className="text-[#ee2b5b]">Ưu đãi thanh toán (-5%)</span>
-              <span className="text-[#ee2b5b] font-black">
-                -{formatCurrency(discountAmount)}
-              </span>
-            </div>
-          )}
 
           {/* Tổng cộng */}
           <div className="pt-8 mt-4 border-t-2 border-[#ee2b5b]/20">
@@ -116,10 +99,26 @@ export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
         {/* Nút xác nhận đặt hàng */}
         <button
           onClick={onConfirmOrder}
-          className="w-full bg-[#ee2b5b] hover:bg-[#d41f4d] text-white py-6 rounded-2xl typo-button-lg mt-12 transition-all transform hover:-translate-y-1 active:scale-[0.98] shadow-2xl shadow-[#ee2b5b]/30 relative z-10 overflow-hidden group"
+          disabled={isLoading}
+          className={`w-full bg-[#ee2b5b] text-white py-6 rounded-2xl typo-button-lg mt-12 transition-all transform relative z-10 overflow-hidden group ${
+            isLoading
+              ? "opacity-60 cursor-not-allowed"
+              : "hover:bg-[#d41f4d] hover:-translate-y-1 active:scale-[0.98] shadow-2xl shadow-[#ee2b5b]/30"
+          }`}
         >
-          <span className="relative z-10">Xác nhận đặt hàng</span>
-          <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+          <div className="relative z-10 flex items-center justify-center gap-3">
+            {isLoading ? (
+              <>
+                <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span>Đang xử lý...</span>
+              </>
+            ) : (
+              <span>Xác nhận đặt hàng</span>
+            )}
+          </div>
+          {!isLoading && (
+            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+          )}
         </button>
 
         {/* Badges bảo mật */}

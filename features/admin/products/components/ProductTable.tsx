@@ -10,6 +10,7 @@ interface ProductTableProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   onDelete: (product: Product) => void;
+  isLoading?: boolean;
 }
 
 export const ProductTable = ({
@@ -18,10 +19,25 @@ export const ProductTable = ({
   currentPage,
   onPageChange,
   onDelete,
+  isLoading = false,
 }: ProductTableProps) => {
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden">
-      <div className="overflow-x-auto">
+    <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden relative flex flex-col">
+      <div
+        className="overflow-x-auto overflow-y-auto"
+        style={{ maxHeight: "calc(6 * 80px + 60px)" }}
+      >
+        {isLoading && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm rounded-2xl">
+            <div className="relative">
+              {/* Spinner xoay */}
+              <div className="relative flex items-center justify-center">
+                <div className="size-12 border-3 border-slate-300 dark:border-zinc-700 border-t-[#13ec5b] rounded-full animate-spin"></div>
+                <span className="absolute text-xs font-bold text-slate-500 dark:text-slate-400"></span>
+              </div>
+            </div>
+          </div>
+        )}
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50 dark:bg-zinc-800/30 border-b border-slate-200 dark:border-zinc-800">
@@ -118,6 +134,7 @@ export const ProductTable = ({
       </div>
 
       {/* Phân trang */}
+
       <Pagination
         products={products}
         totalPages={totalPages}

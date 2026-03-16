@@ -35,6 +35,7 @@ let refreshPromise: Promise<string> | null = null;
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken;
 
+  console.log(token)
   if (token && !config.headers.Authorization) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -51,6 +52,9 @@ const requestNewAccessToken = async (): Promise<string> => {
       timeout: 10000,
     });
 
+    console.log("[Axios Refresh] Success:", response.data);
+
+
     // Handle cả 2 response format: accessToken | data.accessToken
     const newAccessToken =
       response.data?.accessToken || response.data?.data?.accessToken;
@@ -63,11 +67,9 @@ const requestNewAccessToken = async (): Promise<string> => {
     useAuthStore.getState().setAccessToken(newAccessToken);
 
     return newAccessToken;
-  } catch (error) {
-    console.error("[Axios Refresh] Failed:", {
-      status: (error as AxiosError)?.response?.status,
-      message: (error as any)?.message,
-    });
+  } 
+  
+  catch (error) {
     throw error;
   }
 };

@@ -15,6 +15,7 @@ interface FilterBarProps {
     min: number | null;
     max: number | null;
   }>;
+  hasActiveFilters: boolean;
   onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onSortChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -31,6 +32,7 @@ export const FilterBar = ({
   maxPrice,
   categories,
   priceRanges,
+  hasActiveFilters,
   onSearchChange,
   onCategoryChange,
   onSortChange,
@@ -79,7 +81,7 @@ export const FilterBar = ({
           onChange={onCategoryChange}
           className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white text-sm font-medium focus:ring-2 focus:ring-[#13ec5b] transition-all shadow-sm cursor-pointer"
         >
-          <option value={undefined}>Tất cả</option>
+          <option value="Tất cả">Tất cả</option>
           {categories.map((category) => (
             <option key={category.id} value={category.slug}>
               {category.name}
@@ -117,14 +119,16 @@ export const FilterBar = ({
           <span>Lọc</span>
         </button>
 
-        {/* Nút xóa lọc */}
-        <button
-          onClick={onClearFilter}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white text-sm font-bold hover:bg-slate-50 dark:hover:bg-zinc-800 active:scale-95 transition-all shadow-sm"
-        >
-          <X size={16} />
-          <span>Xóa lọc</span>
-        </button>
+        {/* Nút xóa lọc - chỉ hiện khi có filter đang áp dụng */}
+        {hasActiveFilters && (
+          <button
+            onClick={onClearFilter}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white text-sm font-bold hover:bg-slate-50 dark:hover:bg-zinc-800 active:scale-95 transition-all shadow-sm"
+          >
+            <X size={16} />
+            <span>Xóa lọc</span>
+          </button>
+        )}
         <label className="text-xs font-bold text-slate-500 uppercase whitespace-nowrap">
           Sắp xếp:
         </label>

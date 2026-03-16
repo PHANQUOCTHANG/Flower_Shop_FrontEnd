@@ -1,8 +1,9 @@
 import { productDetailService } from "@/features/product-detail/services/productDetailService";
 import { useQuery } from "@tanstack/react-query";
 import { SimilarProduct, Review } from "@/features/product-detail/types";
+import { useAddToCart } from "@/features/cart/hooks";
 
-// Mock data cho reviews
+// Dữ liệu mẫu đánh giá sản phẩm
 const MOCK_REVIEWS: Review[] = [
   {
     id: 1,
@@ -27,48 +28,77 @@ const MOCK_REVIEWS: Review[] = [
   },
 ];
 
-// Mock data cho sản phẩm tương tự
+// Dữ liệu mẫu sản phẩm tương tự
 const MOCK_SIMILAR_PRODUCTS: SimilarProduct[] = [
   {
     id: "1",
     name: "Pink Dream Roses",
+    slug: "pink-dream-roses",
     price: 720000,
-    image:
+    thumbnailUrl:
       "https://images.unsplash.com/photo-1561181286-d3fee7d55364?q=80&w=400&auto=format&fit=crop",
+    images: [],
   },
   {
     id: "2",
     name: "Sunset Glow Tulips",
+    slug: "sunset-glow-tulips",
     price: 950000,
-    image:
+    thumbnailUrl:
       "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400&auto=format&fit=crop",
+    images: [],
   },
   {
     id: "3",
     name: "Lavender Mist",
+    slug: "lavender-mist",
     price: 680000,
-    image:
+    thumbnailUrl:
       "https://images.unsplash.com/photo-1565011523534-747a8601f10a?q=80&w=400&auto=format&fit=crop",
+    images: [],
   },
   {
     id: "4",
     name: "Golden Sunshine",
+    slug: "golden-sunshine",
     price: 550000,
-    image:
+    thumbnailUrl:
       "https://images.unsplash.com/photo-1597848212624-a19eb3bf63a7?q=80&w=400&auto=format&fit=crop",
+    images: [],
   },
 ];
 
-export const useProductDetail = (params?: {
-  slug?: string;
-  id?: string | number;
-}) => {
+export const useProductDetail = (params?: { slug?: string; id?: string }) => {
   const query = useQuery({
     queryKey: ["product-detail", params],
     queryFn: () => productDetailService.getProductDetail(params),
     enabled: !!(params?.slug || params?.id),
     placeholderData: (previousData) => previousData,
   });
+
+  // Mutation thêm vào giỏ hàng
+  const { mutate: addToCart, isPending: isAddingToCart } = useAddToCart();
+
+  // Xử lý thêm sản phẩm vào giỏ hàng
+  const handleAddToCart = (quantity: number = 1) => {
+    if (!query.data?.product) {
+      console.error("Sản phẩm chưa được tải");
+      return;
+    }
+
+    const product = query.data.product;
+    const productId = product.id || product.slug || "";
+
+    if (!productId) {
+      console.error("Cần ID sản phẩm");
+      return;
+    }
+
+    console.log({ productId, quantity });
+
+    // Thêm vào giỏ hàng với productId + quantity
+    addToCart({ productId, quantity });
+  };
 
   return {
     product: query.data?.product,
@@ -78,5 +108,7 @@ export const useProductDetail = (params?: {
     fetching: query.isFetching,
     error: query.error ?? null,
     refetch: query.refetch,
+    addToCart: handleAddToCart,
+    isAddingToCart,
   };
 };

@@ -1,18 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Search, ShoppingCart, User, Heart } from "lucide-react";
+import { useCartStore } from "@/stores/cart.store";
+import { useAuthStore } from "@/stores/auth.store";
+import { useProducts } from "@/features/products/hooks/useProducts";
+import { formatCurrency } from "@/utils/format";
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
-  const [cartCount] = useState(2); // TODO: lấy từ store
-  const [isLoggedIn] = useState(false); // TODO: lấy từ auth context
-  const [userName] = useState("Ngô Thăng"); // TODO: lấy từ user data
-  const [favoriteCount] = useState(0); // TODO: lấy từ store
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Get search suggestions
+  const { products: searchResults, loading: searchLoading } = useProducts({
+    search: searchQuery.trim() ? searchQuery : undefined,
+    limit: 5,
+  });
+
+  // Get cart data from store
+  const cartCount = useCartStore((state) => state.getItemCount());
+
+  // Get auth data from store
+  const isHydrated = useAuthStore((state) => state.isHydrated);
+  const isLoggedIn = useAuthStore((state) => state.isAuthenticated);
+  const userName = useAuthStore((state) => state.user?.name || "");
+
+  const [favoriteCount] = useState(0); // TODO: lấy từ favorite store
+
+  // Force rerender khi auth state thay đổi
+  const [render, setRerender] = useState(0);
+  useEffect(() => {
+    const unsubscribe = useAuthStore.subscribe(
+      (state) => state.isAuthenticated,
+      () => setRerender((prev) => prev + 1),
+    );
+    return unsubscribe;
+  }, []);
 
   // Kiểm tra trang hiện tại có khớp path không
   const isActive = (path: string): boolean => {
@@ -23,6 +50,7 @@ export default function Header() {
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      setShowSuggestions(false);
       router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
     }
   };
@@ -30,11 +58,20 @@ export default function Header() {
   // Cập nhật từ khóa tìm kiếm
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
+    setShowSuggestions(true);
+  };
+
+  // Click vào sản phẩm trong gợi ý
+  const handleSelectProduct = (slug: string) => {
+    setSearchQuery("");
+    setShowSuggestions(false);
+    router.push(`/products/${slug}`);
   };
 
   // Điều hướng đến giỏ hàng
   const handleCartClick = () => {
-    router.push("/cart");
+    if (!isLoggedIn) return router.push("/login");
+    return router.push("/cart");
   };
 
   // Điều hướng đến danh sách yêu thích
@@ -45,6 +82,12 @@ export default function Header() {
   // Điều hướng tới URL
   const handleNavigation = (href: string) => {
     router.push(href);
+  };
+
+  //Điều hướng tới account .
+  const handleAccount = () => {
+    if (!isLoggedIn) return router.push("/login");
+    return router.push("/profile");
   };
 
   return (
@@ -124,16 +167,56 @@ export default function Header() {
           {/* Thanh tìm kiếm */}
           <form
             onSubmit={handleSearch}
-            className="relative flex items-center w-full max-w-md h-11"
+            className="relative flex items-center w-full max-w-md"
           >
             <Search className="absolute left-4 text-[#4c9a66] size-5 pointer-events-none" />
             <input
-              className="w-full h-full pl-12 pr-4 bg-[#e7f3eb] border-none rounded-xl focus:ring-2 focus:ring-[#13ec5b]/50 text-base placeholder:text-[#4c9a66] outline-none"
+              className="w-full h-11 pl-12 pr-4 bg-[#e7f3eb] border-none rounded-xl focus:ring-2 focus:ring-[#13ec5b]/50 text-base placeholder:text-[#4c9a66] outline-none"
               placeholder="Tìm kiếm hoa..."
               type="text"
               value={searchQuery}
               onChange={handleSearchChange}
+              onFocus={() => searchQuery && setShowSuggestions(true)}
             />
+
+            {/* Dropdown Suggestions */}
+            {showSuggestions && searchQuery && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-96 overflow-y-auto">
+                {searchLoading ? (
+                  <div className="p-4 text-center text-gray-500">
+                    Đang tìm kiếm...
+                  </div>
+                ) : searchResults.length > 0 ? (
+                  <div>
+                    {searchResults.map((product) => (
+                      <div
+                        key={product.id}
+                        onClick={() => handleSelectProduct(product.slug)}
+                        className="flex items-center gap-3 p-3 border-b border-gray-100 hover:bg-[#f6f8f6] cursor-pointer transition-colors last:border-b-0"
+                      >
+                        <img
+                          src={product.thumbnailUrl || "/placeholder.jpg"}
+                          alt={product.name}
+                          className="w-12 h-12 object-cover rounded-lg"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="typo-body-sm font-semibold text-gray-900 line-clamp-1">
+                            {product.name}
+                          </h4>
+                          <p className="typo-caption-xs text-[#13ec5b] font-semibold">
+                            {formatCurrency(product.price)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 text-center text-gray-500 typo-body-sm">
+                    Không tìm thấy sản phẩm nào
+                  </div>
+                )}
+              </div>
+            )}
           </form>
 
           {/* Nhóm nút hành động */}
@@ -175,10 +258,10 @@ export default function Header() {
             </div>
 
             {/* Avatar hồ sơ hoặc nút đăng nhập */}
-            {isLoggedIn ? (
+            {isHydrated && isLoggedIn ? (
               <div
                 className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={() => handleNavigation("/profile")}
+                onClick={() => handleAccount()}
                 title="Hồ sơ cá nhân"
               >
                 <div
@@ -194,7 +277,7 @@ export default function Header() {
               </div>
             ) : (
               <button
-                onClick={() => handleNavigation("/login")}
+                onClick={handleAccount}
                 className="size-10 rounded-full bg-[#e7f3eb] flex items-center justify-center text-[#0d1b12] hover:bg-[#13ec5b]/20 transition-colors"
                 title="Đăng nhập"
               >

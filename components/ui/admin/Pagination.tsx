@@ -18,8 +18,6 @@ export const Pagination: React.FC<PaginationProps> = ({
   totalItems = 0,
   onPageChange,
 }) => {
-
-
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       onPageChange(currentPage - 1);
@@ -55,13 +53,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="bg-slate-50 dark:bg-zinc-800/50 border-t border-slate-200 dark:border-zinc-800 px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-      {/* <span className="text-sm font-bold text-slate-500 dark:text-zinc-500">
-        Hiển thị {Math.min((currentPage - 1) * products.length + 1, totalItems)}{" "}
-        đến {Math.min(currentPage * products.length, totalItems)} của {totalItems}{" "}
-        mục
-      </span> */}
-
+    <div className="bg-slate-50 dark:bg-zinc-800/50 border-t border-slate-200 dark:border-zinc-800 px-8 py-5 flex flex-col sm:flex-row items-center justify-end gap-4">
       <div className="flex items-center gap-2">
         <button
           className="p-2 rounded-lg border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-slate-400 hover:bg-slate-50 dark:hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"

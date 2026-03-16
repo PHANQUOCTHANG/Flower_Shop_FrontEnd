@@ -1,5 +1,6 @@
 import React from "react";
 import { ShoppingCart } from "lucide-react";
+import Link from "next/link";
 
 export const EmptyCart: React.FC = () => {
   return (
@@ -12,7 +13,7 @@ export const EmptyCart: React.FC = () => {
         Hãy quay lại trang sản phẩm để chọn những bó hoa ưng ý nhất.
       </p>
       <button className="bg-[#ee2b5b] text-white px-6 sm:px-8 py-3 rounded-xl typo-button-sm hover:shadow-lg transition-all">
-        Khám phá sản phẩm
+        <Link href="/products">Khám phá sản phẩm</Link>
       </button>
     </div>
   );

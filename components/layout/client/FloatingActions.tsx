@@ -1,7 +1,21 @@
 "use client";
 
 import React, { useState } from "react";
-import { MessageCircle, Phone, X, Send } from "lucide-react";
+import { MessageCircle, X, Send } from "lucide-react";
+
+// Zalo Icon Component
+const ZaloIcon = () => (
+  <svg
+    width="32"
+    height="32"
+    viewBox="0 0 48 48"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M24 2C11.85 2 2 11.85 2 24c0 6.27 2.7 11.91 7 15.81v6.19h6.19c3.9 4.3 9.54 7 15.81 7 12.15 0 22-9.85 22-22S36.15 2 24 2zm0 4c9.94 0 18 8.06 18 18s-8.06 18-18 18-18-8.06-18-18 8.06-18 18-18z" />
+    <path d="M20 18h8v2h-8v-2zm0 5h8v2h-8v-2zm0 5h5v2h-5v-2z" />
+  </svg>
+);
 
 export default function FloatingActions() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -54,6 +68,39 @@ export default function FloatingActions() {
 
   return (
     <>
+      <style>{`
+        @keyframes pulse-wave {
+          0% {
+            box-shadow: 0 0 0 0 rgba(19, 236, 91, 0.7);
+          }
+          50% {
+            box-shadow: 0 0 0 10px rgba(19, 236, 91, 0.3);
+          }
+          100% {
+            box-shadow: 0 0 0 20px rgba(19, 236, 91, 0);
+          }
+        }
+
+        @keyframes pulse-wave-blue {
+          0% {
+            box-shadow: 0 0 0 0 rgba(0, 104, 255, 0.7);
+          }
+          50% {
+            box-shadow: 0 0 0 10px rgba(0, 104, 255, 0.3);
+          }
+          100% {
+            box-shadow: 0 0 0 20px rgba(0, 104, 255, 0);
+          }
+        }
+
+        .floating-pulse {
+          animation: pulse-wave 2s infinite;
+        }
+
+        .floating-pulse-blue {
+          animation: pulse-wave-blue 2s infinite;
+        }
+      `}</style>
       {/* Chat Modal */}
       {isChatOpen && (
         <div className="fixed bottom-24 right-6 w-80 h-96 bg-white dark:bg-[#1a2e24] rounded-2xl shadow-2xl flex flex-col z-101">
@@ -120,15 +167,20 @@ export default function FloatingActions() {
         {/* Chat Button */}
         <button
           onClick={toggleChat}
-          className="size-14 rounded-full bg-[#0068ff] text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+          className="size-14 rounded-full bg-[#0068ff] text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform floating-pulse-blue"
         >
           <MessageCircle size={32} />
         </button>
 
-        {/* Phone Button */}
-        <button className="size-14 rounded-full bg-[#13ec5b] text-[#0d1b12] flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-          <Phone size={32} />
-        </button>
+        {/* Zalo Button */}
+        <a
+          href="https://zalo.me/0931838465"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="size-14 rounded-full bg-[#13ec5b] text-[#0d1b12] flex items-center justify-center shadow-lg hover:scale-110 transition-transform floating-pulse"
+        >
+          <ZaloIcon />
+        </a>
       </div>
     </>
   );

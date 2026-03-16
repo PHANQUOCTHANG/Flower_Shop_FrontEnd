@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import {
   Eye,
@@ -12,6 +11,9 @@ import {
   Flower2,
   ArrowRight,
 } from "lucide-react";
+import { useRegister } from "@/features/auth/register/hooks/useRegister";
+import Alert from "@/components/ui/Alert";
+import { useState } from "react";
 
 // ── Reusable Input field with left icon ──────────────────────────────────────
 interface FieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -45,7 +47,8 @@ function Field({
           id={id}
           className={`w-full pl-10 ${rightSlot ? "pr-12" : "pr-4"} py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg
                       text-[#1b0d11] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500
-                      focus:ring-2 focus:ring-[#ee2b5b] focus:border-[#ee2b5b] outline-none transition-all ${className}`}
+                      focus:ring-2 focus:ring-[#ee2b5b] focus:border-[#ee2b5b] outline-none transition-all
+                      disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
           {...rest}
         />
         {rightSlot && (
@@ -60,32 +63,9 @@ function Field({
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function RegisterPage() {
-  const [form, setForm] = useState({
-    fullName: "",
-    phone: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    marketing: false,
-  });
+  const { form, isLoading, error, updateForm, handleSubmit } = useRegister();
   const [showPass, setShowPass] = useState(false);
-
-  const set =
-    (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
-      setForm({
-        ...form,
-        [key]: e.target.type === "checkbox" ? e.target.checked : e.target.value,
-      });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (form.password !== form.confirmPassword) {
-      alert("Mật khẩu xác nhận không khớp!");
-      return;
-    }
-    // TODO: gọi API đăng ký
-    console.log(form);
-  };
+  const [showAlert, setShowAlert] = useState(true);
 
   return (
     <div className="flex min-h-screen w-full flex-col lg:flex-row bg-[#fcfbf9] dark:bg-[#1a0f12] text-[#1b0d11] dark:text-white transition-colors duration-300 font-sans antialiased">
@@ -139,8 +119,27 @@ export default function RegisterPage() {
             </p>
           </div>
 
+          {/* Error Alert */}
+          {error && showAlert && (
+            <div className="mb-6">
+              <Alert
+                type="error"
+                message={error.message}
+                autoClose={true}
+                duration={5000}
+                onClose={() => setShowAlert(false)}
+              />
+            </div>
+          )}
+
           {/* Form */}
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form
+            className="space-y-5"
+            onSubmit={(e) => {
+              setShowAlert(true);
+              handleSubmit(e);
+            }}
+          >
             <Field
               label="Họ và tên"
               id="fullName"
@@ -148,19 +147,20 @@ export default function RegisterPage() {
               type="text"
               placeholder="Nguyễn Văn A"
               required
+              disabled={isLoading}
               value={form.fullName}
-              onChange={set("fullName")}
+              onChange={(e) => updateForm("fullName", e.target.value)}
             />
 
             <Field
-              label="Số điện thoại"
+              label="Số điện thoại (Tùy chọn)"
               id="phone"
               icon={<Phone size={20} />}
               type="tel"
               placeholder="0901 234 567"
-              required
+              disabled={isLoading}
               value={form.phone}
-              onChange={set("phone")}
+              onChange={(e) => updateForm("phone", e.target.value)}
             />
 
             <Field
@@ -170,8 +170,9 @@ export default function RegisterPage() {
               type="email"
               placeholder="name@example.com"
               required
+              disabled={isLoading}
               value={form.email}
-              onChange={set("email")}
+              onChange={(e) => updateForm("email", e.target.value)}
             />
 
             <Field
@@ -181,13 +182,15 @@ export default function RegisterPage() {
               type={showPass ? "text" : "password"}
               placeholder="••••••••"
               required
+              disabled={isLoading}
               value={form.password}
-              onChange={set("password")}
+              onChange={(e) => updateForm("password", e.target.value)}
               rightSlot={
                 <button
                   type="button"
+                  disabled={isLoading}
                   onClick={() => setShowPass(!showPass)}
-                  className="text-gray-400 dark:text-gray-500 hover:text-[#ee2b5b] transition-colors"
+                  className="text-gray-400 dark:text-gray-500 hover:text-[#ee2b5b] transition-colors disabled:opacity-50"
                 >
                   {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -201,43 +204,36 @@ export default function RegisterPage() {
               type="password"
               placeholder="••••••••"
               required
+              disabled={isLoading}
               value={form.confirmPassword}
-              onChange={set("confirmPassword")}
+              onChange={(e) => updateForm("confirmPassword", e.target.value)}
             />
-
-            {/* Checkbox marketing */}
-            <label className="flex items-start gap-3 pt-1 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={form.marketing}
-                onChange={set("marketing")}
-                className="mt-0.5 h-5 w-5 shrink-0 rounded border-gray-300 dark:border-white/20 accent-[#ee2b5b] cursor-pointer"
-              />
-              <div>
-                <p className="text-sm font-medium text-[#1b0d11] dark:text-white">
-                  Nhận thông báo khuyến mãi qua Email
-                </p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                  Chúng tôi sẽ chỉ gửi những thông tin hữu ích nhất cho bạn.
-                </p>
-              </div>
-            </label>
 
             {/* Submit */}
             <div className="pt-3">
               <button
                 type="submit"
+                disabled={isLoading}
                 className="group flex w-full justify-center items-center gap-2 rounded-lg
-                           bg-[#ee2b5b] hover:bg-[#d9244f] active:scale-[0.98]
+                           bg-[#ee2b5b] hover:bg-[#d9244f] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
                            px-4 py-4 text-sm font-bold text-white
                            shadow-lg shadow-[#ee2b5b]/25 transition-all
                            focus:outline-none focus:ring-2 focus:ring-[#ee2b5b] focus:ring-offset-2"
               >
-                ĐĂNG KÝ NGAY
-                <ArrowRight
-                  size={18}
-                  className="group-hover:translate-x-1 transition-transform"
-                />
+                {isLoading ? (
+                  <>
+                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    ĐANG ĐĂNG KÝ
+                  </>
+                ) : (
+                  <>
+                    ĐĂNG KÝ NGAY
+                    <ArrowRight
+                      size={18}
+                      className="group-hover:translate-x-1 transition-transform"
+                    />
+                  </>
+                )}
               </button>
             </div>
           </form>

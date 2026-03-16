@@ -1,5 +1,5 @@
 import React from "react";
-import { Info, Sparkles } from "lucide-react";
+import { Info } from "lucide-react";
 import { Product } from "../types";
 
 interface DescriptionTabProps {
@@ -11,27 +11,17 @@ export const DescriptionTab: React.FC<DescriptionTabProps> = ({ product }) => {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
       {/* Bên trái */}
       <div className="space-y-6">
-        {/* Về mẫu hoa */}
+        {/* Mô tả chi tiết (HTML) */}
         {product.description && (
           <div className="space-y-2">
             <h4 className="typo-heading-sm flex items-center gap-2">
               <Info className="w-5 h-5 text-[#13ec5b]" />
               Về mẫu hoa này
             </h4>
-            <p className="text-gray-600 leading-relaxed">
-              {product.description}
-            </p>
-          </div>
-        )}
-
-        {/* Thông điệp */}
-        {product.meaning && (
-          <div className="space-y-2">
-            <h4 className="typo-heading-sm flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-[#13ec5b]" />
-              Thông điệp truyền tải
-            </h4>
-            <p className="text-gray-600 leading-relaxed">{product.meaning}</p>
+            <div
+              className="text-gray-600 leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ __html: product.description }}
+            />
           </div>
         )}
       </div>

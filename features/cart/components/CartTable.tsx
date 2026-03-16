@@ -1,19 +1,11 @@
 import React from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/utils/format";
-
-export interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-  variant: string;
-}
+import { CartItemResponse } from "@/features/cart/types/cart";
 
 interface CartTableProps {
-  items: CartItem[];
-  onUpdateQuantity: (id: string, quantity: number) => void;
+  items: CartItemResponse[];
+  onUpdateQuantity: (productId: string, quantity: number) => void;
   onRemoveItem: (id: string) => void;
 }
 
@@ -53,30 +45,30 @@ export const CartTable: React.FC<CartTableProps> = ({
                   <div className="flex items-center gap-4">
                     <div className="relative size-20 rounded-xl overflow-hidden border border-[#e7cfd5] dark:border-white/10 bg-gray-100 shrink-0">
                       <img
-                        src={item.image}
-                        alt={item.name}
+                        src={item.product.thumbnailUrl}
+                        alt={item.product.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                     </div>
                     <div>
                       <p className="typo-label text-[#1b0d11] dark:text-white leading-tight mb-1">
-                        {item.name}
+                        {item.product.name}
                       </p>
                       <p className="typo-caption-xs text-[#9a4c5f] dark:text-white/50">
-                        {item.variant}
+                        {item.product.id}
                       </p>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-6 typo-body-sm whitespace-nowrap">
-                  {formatCurrency(item.price)}
+                  {formatCurrency(item.product.price)}
                 </td>
                 <td className="px-6 py-6">
                   <div className="flex items-center justify-center">
                     <div className="flex items-center border border-[#e7cfd5] dark:border-white/20 rounded-xl overflow-hidden bg-white dark:bg-[#221015]">
                       <button
                         onClick={() =>
-                          onUpdateQuantity(item.id, item.quantity - 1)
+                          onUpdateQuantity(item.product.id, item.quantity - 1)
                         }
                         className="p-2 hover:bg-[#ee2b5b]/10"
                       >
@@ -87,7 +79,7 @@ export const CartTable: React.FC<CartTableProps> = ({
                       </span>
                       <button
                         onClick={() =>
-                          onUpdateQuantity(item.id, item.quantity + 1)
+                          onUpdateQuantity(item.product.id, item.quantity + 1)
                         }
                         className="p-2 hover:bg-[#ee2b5b]/10"
                       >
@@ -98,12 +90,12 @@ export const CartTable: React.FC<CartTableProps> = ({
                 </td>
                 <td className="px-6 py-6">
                   <span className="font-black text-[#ee2b5b] whitespace-nowrap">
-                    {formatCurrency(item.price * item.quantity)}
+                    {formatCurrency(item.product.price * item.quantity)}
                   </span>
                 </td>
                 <td className="px-6 py-6 text-right">
                   <button
-                    onClick={() => onRemoveItem(item.id)}
+                    onClick={() => onRemoveItem(item.product.id)}
                     className="text-[#9a4c5f] hover:text-red-500 p-2"
                   >
                     <Trash2 className="w-5 h-5" />

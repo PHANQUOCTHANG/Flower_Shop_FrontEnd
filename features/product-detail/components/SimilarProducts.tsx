@@ -32,7 +32,11 @@ export const SimilarProducts: React.FC<SimilarProductsProps> = ({
             {/* Hình ảnh */}
             <div className="aspect-square rounded-2xl overflow-hidden mb-4 bg-white dark:bg-white/5 relative shadow-sm border border-gray-100 dark:border-white/5">
               <img
-                src={item.image}
+                src={
+                  item.thumbnailUrl ||
+                  item.images?.[0]?.url ||
+                  "/placeholder.jpg"
+                }
                 alt={item.name}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               />

@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌸 Flower Shop Frontend
 
-## Getting Started
+Flower Shop Frontend is a modern **e-commerce web application** built with **Next.js, React, and TypeScript**.  
+It provides an intuitive interface for customers to browse and purchase flowers online, while allowing administrators to manage products and orders efficiently.
 
-First, run the development server:
+---
+
+## 🛠 Technology Stack
+
+| Technology | Description |
+|---|---|
+| Next.js | React framework for building modern web applications |
+| React | Library for building user interfaces |
+| TypeScript | Adds static typing to JavaScript |
+| Tailwind CSS | Utility-first CSS framework for styling |
+| React Query | Data fetching and server state management |
+| Zustand | Lightweight client-side state management |
+| Axios | HTTP client for communicating with backend APIs |
+
+---
+
+## ✨ Features
+
+| Feature | Description |
+|---|---|
+| Authentication | User registration, login, and password reset via email OTP |
+| Product Browsing | Browse products, search, filter by category, and view product details |
+| Shopping Cart | Add, update, and remove products from the cart |
+| Checkout | Review order information and place orders |
+| Orders | View order history and track order status |
+| Favorites | Save and manage favorite products |
+| Customer Support | Real-time chat with customer support |
+
+---
+
+## ⚙️ Admin Features
+
+| Feature | Description |
+|---|---|
+| Dashboard | Overview of revenue, orders, and customer statistics |
+| Product Management | Create, update, and delete products |
+| Order Management | View orders and update order status |
+| Customer Management | View customer profiles and purchase history |
+| Support Chat | Respond to customer messages |
+
+---
+
+## 📁 Project Structure
+
+| Folder | Description |
+|---|---|
+| app/ | Next.js application pages |
+| components/ | Reusable UI components |
+| features/ | Feature-based modules |
+| stores/ | Zustand state management |
+| lib/ | API configuration and utilities |
+| types/ | Global TypeScript types |
+| public/ | Static assets |
+
+---
+
+## 🔧 Environment Variables
+
+| Variable | Description | Example |
+|---|---|---|
+| NEXT_PUBLIC_API_URL | Backend API base URL | http://localhost:5000 |
+| NEXT_PUBLIC_APP_URL | Frontend application URL | http://localhost:3000 |
+
+---
+
+## 🚀 Getting Started
+
+Clone the repository
+
+```bash
+git clone https://github.com/yourusername/flower-frontend.git
+cd flower-frontend
+```
+
+Install dependencies
+
+```bash
+npm install
+```
+
+Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Application runs at
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 📦 Available Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Command | Description |
+|---|---|
+| npm run dev | Run development server |
+| npm run build | Build production application |
+| npm start | Start production server |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📄 License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the **MIT License**.

@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, EyeOff, Flower2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff, Flower2, Loader, ArrowLeft } from "lucide-react";
+import { useLogin } from "@/features/auth/login/hooks/useLogin";
+import Alert from "@/components/ui/Alert";
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -32,15 +35,24 @@ const FacebookIcon = () => (
 );
 
 export default function LoginPage() {
-  const [identifier, setIdentifier] = useState("");
+  const router = useRouter();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPass, setShowPass] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // hooks .
+  const { login, isLoading, error } = useLogin();
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: gọi API đăng nhập ở đây
-    console.log({ identifier, password, rememberMe });
+
+    try {
+      await login({ email, password });
+      setSuccessMessage("Đăng nhập thành công! Chuyển hướng...");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -75,6 +87,14 @@ export default function LoginPage() {
         <div className="w-full max-w-[440px]">
           {/* Tiêu đề */}
           <div className="mb-10 text-center lg:text-left">
+            {/* Nút quay lại */}
+            <button
+              onClick={() => router.push("/")}
+              className="mb-4 lg:mb-6 inline-flex items-center gap-2 text-[#ee2b5b] hover:text-[#d9244f] font-semibold transition-colors"
+            >
+              <ArrowLeft size={20} />
+              <span>Quay lại trang chủ</span>
+            </button>
             {/* Logo hiện trên mobile */}
             <div className="lg:hidden flex justify-center mb-6">
               <div className="flex items-center gap-2 text-[#ee2b5b]">
@@ -92,21 +112,42 @@ export default function LoginPage() {
             </p>
           </div>
 
+          {/* Alerts */}
+          {error && (
+            <Alert
+              type="error"
+              message={error.message}
+              onClose={() => {}}
+              autoClose={true}
+              duration={5000}
+            />
+          )}
+          {successMessage && (
+            <Alert
+              type="success"
+              message={successMessage}
+              onClose={() => setSuccessMessage("")}
+              autoClose={true}
+              duration={10000}
+            />
+          )}
+
           {/* Form */}
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Email / SĐT */}
             <div>
               <label className="block text-sm font-semibold text-[#1b0d11] dark:text-white mb-2">
-                Email hoặc Số điện thoại
+                Email
               </label>
               <input
                 type="text"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="Nhập email hoặc số điện thoại"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Nhập email"
                 required
+                disabled={isLoading}
                 className="w-full px-4 py-3.5 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-[#1b0d11] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500
-                           focus:ring-2 focus:ring-[#ee2b5b]/20 focus:border-[#ee2b5b] outline-none transition-all"
+                           focus:ring-2 focus:ring-[#ee2b5b]/20 focus:border-[#ee2b5b] outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 
@@ -117,7 +158,7 @@ export default function LoginPage() {
                   Mật khẩu
                 </label>
                 <a
-                  href="#"
+                  href="/forgot-password"
                   className="text-xs font-semibold text-[#ee2b5b] hover:underline"
                 >
                   Quên mật khẩu?
@@ -130,8 +171,9 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Nhập mật khẩu"
                   required
+                  disabled={isLoading}
                   className="w-full px-4 py-3.5 pr-12 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-[#1b0d11] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500
-                             focus:ring-2 focus:ring-[#ee2b5b]/20 focus:border-[#ee2b5b] outline-none transition-all"
+                             focus:ring-2 focus:ring-[#ee2b5b]/20 focus:border-[#ee2b5b] outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <button
                   type="button"
@@ -158,12 +200,20 @@ export default function LoginPage() {
 
             {/* Nút submit */}
             <button
-              type="submit"
-              className="w-full bg-[#ee2b5b] hover:bg-[#d9244f] active:scale-[0.98]
+              disabled={isLoading}
+              className="w-full bg-[#ee2b5b] hover:bg-[#d9244f] disabled:bg-[#ee2b5b]/50 active:scale-[0.98]
                          text-white font-bold py-4 rounded-lg shadow-lg shadow-[#ee2b5b]/25
-                         transition-all text-sm uppercase tracking-wider"
+                         transition-all text-sm uppercase tracking-wider disabled:cursor-not-allowed
+                         flex items-center justify-center gap-2"
             >
-              Đăng Nhập
+              {isLoading ? (
+                <>
+                  <Loader size={18} className="animate-spin" />
+                  <span>Đang đăng nhập...</span>
+                </>
+              ) : (
+                "Đăng Nhập"
+              )}
             </button>
           </form>
 

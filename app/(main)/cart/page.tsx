@@ -3,7 +3,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { useCart } from "@/lib/CartContext";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ProgressTracker } from "@/components/ui/ProgressTracker";
 import { checkoutEventTracker } from "@/features/checkout/hooks/checkoutEventTracker";
@@ -16,10 +15,18 @@ import {
   PromoCode,
 } from "@/features/cart/components";
 import { calculateShippingFee } from "@/features/cart/utils/cartHelpers";
+import {
+  useCart,
+  useRemoveFromCart,
+  useUpdateCartQuantity,
+} from "@/features/cart/hooks";
+import { Loading } from "@/components/ui/Loading";
 
 export default function CartPage() {
   const router = useRouter();
-  const { cartItems, removeItem, updateQuantity, cartTotal } = useCart();
+  const { items: cartItems, total: cartTotal, itemCount , isLoading } = useCart();
+  const { mutate: removeItem } = useRemoveFromCart();
+  const { mutate: updateQuantityMutate } = useUpdateCartQuantity();
   const [includeCard, setIncludeCard] = React.useState(false);
   const [cardMessage, setCardMessage] = React.useState("");
   const [promoCode, setPromoCode] = React.useState("");
@@ -37,6 +44,10 @@ export default function CartPage() {
   const shippingFee = calculateShippingFee();
   const total = cartTotal + shippingFee;
 
+  const handleUpdateQuantity = (productId: string, quantity: number) => {
+    updateQuantityMutate({ productId, quantity });
+  };
+
   const handleCheckout = () => {
     checkoutEventTracker.trackNavigation("cart", "checkout");
     setIsNavigating(true);
@@ -44,6 +55,8 @@ export default function CartPage() {
       router.push("/checkout");
     }, 300);
   };
+
+  if (isLoading) return <Loading></Loading>
 
   return (
     <div
@@ -64,28 +77,27 @@ export default function CartPage() {
             <div className="flex-1 w-full space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
                 <h1 className="typo-heading-lg">
-                  Giỏ hàng{" "}
-                  <span className="text-[#ee2b5b]">({cartItems.length})</span>
+                  Giỏ hàng <span className="text-[#ee2b5b]">({itemCount})</span>
                 </h1>
-                <button className="text-[#ee2b5b] hover:text-[#ee2b5b]/80 typo-button-sm flex items-center gap-2 group transition-all self-start sm:self-center">
+                <button onClick={() => {router.push("/products")}} className="text-[#ee2b5b] hover:text-[#ee2b5b]/80 typo-button-sm flex items-center gap-2 group transition-all self-start sm:self-center">
                   <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                   Tiếp tục mua sắm
                 </button>
               </div>
 
-              {cartItems.length > 0 ? (
+              {cartItems?.length > 0 ? (
                 <div className="space-y-4">
                   {/* Desktop Table View */}
                   <CartTable
                     items={cartItems}
-                    onUpdateQuantity={updateQuantity}
+                    onUpdateQuantity={handleUpdateQuantity}
                     onRemoveItem={removeItem}
                   />
 
                   {/* Mobile Card View */}
                   <CartItemsMobile
                     items={cartItems}
-                    onUpdateQuantity={updateQuantity}
+                    onUpdateQuantity={handleUpdateQuantity}
                     onRemoveItem={removeItem}
                   />
                 </div>
@@ -105,12 +117,12 @@ export default function CartPage() {
             {/* Right: Summary and Promo Code */}
             <div className="w-full lg:w-[380px] space-y-6">
               <OrderSummary
-                itemCount={cartItems.length}
+                itemCount={itemCount}
                 subtotal={cartTotal}
                 shippingFee={shippingFee}
                 total={total}
                 onCheckout={handleCheckout}
-                isCheckoutDisabled={cartItems.length === 0}
+                isCheckoutDisabled={itemCount === 0}
               />
 
               {/* Promo Code */}

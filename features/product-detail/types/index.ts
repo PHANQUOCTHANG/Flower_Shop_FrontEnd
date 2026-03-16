@@ -1,42 +1,49 @@
-// Sản phẩm chi tiết
-export interface Product {
-  id: string | number;
-  name: string;
-  slug: string;
-  shortDescription?: string;
-  description?: string;
-  price: string | number;
-  comparePrice?: string | number | null;
-  costPrice?: string | number | null;
-  sku?: string;
-  stockQuantity: number;
-  lowStockThreshold?: number;
-  thumbnailUrl?: string | null;
-  metaTitle?: string;
-  metaDescription?: string;
-  status: string;
-  images: ProductImage[];
-  composition?: string[];
-  meaning?: string;
-  occasions?: string[];
-  createdAt?: string;
-  updatedAt?: string;
-}
-
 // Hình ảnh sản phẩm
 export interface ProductImage {
-  id: string | number;
+  id: string;
   url: string;
-  isPrimary?: boolean;
+  isPrimary: boolean;
 }
 
-// Sản phẩm tương tự
-export interface SimilarProduct {
-  id: string | number;
+// Danh mục sản phẩm
+export interface ProductCategory {
+  id: string;
   name: string;
-  price: string | number;
-  image: string;
-  slug?: string;
+  slug: string;
+}
+
+// Sản phẩm chi tiết - Khớp với ProductResponseDto từ backend
+export interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  shortDescription: string | null;
+  description: string | null;
+  price: number;
+  comparePrice: number | null;
+  costPrice: number | null;
+  sku: string | null;
+  stockQuantity: number;
+  lowStockThreshold: number | null;
+  thumbnailUrl: string | null;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  images: ProductImage[];
+  categories: ProductCategory[];
+}
+
+// Sản phẩm tương tự - Khớp với ProductResponseDto từ backend
+export interface SimilarProduct {
+  id: string;
+  name: string;
+  slug: string;
+  price: number;
+  thumbnailUrl: string | null;
+  images: ProductImage[];
 }
 
 // Đánh giá

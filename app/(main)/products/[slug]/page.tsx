@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { notFound } from "next/navigation";
 import {
   Gallery,
   ProductInfo,
@@ -15,6 +16,8 @@ import {
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { useProductDetail } from "@/features/product-detail/hooks/useProductDetail";
 import { Loading } from "@/components/ui/Loading";
+import Alert from "@/components/ui/Alert";
+import { useAuthStore } from "@/stores/auth.store";
 
 export default function ProductDetail() {
   const params = useParams();
@@ -25,30 +28,72 @@ export default function ProductDetail() {
   const [activeTab, setActiveTab] = useState<"description" | "reviews">(
     "description",
   );
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState<"success" | "error">("success");
+  const [showAlert, setShowAlert] = useState(false);
 
-  // hooks
-  const { product, reviews, similarProducts, error, loading } =
-    useProductDetail({
-      slug,
-    });
+  const isLogin = useAuthStore((state) => state.isAuthenticated);
+
+  // Lấy thông tin sản phẩm + hàm thêm vào giỏ từ hook
+  const {
+    product,
+    reviews,
+    similarProducts,
+    error,
+    loading,
+    addToCart,
+    isAddingToCart,
+  } = useProductDetail({
+    slug,
+  });
 
   const handleQuantityChange = (type: "inc" | "dec") => {
     if (type === "inc") setQuantity((prev) => prev + 1);
     if (type === "dec" && quantity > 1) setQuantity((prev) => prev - 1);
   };
 
+  // Xử lý thêm sản phẩm vào giỏ hàng
+  const handleAddToCart = async (qty: number) => {
+    if (!isLogin) {
+      setAlertType("error");
+      setAlertMessage("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+      setShowAlert(true);
+      return;
+    }
+
+    try {
+      await addToCart(qty);
+      setAlertType("success");
+      setAlertMessage("Thêm vào giỏ hàng thành công!");
+      setShowAlert(true);
+      // Reset số lượng về 1 sau khi thêm
+      setQuantity(1);
+    } catch (error) {
+      setAlertType("error");
+      setAlertMessage("Có lỗi xảy ra khi thêm vào giỏ hàng");
+      setShowAlert(true);
+    }
+  };
+
   if (loading) return <Loading></Loading>;
 
   if (error || !product) {
-    return (
-      <div className="min-h-screen bg-[#f6f8f6] flex items-center justify-center">
-        <p>Không tìm thấy sản phẩm</p>
-      </div>
-    );
+    notFound();
   }
 
   return (
     <>
+      {showAlert && (
+        <div className="fixed top-24 right-6 z-50 max-w-md">
+          <Alert
+            type={alertType}
+            message={alertMessage}
+            onClose={() => setShowAlert(false)}
+            autoClose={true}
+            duration={4000}
+          />
+        </div>
+      )}
       <div className="min-h-screen bg-[#fcfbf9] text-[#1b0d11] transition-colors duration-300">
         <main className="max-w-360 mx-auto px-4 sm:px-10 lg:px-20 py-12">
           {/* Breadcrumbs */}
@@ -76,6 +121,8 @@ export default function ProductDetail() {
               <ActionButtons
                 quantity={quantity}
                 onQuantityChange={handleQuantityChange}
+                onAddToCart={handleAddToCart}
+                isLoading={isAddingToCart}
               />
 
               <TrustBadges />

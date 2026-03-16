@@ -12,7 +12,6 @@ import {
 } from "@/features/admin/products/components";
 import { useProducts } from "@/features/admin/products/hooks/useProducts";
 import { useCategories } from "@/features/admin/products/hooks/useCategories";
-import type { Product } from "@/features/admin/products/types";
 
 // Dữ liệu sản phẩm - phù hợp với Prisma model
 export default function ProductsPage() {
@@ -21,14 +20,18 @@ export default function ProductsPage() {
 
   // Pending filters (chưa được áp dụng)
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+    undefined,
+  );
   const [sortBy, setSortBy] = useState("newest");
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
 
   // Applied filters (đã được áp dụng - dùng để filter sản phẩm)
   const [appliedSearchKeyword, setAppliedSearchKeyword] = useState("");
-  const [appliedCategory, setAppliedCategory] = useState<string | undefined >(undefined);
+  const [appliedCategory, setAppliedCategory] = useState<string | undefined>(
+    undefined,
+  );
   const [appliedSortBy, setAppliedSortBy] = useState("newest");
   const [appliedMinPrice, setAppliedMinPrice] = useState<number | null>(null);
   const [appliedMaxPrice, setAppliedMaxPrice] = useState<number | null>(null);
@@ -39,10 +42,14 @@ export default function ProductsPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   // hooks
-  const { products, loading: productsLoading , totalPages = 1 } = useProducts({
+  const {
+    products,
+    loading: productsLoading,
+    totalPages = 1,
+  } = useProducts({
     search: appliedSearchKeyword,
-    category: appliedCategory,
-    sort: appliedSortBy,
+    category: appliedCategory === "Tất cả" ? undefined : appliedCategory,
+    sort: appliedSortBy === "newest" ? undefined : appliedSortBy,
     priceMin: appliedMinPrice,
     priceMax: appliedMaxPrice,
     page: currentPage,
@@ -71,7 +78,7 @@ export default function ProductsPage() {
 
     // Cập nhật cả pending và applied filters từ URL
     setSearchKeyword(keyword);
-    setSelectedCategory(category);
+    setSelectedCategory(category || undefined);
     setCurrentPage(page);
     setSortBy(sort);
     setMinPrice(minPriceVal);
@@ -79,7 +86,7 @@ export default function ProductsPage() {
 
     // Applied filters cũng được set từ URL (vì URL là state của applied)
     setAppliedSearchKeyword(keyword);
-    setAppliedCategory(category);
+    setAppliedCategory(category || undefined);
     setAppliedSortBy(sort);
     setAppliedMinPrice(minPriceVal);
     setAppliedMaxPrice(maxPriceVal);
@@ -111,9 +118,9 @@ export default function ProductsPage() {
     }
 
     if (category !== undefined) {
-      if (category !== "Tất cả") params.set("category", category);
-      setSelectedCategory(category);
-    } else if (selectedCategory !== "Tất cả") {
+      if (category) params.set("category", category);
+      setSelectedCategory(category || undefined);
+    } else if (selectedCategory) {
       params.set("category", selectedCategory);
     }
 
@@ -144,14 +151,31 @@ export default function ProductsPage() {
 
   // Xử lý thay đổi danh mục (không cập nhật URL ngay, chỉ cập nhật state)
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const category = e.target.value;
+    const category = e.target.value || undefined;
     setSelectedCategory(category);
   };
 
-  // Xử lý thay đổi sắp xếp (không cập nhật URL ngay, chỉ cập nhật state)
+  // Xử lý thay đổi sắp xếp (tự động áp dụng và load lại)
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const sort = e.target.value;
     setSortBy(sort);
+
+    // Chỉ áp dụng sort, giữ lại các applied filters khác
+    setAppliedSortBy(sort);
+
+    // Reset page và load lại
+    setCurrentPage(1);
+    setIsLoading(true);
+
+    // Update URL với sort mới nhưng giữ lại các applied filters khác
+    updateQueryParams(
+      appliedSearchKeyword,
+      appliedCategory,
+      1,
+      sort,
+      appliedMinPrice,
+      appliedMaxPrice,
+    );
   };
 
   // Xử lý thay đổi khung giá (không cập nhật URL ngay, chỉ cập nhật state)
@@ -205,14 +229,14 @@ export default function ProductsPage() {
   const handleClearFilter = () => {
     // Reset pending filters
     setSearchKeyword("");
-    setSelectedCategory("Tất cả");
+    setSelectedCategory(undefined);
     setSortBy("newest");
     setMinPrice(null);
     setMaxPrice(null);
 
     // Reset applied filters
     setAppliedSearchKeyword("");
-    setAppliedCategory("Tất cả");
+    setAppliedCategory(undefined);
     setAppliedSortBy("newest");
     setAppliedMinPrice(null);
     setAppliedMaxPrice(null);
@@ -255,6 +279,14 @@ export default function ProductsPage() {
     }
   };
 
+  // Kiểm tra xem có filter nào đang áp dụng không
+  const hasActiveFilters =
+    appliedSearchKeyword !== "" ||
+    appliedCategory !== undefined ||
+    appliedSortBy !== "newest" ||
+    appliedMinPrice !== null ||
+    appliedMaxPrice !== null;
+
   // Các khung giá cố định
   const getPriceRanges = () => [
     { value: "all", label: "Tất cả giá", min: null, max: null },
@@ -280,7 +312,6 @@ export default function ProductsPage() {
 
   return (
     <>
-      {isLoading && <Loading />}
       <DeleteConfirmDialog
         isOpen={isDeleteDialogOpen}
         title="Xóa sản phẩm"
@@ -299,12 +330,13 @@ export default function ProductsPage() {
           {/* Thanh lọc & tìm kiếm */}
           <FilterBar
             searchKeyword={searchKeyword}
-            selectedCategory={selectedCategory}
+            selectedCategory={selectedCategory || "Tất cả"}
             sortBy={sortBy}
             minPrice={minPrice}
             maxPrice={maxPrice}
             categories={categories}
             priceRanges={priceRanges}
+            hasActiveFilters={hasActiveFilters}
             onSearchChange={handleSearchChange}
             onCategoryChange={handleCategoryChange}
             onSortChange={handleSortChange}
@@ -320,6 +352,7 @@ export default function ProductsPage() {
             currentPage={currentPage}
             onPageChange={handlePageChange}
             onDelete={handleOpenDeleteDialog}
+            isLoading={isLoading}
           />
 
           {/* Thẻ thống kê */}

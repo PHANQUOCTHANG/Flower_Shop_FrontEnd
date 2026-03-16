@@ -1,19 +1,22 @@
 import { Product } from "@/features/product-detail/types";
 import api from "@/lib/axios";
 import { ApiResponse } from "@/types/response";
+import { cartService } from "@/features/cart/services/cartService";
 
 interface ProductDetailParams {
   slug?: string;
   id?: string | number;
 }
 
+// Dịch vụ quản lý chi tiết sản phẩm
 export const productDetailService = {
+  // Lấy thông tin chi tiết sản phẩm từ slug hoặc ID
   async getProductDetail(params?: ProductDetailParams) {
     const slug = params?.slug;
     const id = params?.id;
 
     if (!slug && !id) {
-      throw new Error("Slug or ID is required");
+      throw new Error("Cần slug hoặc ID sản phẩm");
     }
 
     const url = slug ? `/products/slug/${slug}` : `/products/${id}`;
@@ -21,12 +24,17 @@ export const productDetailService = {
     const res = await api.get<ApiResponse<Product>>(url);
 
     if (res.data.status !== "success") {
-      throw new Error(res.data.message || "Fetch failed");
+      throw new Error(res.data.message || "Lỗi khi lấy dữ liệu");
     }
 
     return {
       product: res.data.data,
       message: res.data.message,
     };
+  },
+
+  // Thêm sản phẩm vào giỏ (chỉ gửi productId + quantity)
+  addToCart(productId: string, quantity: number = 1) {
+    return cartService.addItem(productId, quantity);
   },
 };

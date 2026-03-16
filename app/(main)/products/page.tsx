@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Filter, CheckCircle, LayoutGrid, List, Search } from "lucide-react";
+import { Filter, CheckCircle, LayoutGrid, List, Search, X } from "lucide-react";
 import { useProducts } from "@/features/products/hooks/useProducts";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { FilterSection } from "@/features/products/components/FilterSection";
@@ -49,11 +49,12 @@ export default function FlowerCollection() {
 
   // hooks
   const {
-    products, 
+    products,
     loading: productsLoading,
     totalPages = 1,
   } = useProducts({
     page: currentPage,
+    limit: 6,
     search: searchQuery || undefined,
     priceMin: minPrice,
     priceMax: maxPrice,
@@ -64,6 +65,20 @@ export default function FlowerCollection() {
   const { categories, loading: categoriesLoading } = useCategories({
     limit: 6,
   });
+
+  // Kiểm tra xem có filter nào đang áp dụng không
+  const hasActiveFilters =
+    minPrice !== null ||
+    maxPrice !== null ||
+    selectedCategories !== "" ||
+    sort !== "newest" ||
+    searchQuery !== "";
+
+  // Hàm xóa tất cả các filter
+  const handleClearFilters = () => {
+    setSearchInput("");
+    router.push("/products");
+  };
 
   // Helper function để tạo URL params
   const createQueryString = (
@@ -95,7 +110,9 @@ export default function FlowerCollection() {
     if (selectedCategories) {
       params.category = selectedCategories;
     }
-    params.sort = sort;
+    if (sort !== "newest") {
+      params.sort = sort;
+    }
     if (searchQuery) {
       params.search = searchQuery;
     }
@@ -116,7 +133,9 @@ export default function FlowerCollection() {
     if (selectedCategories) {
       params.category = selectedCategories;
     }
-    params.sort = sort;
+    if (sort !== "newest") {
+      params.sort = sort;
+    }
     if (searchQuery) {
       params.search = searchQuery;
     }
@@ -144,7 +163,9 @@ export default function FlowerCollection() {
     if (newCategory) {
       params.category = newCategory;
     }
-    params.sort = sort;
+    if (sort !== "newest") {
+      params.sort = sort;
+    }
     if (searchQuery) {
       params.search = searchQuery;
     }
@@ -169,14 +190,15 @@ export default function FlowerCollection() {
     if (selectedCategories) {
       params.category = selectedCategories;
     }
-    params.sort = sort;
+    if (sort !== "newest") {
+      params.sort = sort;
+    }
     router.push(`/products${createQueryString(params)}`);
   };
 
   // Handle sort
   const handleSort = (sort: string) => {
     const params: Record<string, string | number | string[] | null> = {
-      sort: sort,
       page: 1,
     };
     if (minPrice !== null) {
@@ -187,6 +209,9 @@ export default function FlowerCollection() {
     }
     if (selectedCategories) {
       params.category = selectedCategories;
+    }
+    if (sort !== "newest") {
+      params.sort = sort;
     }
     if (searchQuery) {
       params.search = searchQuery;
@@ -333,7 +358,7 @@ export default function FlowerCollection() {
 
                 <div className="flex-1 md:flex-none relative bg-white dark:bg-white/5 p-2 px-4 rounded-xl border border-[#e7f3eb] dark:border-white/10 flex items-center gap-3 min-w-50">
                   <span className="typo-caption-xs text-[#4c9a66] whitespace-nowrap">
-                    Sắp xếp: 
+                    Sắp xếp:
                   </span>
                   <select
                     value={sort}
@@ -345,11 +370,31 @@ export default function FlowerCollection() {
                     <option value="price-desc">Giá: Cao đến Thấp</option>
                   </select>
                 </div>
+
+                {/* Nút xóa lọc - chỉ hiện khi có filter đang áp dụng */}
+                {hasActiveFilters && (
+                  <button
+                    onClick={handleClearFilters}
+                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 border border-[#e7f3eb] dark:border-white/10 rounded-xl text-[#0d1b12] dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all typo-body-sm font-bold"
+                  >
+                    <X size={16} />
+                    <span>Xóa lọc</span>
+                  </button>
+                )}
               </div>
             </div>
 
             {/* Lưới sản phẩm */}
-            {products.length > 0 ? (
+            {productsLoading ? (
+              <div className="flex justify-center items-center py-20">
+                <div className="relative">
+                  <div className="size-12 border-3 border-slate-300 dark:border-slate-700 border-t-[#13ec5b] rounded-full animate-spin"></div>
+                  <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-500 dark:text-slate-400">
+                    <span className="sr-only">Đang tải...</span>
+                  </span>
+                </div>
+              </div>
+            ) : products.length > 0 ? (
               <div
                 className={
                   viewMode === "grid"
