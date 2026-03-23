@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Filter, CheckCircle, LayoutGrid, List, Search, X } from "lucide-react";
 import { useProducts } from "@/features/products/hooks/useProducts";
+import { useCategories } from "@/features/products/hooks/useCategories";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { FilterSection } from "@/features/products/components/FilterSection";
 import { ProductCard } from "@/features/products/components/ProductCard";
-import { useCategories } from "@/features/products/hooks/useCategories";
 import { Loading } from "@/components/ui/Loading";
 import { Pagination } from "@/components/ui/Pagination";
 
@@ -29,28 +29,43 @@ const PRICE_RANGES = [
   { value: "above-2m", label: "Trên 2.000.000₫", min: 2000000, max: null },
 ];
 
+// ─── Helper: build query string, bỏ qua các giá trị null/undefined/default ───
+function buildQuery(
+  params: Record<string, string | number | null | undefined>,
+): string {
+  const p = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== null && v !== undefined && v !== "") p.set(k, String(v));
+  });
+  const qs = p.toString();
+  return qs ? `?${qs}` : "";
+}
+
 export default function FlowerCollection() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Lấy params từ URL
+  // ─── Đọc filter từ URL (source of truth) ──────────────────────────────────
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
   const minPrice = searchParams.get("minPrice")
-    ? parseInt(searchParams.get("minPrice") || "0")
+    ? parseInt(searchParams.get("minPrice")!)
     : null;
   const maxPrice = searchParams.get("maxPrice")
-    ? parseInt(searchParams.get("maxPrice") || "0")
+    ? parseInt(searchParams.get("maxPrice")!)
     : null;
-  const selectedCategories = searchParams.get("category") || "";
+  const selectedCategory = searchParams.get("category") || "";
   const sort = searchParams.get("sort") || "newest";
   const searchQuery = searchParams.get("search") || "";
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [searchInput, setSearchInput] = useState(searchQuery);
 
-  // hooks
+  // searchInput là local state — chỉ sync lên URL khi user submit form
+  const [searchInput, setSearchInput] = useState(searchQuery);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  // ─── Data fetching ─────────────────────────────────────────────────────────
   const {
     products,
     loading: productsLoading,
+    fetching,
     totalPages = 1,
   } = useProducts({
     page: currentPage,
@@ -58,7 +73,7 @@ export default function FlowerCollection() {
     search: searchQuery || undefined,
     priceMin: minPrice,
     priceMax: maxPrice,
-    category: selectedCategories || undefined,
+    category: selectedCategory || undefined,
     sort,
   });
 
@@ -66,160 +81,73 @@ export default function FlowerCollection() {
     limit: 6,
   });
 
-  // Kiểm tra xem có filter nào đang áp dụng không
-  const hasActiveFilters =
-    minPrice !== null ||
-    maxPrice !== null ||
-    selectedCategories !== "" ||
-    sort !== "newest" ||
-    searchQuery !== "";
+  // ─── Derived state ─────────────────────────────────────────────────────────
+  const hasActiveFilters = useMemo(
+    () =>
+      minPrice !== null ||
+      maxPrice !== null ||
+      selectedCategory !== "" ||
+      sort !== "newest" ||
+      searchQuery !== "",
+    [minPrice, maxPrice, selectedCategory, sort, searchQuery],
+  );
 
-  // Hàm xóa tất cả các filter
+  // ─── Shared navigate helper — giữ lại các filter hiện tại, override phần cần đổi
+  const navigate = useCallback(
+    (overrides: Record<string, string | number | null | undefined>) => {
+      const base: Record<string, string | number | null | undefined> = {
+        page: currentPage,
+        minPrice,
+        maxPrice,
+        category: selectedCategory || null,
+        sort: sort !== "newest" ? sort : null,
+        search: searchQuery || null,
+      };
+      // page luôn reset về 1 khi đổi filter (trừ khi override có page)
+      const merged = { ...base, page: 1, ...overrides };
+      router.push(`/products${buildQuery(merged)}`);
+    },
+    [
+      currentPage,
+      minPrice,
+      maxPrice,
+      selectedCategory,
+      sort,
+      searchQuery,
+      router,
+    ],
+  );
+
+  // ─── Handlers ──────────────────────────────────────────────────────────────
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    navigate({ page });
+  };
+
+  const handlePriceChange = (minVal: number | null, maxVal: number | null) => {
+    navigate({ minPrice: minVal, maxPrice: maxVal });
+  };
+
+  const handleCategoryChange = (slug: string, isChecked: boolean) => {
+    navigate({ category: isChecked ? slug : null });
+  };
+
+  const handleSort = (newSort: string) => {
+    navigate({ sort: newSort !== "newest" ? newSort : null });
+  };
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    navigate({ search: searchInput.trim() || null });
+  };
+
   const handleClearFilters = () => {
     setSearchInput("");
     router.push("/products");
   };
 
-  // Helper function để tạo URL params
-  const createQueryString = (
-    params: Record<string, string | number | string[] | null>,
-  ) => {
-    const newParams = new URLSearchParams();
-
-    Object.entries(params).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((v) => newParams.append(key, String(v)));
-      } else if (value !== undefined && value !== null) {
-        newParams.set(key, String(value));
-      }
-    });
-
-    return `?${newParams.toString()}`;
-  };
-
-  // Handle pagination
-  const handlePageChange = (page: number) => {
-    if (page < 1 || page > totalPages) return;
-    const params: Record<string, string | number | string[] | null> = { page };
-    if (minPrice !== null) {
-      params.minPrice = minPrice;
-    }
-    if (maxPrice !== null) {
-      params.maxPrice = maxPrice;
-    }
-    if (selectedCategories) {
-      params.category = selectedCategories;
-    }
-    if (sort !== "newest") {
-      params.sort = sort;
-    }
-    if (searchQuery) {
-      params.search = searchQuery;
-    }
-    router.push(`/products${createQueryString(params)}`);
-  };
-
-  // Handle price filter
-  const handlePriceChange = (minVal: number | null, maxVal: number | null) => {
-    const params: Record<string, string | number | string[] | null> = {
-      page: 1,
-    };
-    if (minVal !== null) {
-      params.minPrice = minVal;
-    }
-    if (maxVal !== null) {
-      params.maxPrice = maxVal;
-    }
-    if (selectedCategories) {
-      params.category = selectedCategories;
-    }
-    if (sort !== "newest") {
-      params.sort = sort;
-    }
-    if (searchQuery) {
-      params.search = searchQuery;
-    }
-    router.push(`/products${createQueryString(params)}`);
-  };
-
-  // Handle category filter
-  const handleCategoryChange = (slug: string, isChecked: boolean) => {
-    let newCategory = "";
-    if (isChecked) {
-      // Only allow one category selection
-      newCategory = slug;
-    }
-    // If unchecked, newCategory stays empty
-
-    const params: Record<string, string | number | string[] | null> = {
-      page: 1,
-    };
-    if (minPrice !== null) {
-      params.minPrice = minPrice;
-    }
-    if (maxPrice !== null) {
-      params.maxPrice = maxPrice;
-    }
-    if (newCategory) {
-      params.category = newCategory;
-    }
-    if (sort !== "newest") {
-      params.sort = sort;
-    }
-    if (searchQuery) {
-      params.search = searchQuery;
-    }
-    router.push(`/products${createQueryString(params)}`);
-  };
-
-  // Handle search
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const params: Record<string, string | number | string[] | null> = {
-      page: 1,
-    };
-    if (searchInput.trim()) {
-      params.search = searchInput;
-    }
-    if (minPrice !== null) {
-      params.minPrice = minPrice;
-    }
-    if (maxPrice !== null) {
-      params.maxPrice = maxPrice;
-    }
-    if (selectedCategories) {
-      params.category = selectedCategories;
-    }
-    if (sort !== "newest") {
-      params.sort = sort;
-    }
-    router.push(`/products${createQueryString(params)}`);
-  };
-
-  // Handle sort
-  const handleSort = (sort: string) => {
-    const params: Record<string, string | number | string[] | null> = {
-      page: 1,
-    };
-    if (minPrice !== null) {
-      params.minPrice = minPrice;
-    }
-    if (maxPrice !== null) {
-      params.maxPrice = maxPrice;
-    }
-    if (selectedCategories) {
-      params.category = selectedCategories;
-    }
-    if (sort !== "newest") {
-      params.sort = sort;
-    }
-    if (searchQuery) {
-      params.search = searchQuery;
-    }
-    router.push(`/products${createQueryString(params)}`);
-  };
-
-  if (productsLoading || categoriesLoading) return <Loading></Loading>;
+  // ─── First load ────────────────────────────────────────────────────────────
+  if (productsLoading || categoriesLoading) return <Loading />;
 
   return (
     <div className="min-h-screen bg-[#fcfbf9] dark:bg-[#1a0f12] text-[#1b0d11] dark:text-white transition-colors duration-300 font-sans antialiased">
@@ -229,7 +157,7 @@ export default function FlowerCollection() {
         />
 
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Sidebar Bộ lọc */}
+          {/* ── Sidebar ── */}
           <aside className="w-full lg:w-72 shrink-0">
             <div className="sticky top-28 space-y-2">
               <div className="mb-8">
@@ -285,7 +213,7 @@ export default function FlowerCollection() {
                     <div className="relative flex items-center">
                       <input
                         type="checkbox"
-                        checked={selectedCategories === category.slug}
+                        checked={selectedCategory === category.slug}
                         onChange={(e) =>
                           handleCategoryChange(category.slug, e.target.checked)
                         }
@@ -305,37 +233,28 @@ export default function FlowerCollection() {
             </div>
           </aside>
 
-          {/* Nội dung chính */}
+          {/* ── Main content ── */}
           <div className="flex-1">
-            {/* Header Danh mục */}
+            {/* Toolbar */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
               <div className="flex items-center gap-2 w-full md:w-auto flex-wrap">
+                {/* View mode toggle */}
                 <div className="flex items-center gap-1 bg-[#e7f3eb] dark:bg-white/5 p-1 rounded-xl">
-                  {/* Chế độ xem lưới */}
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`p-2 rounded-lg transition-all ${
-                      viewMode === "grid"
-                        ? "bg-white dark:bg-white/10 shadow-sm text-[#13ec5b]"
-                        : "text-[#4c9a66] dark:text-white/40 hover:text-[#0d1b12] dark:hover:text-white"
-                    }`}
+                    className={`p-2 rounded-lg transition-all ${viewMode === "grid" ? "bg-white dark:bg-white/10 shadow-sm text-[#13ec5b]" : "text-[#4c9a66] dark:text-white/40 hover:text-[#0d1b12] dark:hover:text-white"}`}
                   >
                     <LayoutGrid size={18} />
                   </button>
-                  {/* Chế độ xem danh sách */}
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`p-2 rounded-lg transition-all ${
-                      viewMode === "list"
-                        ? "bg-white dark:bg-white/10 shadow-sm text-[#13ec5b]"
-                        : "text-[#4c9a66] dark:text-white/40 hover:text-[#0d1b12] dark:hover:text-white"
-                    }`}
+                    className={`p-2 rounded-lg transition-all ${viewMode === "list" ? "bg-white dark:bg-white/10 shadow-sm text-[#13ec5b]" : "text-[#4c9a66] dark:text-white/40 hover:text-[#0d1b12] dark:hover:text-white"}`}
                   >
                     <List size={18} />
                   </button>
                 </div>
 
-                {/* Search Bar - Small inline */}
+                {/* Search */}
                 <form
                   onSubmit={handleSearch}
                   className="flex items-center gap-1 bg-white dark:bg-white/5 px-3 py-2 rounded-xl border border-[#e7f3eb] dark:border-white/10"
@@ -356,7 +275,8 @@ export default function FlowerCollection() {
                   </button>
                 </form>
 
-                <div className="flex-1 md:flex-none relative bg-white dark:bg-white/5 p-2 px-4 rounded-xl border border-[#e7f3eb] dark:border-white/10 flex items-center gap-3 min-w-50">
+                {/* Sort */}
+                <div className="flex-1 md:flex-none bg-white dark:bg-white/5 p-2 px-4 rounded-xl border border-[#e7f3eb] dark:border-white/10 flex items-center gap-3 min-w-50">
                   <span className="typo-caption-xs text-[#4c9a66] whitespace-nowrap">
                     Sắp xếp:
                   </span>
@@ -366,12 +286,13 @@ export default function FlowerCollection() {
                     className="bg-transparent border-none typo-body-sm font-bold text-[#0d1b12] dark:text-white focus:ring-0 p-0 cursor-pointer w-full outline-none"
                   >
                     <option value="newest">Mới nhất</option>
-                    <option value="price-asc">Giá: Thấp đến Cao</option>
-                    <option value="price-desc">Giá: Cao đến Thấp</option>
+                    <option value="oldest">Cũ nhất</option>
+                    <option value="price-asc">Giá (thấp → cao)</option>
+                    <option value="price-desc">Giá (cao → thấp)</option>
                   </select>
                 </div>
 
-                {/* Nút xóa lọc - chỉ hiện khi có filter đang áp dụng */}
+                {/* Clear filters */}
                 {hasActiveFilters && (
                   <button
                     onClick={handleClearFilters}
@@ -384,41 +305,35 @@ export default function FlowerCollection() {
               </div>
             </div>
 
-            {/* Lưới sản phẩm */}
-            {productsLoading ? (
-              <div className="flex justify-center items-center py-20">
-                <div className="relative">
-                  <div className="size-12 border-3 border-slate-300 dark:border-slate-700 border-t-[#13ec5b] rounded-full animate-spin"></div>
-                  <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-500 dark:text-slate-400">
-                    <span className="sr-only">Đang tải...</span>
-                  </span>
+            {/* Product grid — mờ nhẹ khi đang refetch, không block UI */}
+            <div
+              className={`transition-opacity duration-200 ${fetching ? "opacity-60 pointer-events-none" : "opacity-100"}`}
+            >
+              {products.length > 0 ? (
+                <div
+                  className={
+                    viewMode === "grid"
+                      ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-10"
+                      : "space-y-4"
+                  }
+                >
+                  {products.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      viewMode={viewMode}
+                    />
+                  ))}
                 </div>
-              </div>
-            ) : products.length > 0 ? (
-              <div
-                className={
-                  viewMode === "grid"
-                    ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-10"
-                    : "space-y-4"
-                }
-              >
-                {products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    viewMode={viewMode}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="typo-body text-[#4c9a66] dark:text-white/60">
-                  Không tìm thấy sản phẩm nào
-                </p>
-              </div>
-            )}
+              ) : (
+                <div className="text-center py-12">
+                  <p className="typo-body text-[#4c9a66] dark:text-white/60">
+                    Không tìm thấy sản phẩm nào
+                  </p>
+                </div>
+              )}
+            </div>
 
-            {/* Phân trang */}
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

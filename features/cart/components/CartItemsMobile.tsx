@@ -1,7 +1,8 @@
 import React from "react";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { CartItemResponse } from "@/features/cart/types/cart";
 import { formatCurrency } from "@/utils/format";
+import { QuantityControl } from "@/features/cart/components/QuantityControl";
 
 interface CartItemsMobileProps {
   items: CartItemResponse[];
@@ -21,6 +22,7 @@ export const CartItemsMobile: React.FC<CartItemsMobileProps> = ({
           key={item.id}
           className="bg-white dark:bg-white/5 rounded-2xl p-4 border border-[#e7cfd5] dark:border-white/10 shadow-sm space-y-4"
         >
+          {/* Header: ảnh + tên + xóa */}
           <div className="flex gap-4">
             <img
               src={item.product.thumbnailUrl}
@@ -32,7 +34,8 @@ export const CartItemsMobile: React.FC<CartItemsMobileProps> = ({
                 <p className="typo-label leading-tight">{item.product.name}</p>
                 <button
                   onClick={() => onRemoveItem(item.product.id)}
-                  className="text-[#9a4c5f] shrink-0"
+                  aria-label="Xóa sản phẩm"
+                  className="text-[#9a4c5f] hover:text-red-500 shrink-0 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -45,24 +48,16 @@ export const CartItemsMobile: React.FC<CartItemsMobileProps> = ({
               </p>
             </div>
           </div>
+
+          {/* Footer: quantity control + thành tiền */}
           <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-white/5">
-            <div className="flex items-center border border-[#e7cfd5] dark:border-white/20 rounded-lg overflow-hidden h-9 bg-white dark:bg-[#221015]">
-              <button
-                onClick={() => onUpdateQuantity(item.product.id, item.quantity - 1)}
-                className="px-3 h-full"
-              >
-                <Minus className="w-3 h-3" />
-              </button>
-              <span className="w-8 text-center typo-caption-xs font-bold">
-                {item.quantity}
-              </span>
-              <button
-                onClick={() => onUpdateQuantity(item.product.id, item.quantity + 1)}
-                className="px-3 h-full"
-              >
-                <Plus className="w-3 h-3" />
-              </button>
-            </div>
+            <QuantityControl
+              quantity={item.quantity}
+              productId={item.product.id}
+              onUpdateQuantity={onUpdateQuantity}
+              variant="mobile"
+            />
+
             <div className="text-right">
               <p className="typo-caption-xs text-gray-400">Thành tiền</p>
               <p className="typo-label text-[#ee2b5b]">

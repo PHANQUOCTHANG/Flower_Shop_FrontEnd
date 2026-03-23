@@ -13,15 +13,24 @@ export const categoryService = {
     const res = await api.get<ApiResponse<ProductCategory[]>>("/categories", {
       params,
     });
-
     if (res.data.status !== "success") {
       throw new Error(res.data.message || "Fetch failed");
     }
-
     return {
       categories: res.data.data ?? [],
       meta: res.data.meta,
       message: res.data.message,
     };
+  },
+
+  async createCategory(data: { name: string; slug?: string }) {
+    const res = await api.post<ApiResponse<ProductCategory>>(
+      "/categories",
+      data,
+    );
+    if (res.data.status !== "success") {
+      throw new Error(res.data.message || "Create failed");
+    }
+    return res.data.data;
   },
 };

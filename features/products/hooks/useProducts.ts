@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { productService } from "@/features/products/services/productService";
-
 import { useQuery } from "@tanstack/react-query";
 
-export const useProducts = (params?: {
+interface UseProductsParams {
   page?: number;
   limit?: number;
   search?: string;
@@ -11,44 +10,38 @@ export const useProducts = (params?: {
   priceMax?: number | null;
   category?: string;
   sort?: string;
-}) => {
+}
+
+export const useProducts = (params?: UseProductsParams) => {
   const query = useQuery({
-    queryKey: ["products", params],
+    queryKey: ["products", "list", params],
     queryFn: () => {
-      const apiParams: any = {
-        page: params?.page,
-        limit: params?.limit,
-        search: params?.search,
-      };
-
-      if (params?.priceMin !== null && params?.priceMin !== undefined) {
-        apiParams.priceMin = params.priceMin;
-      }
-      if (params?.priceMax !== null && params?.priceMax !== undefined) {
-        apiParams.priceMax = params.priceMax;
-      }
-      if (params?.category) {
-        apiParams.category = params.category;
-      }
-      if (params?.sort) {
-        apiParams.sort = params.sort;
-      }
-
+      // Loại bỏ null/undefined trước khi gọi API
+      const apiParams = Object.fromEntries(
+        Object.entries({
+          page: params?.page,
+          limit: params?.limit,
+          search: params?.search || undefined,
+          priceMin: params?.priceMin ?? undefined,
+          priceMax: params?.priceMax ?? undefined,
+          category: params?.category || undefined,
+          sort: params?.sort || undefined,
+        }).filter(([, v]) => v !== undefined),
+      );
       return productService.getProducts(apiParams);
     },
-
-    // Thay cho keepPreviousData
-    placeholderData: (previousData) => previousData,
+    placeholderData: (prev) => prev, // giữ data cũ khi đổi filter/trang → không bị flash trắng
+    staleTime: 30_000,               // 30 giây — tránh refetch liên tục khi user navigate
   });
 
   return {
     products: query.data?.products ?? [],
     meta: query.data?.meta,
     totalPages: (query.data?.meta as any)?.totalPages ?? 1,
-    loading: query.isPending, // v5 đổi từ isLoading
+    loading: query.isPending,
     fetching: query.isFetching,
     error: query.error ?? null,
-    empty: !query.isPending && (query.data?.products?.length ?? 0) === 0,
+    isEmpty: !query.isPending && (query.data?.products?.length ?? 0) === 0,
     refetch: query.refetch,
   };
 };

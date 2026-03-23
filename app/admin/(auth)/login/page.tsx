@@ -13,10 +13,11 @@ import {
   Flower2,
   ChevronRight,
 } from "lucide-react";
+import { useLogin } from "@/features/auth/login/hooks/useLogin";
 
 // Định nghĩa kiểu dữ liệu cho thông tin đăng nhập
 interface LoginCredentials {
-  identifier: string;
+  email: string;
   password: string;
   rememberMe: boolean;
 }
@@ -25,14 +26,15 @@ export default function LoginPage() {
   // Trạng thái ẩn/hiện mật khẩu
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  // Trạng thái form với kiểu dữ liệu đã định nghĩa
   const [credentials, setCredentials] = useState<LoginCredentials>({
-    identifier: "",
+    email: "",
     password: "",
     rememberMe: false,
   });
+  const [successMessage, setSuccessMessage] = useState("");
 
-  // Xử lý thay đổi input với kiểu ChangeEvent chuẩn
+  const { login, isLoading, error } = useLogin();
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setCredentials((prev) => ({
@@ -41,11 +43,23 @@ export default function LoginPage() {
     }));
   };
 
-  // Xử lý đăng nhập với kiểu FormEvent chuẩn
-  const handleLogin = (e: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Đăng nhập với:", credentials);
-    // Tích hợp logic gọi API (auth service) tại đây
+    try {
+      console.log({
+        email: credentials.email,
+        password: credentials.password,
+        role: "ADMIN"
+      })
+      await login({
+        email: credentials.email,
+        password: credentials.password,
+        role: "ADMIN"
+      });
+      setSuccessMessage("Đăng nhập thành công! Chuyển hướng...");
+    } catch (err) {
+      console.error("Login error:", err);
+    }
   };
 
   return (
@@ -120,24 +134,43 @@ export default function LoginPage() {
             </p>
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-2xl">
+              <p className="text-sm font-bold text-red-600 dark:text-red-400">
+                {error.message || "Đăng nhập thất bại. Vui lòng thử lại."}
+              </p>
+            </div>
+          )}
+
+          {/* Success Message */}
+          {successMessage && (
+            <div className="mb-6 p-4 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-2xl">
+              <p className="text-sm font-bold text-green-600 dark:text-green-400">
+                {successMessage}
+              </p>
+            </div>
+          )}
+
           {/* Form đăng nhập chính */}
           <form onSubmit={handleLogin} className="space-y-6">
-            {/* Trường Email/Username */}
+            {/* Trường Email */}
             <div className="space-y-2">
               <label className="block text-xs font-black uppercase tracking-widest text-slate-400 ml-1">
-                Email / Tài khoản
+                Email
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#1152d4] transition-colors">
                   <User size={20} />
                 </div>
                 <input
-                  name="identifier"
-                  type="text"
+                  name="email"
+                  type="email"
                   required
-                  value={credentials.identifier}
+                  disabled={isLoading}
+                  value={credentials.email}
                   onChange={handleInputChange}
-                  className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-[#101622]/50 border-2 border-slate-100 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-[#1152d4]/10 focus:border-[#1152d4] outline-none transition-all text-slate-900 dark:text-white font-bold placeholder:text-slate-400 shadow-inner"
+                  className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-[#101622]/50 border-2 border-slate-100 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-[#1152d4]/10 focus:border-[#1152d4] outline-none transition-all text-slate-900 dark:text-white font-bold placeholder:text-slate-400 shadow-inner disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="admin@flowershop.vn"
                 />
               </div>
@@ -164,9 +197,10 @@ export default function LoginPage() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   required
+                  disabled={isLoading}
                   value={credentials.password}
                   onChange={handleInputChange}
-                  className="w-full pl-12 pr-12 py-4 bg-slate-50 dark:bg-[#101622]/50 border-2 border-slate-100 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-[#1152d4]/10 focus:border-[#1152d4] outline-none transition-all text-slate-900 dark:text-white font-bold placeholder:text-slate-400 shadow-inner"
+                  className="w-full pl-12 pr-12 py-4 bg-slate-50 dark:bg-[#101622]/50 border-2 border-slate-100 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-[#1152d4]/10 focus:border-[#1152d4] outline-none transition-all text-slate-900 dark:text-white font-bold placeholder:text-slate-400 shadow-inner disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="••••••••"
                 />
                 <button
@@ -200,13 +234,23 @@ export default function LoginPage() {
             {/* Nút đăng nhập */}
             <button
               type="submit"
-              className="w-full py-4 bg-[#1152d4] hover:bg-[#1152d4]/90 text-white font-black rounded-2xl shadow-xl shadow-[#1152d4]/20 transition-all active:scale-[0.98] uppercase tracking-widest text-sm flex items-center justify-center gap-2 group"
+              disabled={isLoading}
+              className="w-full py-4 bg-[#1152d4] hover:bg-[#1152d4]/90 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-black rounded-2xl shadow-xl shadow-[#1152d4]/20 transition-all active:scale-[0.98] uppercase tracking-widest text-sm flex items-center justify-center gap-2 group"
             >
-              <span>Xác nhận đăng nhập</span>
-              <ChevronRight
-                size={20}
-                className="group-hover:translate-x-1 transition-transform"
-              />
+              {isLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <span>Đang xác nhận...</span>
+                </>
+              ) : (
+                <>
+                  <span>Xác nhận đăng nhập</span>
+                  <ChevronRight
+                    size={20}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
+                </>
+              )}
             </button>
           </form>
 

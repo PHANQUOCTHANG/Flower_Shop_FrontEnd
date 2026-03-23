@@ -19,7 +19,7 @@ interface UseLogoutReturn {
  * - Xóa auth store
  * - Redirect đến trang login
  */
-export const useLogout = (): UseLogoutReturn => {
+export const useLogout = (role? : string | undefined): UseLogoutReturn => {
   const router = useRouter();
   const clearAuth = useAuthStore((state) => state.logout);
   const clearCart = useCartStore((state) => state.clearCart);
@@ -34,13 +34,16 @@ export const useLogout = (): UseLogoutReturn => {
       clearCart();
 
       // Redirect đến trang login
-      router.push("/");
+      if (role && role === "CUSTOMER") router.push("/");
+      else router.push("/admin/login");
     },
     onError: (error: Error) => {
       console.error("Logout failed:", error.message);
       // Vẫn clear store và redirect dù lỗi
       clearAuth();
-      router.push("/login");
+
+      if (role === "CUSTOMER") router.push("/login");
+      else router.push("/admin/login");
     },
   });
 

@@ -3,6 +3,8 @@
 import { CartItemResponse } from "@/features/cart/types/cart";
 import { create } from "zustand";
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 interface CartStoreState {
   items: CartItemResponse[];
   isLoading: boolean;
@@ -12,8 +14,8 @@ interface CartStoreState {
 interface CartStoreActions {
   setItems: (items: CartItemResponse[]) => void;
   addItem: (item: CartItemResponse) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  removeItem: (productId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -23,23 +25,28 @@ interface CartStoreActions {
 
 export type CartStore = CartStoreState & CartStoreActions;
 
+// ─── Store ────────────────────────────────────────────────────────────────────
+
 export const useCartStore = create<CartStore>((set, get) => ({
   items: [],
   isLoading: false,
   error: null,
 
-  setItems: (items: CartItemResponse[]) => {
-    set({ items });
-  },
+  setItems: (items) => set({ items }),
 
-  addItem: (item: CartItemResponse) => {
+  addItem: (item) => {
     set((state) => {
-      const existingItem = state.items.find((i) => i.id === item.id);
+      // FIX: So sánh bằng product.id thay vì item.id (cart item id).
+      // item.id là id của cart record, trùng nhau khi server tạo mới.
+      // product.id mới là định danh thực sự của sản phẩm.
+      const existingItem = state.items.find(
+        (i) => i.product.id === item.product.id,
+      );
 
       if (existingItem) {
         return {
           items: state.items.map((i) =>
-            i.id === item.id
+            i.product.id === item.product.id
               ? { ...i, quantity: i.quantity + item.quantity }
               : i,
           ),
@@ -50,40 +57,40 @@ export const useCartStore = create<CartStore>((set, get) => ({
     });
   },
 
-  removeItem: (id: string) => {
+  removeItem: (productId) => {
+    // FIX: Đồng bộ tên param và logic filter với cách dùng ở useCartHooks
+    // (truyền vào product.id chứ không phải cart item id)
     set((state) => ({
-      items: state.items.filter((item) => item.id !== id),
+      items: state.items.filter((item) => item.product.id !== productId),
     }));
   },
 
-  updateQuantity: (id: string, quantity: number) => {
+  updateQuantity: (productId, quantity) => {
     set((state) => ({
+      // FIX: Đổi sang so sánh bằng product.id để nhất quán với removeItem và addItem
       items: state.items.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item,
+        item.product.id === productId
+          ? { ...item, quantity: Math.max(1, quantity) }
+          : item,
       ),
     }));
   },
 
-  clearCart: () => {
-    set({ items: [] });
-  },
+  clearCart: () => set({ items: [] }),
 
-  setLoading: (loading: boolean) => {
-    set({ isLoading: loading });
-  },
+  setLoading: (loading) => set({ isLoading: loading }),
 
-  setError: (error: string | null) => {
-    set({ error });
-  },
+  setError: (error) => set({ error }),
 
-  getTotal: () => {
-    return get().items?.reduce(
+  // FIX: Đổi từ ?. sang || [] để đảm bảo luôn có array fallback.
+  // items được khởi tạo là [] nên ?. không cần thiết,
+  // nhưng || [] bảo vệ trường hợp setItems được gọi với undefined từ bên ngoài.
+  getTotal: () =>
+    (get().items || []).reduce(
       (acc, item) => acc + item.product.price * item.quantity,
       0,
-    );
-  },
+    ),
 
-  getItemCount: () => {
-    return get().items?.reduce((acc, item) => acc + item.quantity, 0);
-  },
+  getItemCount: () =>
+    (get().items || []).reduce((acc, item) => acc + item.quantity, 0),
 }));

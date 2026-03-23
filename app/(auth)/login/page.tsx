@@ -48,7 +48,8 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      await login({ email, password });
+      console.log({ email, password , role : "CUSTOMER"})
+      await login({ email, password , role : "CUSTOMER"});
       setSuccessMessage("Đăng nhập thành công! Chuyển hướng...");
     } catch (err) {
       console.log(err);

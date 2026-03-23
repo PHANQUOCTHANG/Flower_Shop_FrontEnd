@@ -5,6 +5,7 @@ import { ApiResponse } from "@/types/response";
 export interface LoginPayload {
   email: string;
   password: string;
+  role : string ;
   rememberMe?: boolean;
 }
 
@@ -28,6 +29,7 @@ export const loginService = async (
     const response = await api.post<ApiResponse<LoginResponse>>("/auth/login", {
       email: loginRequest.email,
       password: loginRequest.password,
+      role: loginRequest.role
     });
 
     if (response.data.status === "error") {

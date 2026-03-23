@@ -1,41 +1,110 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import axios, {
+  AxiosError,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
 import { useAuthStore } from "@/stores/auth.store";
 
-// Extend config type để đánh dấu retry
+// ─── Types ───────────────────────────────────────────────────────────────────
+
 interface CustomConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
-// Endpoint constants
-const REFRESH_TOKEN_ENDPOINT = "/auth/refresh-token";
+interface RefreshTokenResponse {
+  accessToken?: string;
+  data?: {
+    accessToken?: string;
+  };
+}
 
-// Instance chính: gửi request với access token
-const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  withCredentials: true,
-  timeout: 30000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+// ─── Constants ───────────────────────────────────────────────────────────────
 
-// Instance riêng: refresh token (tránh vòng lặp interceptor)
-const refreshClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  withCredentials: true,
-});
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// Lock để tránh gọi refresh token nhiều lần cùng lúc
-let refreshPromise: Promise<string> | null = null;
+const REFRESH_ENDPOINT = "/auth/refresh-token";
 
 /**
- * Request interceptor: gắn access token vào header
+ * Các endpoint không cần xử lý refresh logic khi nhận 401.
+ * Login sai mật khẩu trả về 401 → không được phép trigger refresh.
  */
+const AUTH_ENDPOINTS = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+  REFRESH_ENDPOINT,
+];
+
+// ─── Instances ────────────────────────────────────────────────────────────────
+
+/**
+ * Instance chính dùng cho toàn bộ app.
+ * Request interceptor tự động gắn access token vào header.
+ */
+const api = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true,
+  timeout: 30000,
+  headers: { "Content-Type": "application/json" },
+});
+
+/**
+ * Instance riêng chỉ để gọi refresh token.
+ * Tách ra để tránh vòng lặp interceptor vô hạn.
+ */
+const refreshClient = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true,
+  timeout: 10000,
+});
+
+// ─── Refresh lock ─────────────────────────────────────────────────────────────
+
+/**
+ * Singleton promise để đảm bảo chỉ có đúng 1 lần gọi refresh
+ * dù nhiều request cùng lúc nhận 401.
+ * finally() đảm bảo lock luôn được giải phóng dù success hay fail.
+ */
+let refreshPromise: Promise<string> | null = null;
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const isAuthEndpoint = (url?: string): boolean =>
+  AUTH_ENDPOINTS.some((endpoint) => url?.includes(endpoint));
+
+const isRetryableStatus = (status?: number): boolean =>
+  status !== undefined && [400, 401, 403].includes(status);
+
+const extractAccessToken = (data: RefreshTokenResponse): string | null =>
+  data?.accessToken ?? data?.data?.accessToken ?? null;
+
+const logout = (): void => useAuthStore.getState().logout();
+
+// ─── Core: refresh token ──────────────────────────────────────────────────────
+
+const requestNewAccessToken = async (): Promise<string> => {
+  const response: AxiosResponse<RefreshTokenResponse> =
+    await refreshClient.post(REFRESH_ENDPOINT);
+
+  const newToken = extractAccessToken(response.data);
+
+  if (!newToken) {
+    throw new Error("No access token in refresh response");
+  }
+
+  useAuthStore.getState().setAccessToken(newToken);
+  return newToken;
+};
+
+// ─── Request interceptor ──────────────────────────────────────────────────────
+
 api.interceptors.request.use((config) => {
+  // Guard SSR: window chưa tồn tại trong Next.js server-side
+  if (typeof window === "undefined") return config;
+
   const token = useAuthStore.getState().accessToken;
 
-  console.log(token)
   if (token && !config.headers.Authorization) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -43,92 +112,68 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-/**
- * Lấy access token mới từ server
- */
-const requestNewAccessToken = async (): Promise<string> => {
-  try {
-    const response = await refreshClient.post(REFRESH_TOKEN_ENDPOINT, null, {
-      timeout: 10000,
-    });
+// ─── Response interceptor ────────────────────────────────────────────────────
 
-    console.log("[Axios Refresh] Success:", response.data);
-
-
-    // Handle cả 2 response format: accessToken | data.accessToken
-    const newAccessToken =
-      response.data?.accessToken || response.data?.data?.accessToken;
-
-    if (!newAccessToken) {
-      throw new Error("No access token in refresh response");
-    }
-
-    // Update token trong store
-    useAuthStore.getState().setAccessToken(newAccessToken);
-
-    return newAccessToken;
-  } 
-  
-  catch (error) {
-    throw error;
-  }
-};
-
-/**
- * Response interceptor: handle 401 errors và refresh token
- */
 api.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError) => {
-    const originalRequest = error.config as CustomConfig;
 
-    // Guard: kiểm tra request/response tồn tại
+  async (error: AxiosError) => {
+    const originalRequest = error.config as CustomConfig | undefined;
+
+    // Guard: không có response hoặc request config
     if (!error.response || !originalRequest) {
       return Promise.reject(error);
     }
 
-    // Nếu không phải 401 thì skip
-    if (error.response.status !== 401) {
+    const { status } = error.response;
+
+    // Chỉ xử lý lỗi 401
+    if (status !== 401) {
       return Promise.reject(error);
     }
 
-    // Nếu endpoint refresh token bị 401 → logout
-    if (originalRequest.url?.includes(REFRESH_TOKEN_ENDPOINT)) {
-      useAuthStore.getState().logout();
+    // FIX: Bỏ qua các auth endpoint (login, register, v.v.)
+    // Đây là lý do trước đây login sai lại báo "missing refresh token":
+    // interceptor không skip /auth/login nên cứ 401 là đi refresh.
+    if (isAuthEndpoint(originalRequest.url)) {
       return Promise.reject(error);
     }
 
-    // Nếu đã retry → không retry lại
+    // FIX: Bỏ qua nếu request gốc không có Authorization header
+    // (request public, không cần auth)
+    if (!originalRequest.headers.Authorization) {
+      return Promise.reject(error);
+    }
+
+    // Đã retry rồi → không thử thêm, logout luôn
     if (originalRequest._retry) {
-      useAuthStore.getState().logout();
+      logout();
       return Promise.reject(error);
     }
 
     originalRequest._retry = true;
 
     try {
-      // Tạo promise refresh nếu chưa có
+      // Dùng finally để đảm bảo lock luôn được reset,
+      // tránh trường hợp refreshPromise bị treo do exception bất ngờ
       if (!refreshPromise) {
-        refreshPromise = requestNewAccessToken();
+        refreshPromise = requestNewAccessToken().finally(() => {
+          refreshPromise = null;
+        });
       }
 
-      // Đợi refresh xong
       const newToken = await refreshPromise;
-      refreshPromise = null;
 
-      // Retry request với token mới
+      // Retry request gốc với token mới
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
       return api(originalRequest);
-    } catch (refreshError: any) {
-      refreshPromise = null;
+    } catch (refreshError) {
+      const axiosRefreshError = refreshError as AxiosError;
+      const refreshStatus = axiosRefreshError?.response?.status;
+      const isTimeout = axiosRefreshError?.code === "ECONNABORTED";
 
-      const refreshStatus = refreshError?.response?.status;
-      const isTimeout = refreshError?.message?.includes("timeout");
-
-      // Logout nếu refresh fail
-      if ([400, 401, 403].includes(refreshStatus) || isTimeout) {
-        console.warn("[Axios] Logout triggered by refresh failure");
-        useAuthStore.getState().logout();
+      if (isRetryableStatus(refreshStatus) || isTimeout) {
+        logout();
       }
 
       return Promise.reject(refreshError);

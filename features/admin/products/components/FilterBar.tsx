@@ -139,8 +139,9 @@ export const FilterBar = ({
             className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white text-sm font-medium focus:ring-2 focus:ring-[#13ec5b] transition-all shadow-sm cursor-pointer appearance-none pr-10"
           >
             <option value="newest">Mới nhất</option>
-            <option value="price-asc">Giá: Thấp đến Cao</option>
-            <option value="price-desc">Giá: Cao đến Thấp</option>
+            <option value="oldest">Cũ nhất</option>
+            <option value="price-asc">Giá (thấp → cao)</option>
+            <option value="price-desc">Giá (cao → thấp)</option>
           </select>
           <ChevronDown
             className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"

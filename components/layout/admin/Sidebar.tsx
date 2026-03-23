@@ -14,6 +14,8 @@ import {
   LogOut,
   MessageCircle,
 } from "lucide-react";
+import { useLogout } from "@/features/auth/logout/hooks";
+import { useAuthStore } from "@/stores/auth.store";
 
 // --- Định nghĩa kiểu dữ liệu (Interfaces) ---
 interface SidebarLinkProps {
@@ -62,9 +64,20 @@ const SidebarLink: FC<SidebarLinkProps> = ({
 export const Sidebar: FC<SidebarProps> = ({ currentPath, onNavigate }) => {
   const router = useRouter();
 
+  const user = useAuthStore((state) => state.user);
+
   const handleNavigate = (path: string) => {
     router.push(`/admin/${path}`);
     onNavigate?.(path);
+  };
+
+  // Hook logout
+  const { logout, isLoading: isLogoutLoading } = useLogout("ADMIN");
+
+  // Hàm đăng xuất
+  const handleLogout = async () => {
+    // setSuccessMessage("Đăng xuất thành công! Chuyển hướng...");
+    await logout();
   };
 
   return (
@@ -134,14 +147,7 @@ export const Sidebar: FC<SidebarProps> = ({ currentPath, onNavigate }) => {
             active={currentPath === "settings"}
             onClick={() => handleNavigate("settings")}
           />
-          <SidebarLink
-            icon={LogOut}
-            label="Đăng xuất"
-            onClick={() => {
-              // TODO: Implement logout logic
-              console.log("Đã đăng xuất");
-            }}
-          />
+          <SidebarLink icon={LogOut} label="Đăng xuất" onClick={handleLogout} />
         </div>
       </nav>
 
@@ -158,7 +164,7 @@ export const Sidebar: FC<SidebarProps> = ({ currentPath, onNavigate }) => {
           </div>
           <div className="flex flex-col overflow-hidden">
             <p className="text-sm font-bold truncate text-slate-900 dark:text-white">
-              Alex Rivera
+              {user?.name}
             </p>
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
               Quản trị viên
