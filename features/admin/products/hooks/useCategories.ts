@@ -1,37 +1,30 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { categoryService } from "@/features/admin/products/services/categoryService";
-import { CategoryItem } from "@/features/admin/products/types";
 
-// ─── Query keys ───────────────────────────────────────────────────────────────
+// Query keys
 const categoryKeys = {
-  all: ["categories"] as const,
+  all: ["admin" , "categories"] as const,
   lists: () => [...categoryKeys.all, "list"] as const,
   list: (params?: object) => [...categoryKeys.lists(), params] as const,
 };
 
-// ─── useCategories ────────────────────────────────────────────────────────────
-export const useCategories = (params?: {
+// Hook lấy danh sách danh mục
+interface UseCategoriesParams {
   page?: number;
   limit?: number;
   search?: string;
-}) => {
+}
+
+export const useCategories = (params?: UseCategoriesParams) => {
   const query = useQuery({
-    queryKey: categoryKeys.list(params),
+    queryKey: ["categories", "list", params],
     queryFn: () => categoryService.getCategories(params),
     placeholderData: (prev) => prev,
     staleTime: 300_000, // 5 phút — category rất ít thay đổi
   });
 
-  const categories: CategoryItem[] = (query.data?.categories ?? []).map(
-    (item) => ({
-      id: Number(item.id),
-      name: item.name,
-      slug: item.slug,
-    }),
-  );
-
   return {
-    categories,
+    categories: query.data?.categories ?? [],
     meta: query.data?.meta,
     loading: query.isPending,
     fetching: query.isFetching,
@@ -41,13 +34,13 @@ export const useCategories = (params?: {
   };
 };
 
-// ─── useCreateCategory ────────────────────────────────────────────────────────
+// Hook tạo danh mục mới
 export const useCreateCategory = () => {
   const queryClient = useQueryClient();
 
   const { mutate, mutateAsync, isPending, isError, error, reset } = useMutation(
     {
-      mutationFn: (data: { name: string; slug?: string }) =>
+      mutationFn: (data: FormData | { name: string; slug?: string }) =>
         categoryService.createCategory(data),
 
       onSuccess: () => {

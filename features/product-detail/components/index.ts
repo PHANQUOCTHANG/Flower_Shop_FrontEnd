@@ -6,3 +6,5 @@ export { TrustBadges } from "./TrustBadges";
 export { DescriptionTab } from "./DescriptionTab";
 export { ReviewsTab } from "./ReviewsTab";
 export { SimilarProducts } from "./SimilarProducts";
+export { TabNavigation } from "./TabNavigation";
+export { TabContent } from "./TabContent";

@@ -1,37 +1,14 @@
 import api from "@/lib/axios";
 import { ApiResponse } from "@/types/response";
 
-// ── Request/Response Interfaces ────────────────────────────────────────────
-
-export interface SendOtpRequest {
-  email: string;
-}
-
-export interface SendOtpResponse {
-  message: string;
-  expiresIn?: number; // Thời gian hết hạn OTP (giây)
-}
-
-export interface VerifyOtpRequest {
-  email: string;
-  otp: string;
-}
-
-export interface VerifyOtpResponse {
-  message: string;
-  token?: string; // Token tạm để dùng cho bước reset password
-}
-
-export interface ResetPasswordRequest {
-  email: string;
-  otp: string;
-  newPassword: string;
-}
-
-export interface ResetPasswordResponse {
-  message: string;
-  email?: string;
-}
+import {
+  SendOtpRequest,
+  SendOtpResponse,
+  VerifyOtpRequest,
+  VerifyOtpResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
+} from "@/types/auth";
 
 // ── API Service Functions ────────────────────────────────────────────────────
 

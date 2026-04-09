@@ -1,4 +1,4 @@
-import { Product } from "@/features/products/types";
+import { Product } from "@/types/product";
 import api from "@/lib/axios";
 import { ApiResponse } from "@/types/response";
 
@@ -35,5 +35,17 @@ export const productService = {
       meta: res.data.meta,
       message: res.data.message,
     };
+  },
+
+  async getProductsGroupedByCategory(limit = 20) {
+    const res = await api.get<ApiResponse<any>>("/products/grouped-by-category", {
+      params: { limit },
+    });
+
+    if (res.data.status !== "success") {
+      throw new Error(res.data.message || "Fetch failed");
+    }
+
+    return res.data.data;
   },
 };

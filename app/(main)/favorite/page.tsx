@@ -60,7 +60,7 @@ const ProductCard = ({
   onRemove: (id: string) => void;
 }) => {
   return (
-    <div className="group flex flex-col bg-white dark:bg-[#1a0c10] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-slate-100 dark:border-white/5">
+    <div className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-slate-100 ">
       {/* Ảnh sản phẩm và nút xóa */}
       <div className="relative w-full aspect-[4/5] overflow-hidden">
         <img
@@ -70,7 +70,7 @@ const ProductCard = ({
         />
         <button
           onClick={() => onRemove(product.id)}
-          className="absolute top-4 right-4 p-2.5 bg-white/90 dark:bg-black/50 backdrop-blur-md rounded-full text-slate-400 hover:text-[#ee2b5b] shadow-sm transition-colors active:scale-90"
+          className="absolute top-4 right-4 p-2.5 bg-white/90 backdrop-blur-md rounded-full text-slate-400 hover:text-[#ee2b5b] shadow-sm transition-colors active:scale-90"
           title="Xóa khỏi danh sách"
         >
           <Trash2 size={18} />
@@ -82,7 +82,7 @@ const ProductCard = ({
         <span className="text-[10px] font-black uppercase text-[#ee2b5b] tracking-widest mb-1">
           {product.category}
         </span>
-        <h3 className="text-slate-900 dark:text-white text-lg font-bold mb-2 leading-snug group-hover:text-[#ee2b5b] transition-colors line-clamp-1">
+        <h3 className="text-slate-900 text-lg font-bold mb-2 leading-snug group-hover:text-[#ee2b5b] transition-colors line-clamp-1">
           {product.name}
         </h3>
 
@@ -119,8 +119,8 @@ export default function WishlistPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8f6f6] dark:bg-[#10080a] font-['Inter',_sans-serif] text-slate-900 dark:text-slate-100 transition-colors duration-300">
-      <main className="flex-1 px-6 lg:px-40 py-10 max-w-[1920px] mx-auto w-full">
+    <div className="min-h-screen flex flex-col bg-[#f8f6f6] font-['Inter',_sans-serif] text-slate-900 transition-colors duration-300">
+      <main className="flex-1 px-4 sm:px-6 md:px-12 lg:px-40 py-10 max-w-[1920px] mx-auto w-full">
         {/* Breadcrumbs */}
         <Breadcrumbs
           items={[
@@ -131,17 +131,17 @@ export default function WishlistPage() {
 
         {/* Tiêu đề trang */}
         <div className="mb-12">
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter uppercase mb-3 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-black text-slate-900 tracking-tighter uppercase mb-3 leading-tight">
             Sản phẩm <span className="text-[#ee2b5b]">yêu thích</span>
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-medium">
+          <p className="text-slate-500 font-medium">
             Lưu lại những bó hoa tuyệt đẹp để hoàn tất việc mua sắm sau này.
           </p>
         </div>
 
         {wishlist.length > 0 ? (
           /* Lưới hiển thị danh sách sản phẩm */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 animate-in fade-in duration-700">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 animate-in fade-in duration-700">
             {wishlist.map((item) => (
               <ProductCard
                 key={item.id}
@@ -156,10 +156,10 @@ export default function WishlistPage() {
             <div className="size-48 mb-8 bg-[#ee2b5b]/5 rounded-full flex items-center justify-center text-[#ee2b5b]/30">
               <HeartOff size={84} strokeWidth={1.5} />
             </div>
-            <h2 className="text-2xl font-black text-slate-900 dark:text-white uppercase mb-3">
+            <h2 className="text-2xl font-black text-slate-900 uppercase mb-3">
               Danh sách đang trống
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 mb-10 max-w-sm font-medium">
+            <p className="text-slate-500 mb-10 max-w-sm font-medium">
               Bạn chưa có sản phẩm nào trong danh sách yêu thích. Hãy chọn cho
               mình những bó hoa ưng ý nhất nhé.
             </p>

@@ -2,7 +2,7 @@
 
 import api from "@/lib/axios";
 import { ApiResponse } from "@/types/response";
-import { OrderResponse } from "../types/order";
+import { OrderResponse } from "@/types/order";
 
 export interface GetOrdersParams {
   page?: number;
@@ -24,6 +24,7 @@ interface OrdersListResponse {
     totalPages: number;
   };
   message: string;
+  meta: any;
 }
 
 export const orderService = {
@@ -56,6 +57,7 @@ export const orderService = {
         limit: 10,
         totalPages: 0,
       },
+      meta: res.data.meta,
       message: res.data.message || "Success",
     };
   },
@@ -64,11 +66,8 @@ export const orderService = {
    * Lấy chi tiết một đơn hàng
    */
   async getOrderById(orderId: string): Promise<OrderResponse> {
-    const res = await api.get<ApiResponse<OrderResponse>>(
-      `/orders/${orderId}`,
-    );
+    const res = await api.get<ApiResponse<OrderResponse>>(`/orders/${orderId}`);
 
-    console.log(res.data.data)
 
     if (res.data.status !== "success") {
       throw new Error(res.data.message || "Failed to fetch order");

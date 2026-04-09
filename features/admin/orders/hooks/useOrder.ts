@@ -7,7 +7,7 @@ import type { GetOrdersParams } from "../services/orderService";
 
 // Query keys factory
 const orderKeys = {
-  all: ["orders"] as const,
+  all: ["admin" , "orders"] as const,
   lists: () => [...orderKeys.all, "list"] as const,
   list: (params?: GetOrdersParams) => [...orderKeys.lists(), params] as const,
   details: () => [...orderKeys.all, "detail"] as const,
@@ -33,9 +33,11 @@ export const useOrders = (params?: GetOrdersParams) => {
     limit: 10,
     totalPages: 0,
   };
+  const meta = data?.meta;
 
   return {
     orders,
+    meta,
     pagination,
     totalPages: pagination.totalPages,
     loading: isPending,
@@ -63,8 +65,6 @@ export const useOrderById = (orderId: string | null) => {
     // ❌ bỏ placeholderData — nó giữ data cũ, che mất loading state
   });
 
-  console.log(orderId)
-  console.log(data)
 
   return {
     order: data,
@@ -92,7 +92,7 @@ export const useUpdateOrderStatus = () => {
       return await orderService.updateOrderStatus(orderId, status);
     },
 
-    // ✅ Optimistic update: cập nhật UI ngay lập tức trước khi API trả về
+    // Optimistic update: cập nhật UI ngay lập tức trước khi API trả về
     onMutate: async ({ orderId, status }) => {
       // Huỷ các query đang refetch để tránh race condition
       await queryClient.cancelQueries({ queryKey: orderKeys.lists() });
@@ -130,7 +130,7 @@ export const useUpdateOrderStatus = () => {
       return { previousLists, previousDetail };
     },
 
-    // ✅ Rollback nếu API lỗi
+    // Rollback nếu API lỗi
     onError: (_err, { orderId }, context) => {
       if (context?.previousLists) {
         context.previousLists.forEach(([queryKey, data]) => {
@@ -145,7 +145,7 @@ export const useUpdateOrderStatus = () => {
       }
     },
 
-    // ✅ Sync lại với server sau khi mutation hoàn tất (thành công hoặc lỗi)
+    // Sync lại với server sau khi mutation hoàn tất (thành công hoặc lỗi)
     onSettled: (_data, _error, { orderId }) => {
       queryClient.invalidateQueries({ queryKey: orderKeys.lists() });
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) });

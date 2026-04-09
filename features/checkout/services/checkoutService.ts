@@ -1,54 +1,58 @@
 import axios from "@/lib/axios";
 
-export interface OrderItem {
-  productId: string;
-  quantity: number;
-  price: number;
-  subtotal: number;
-}
-
-export interface CreateOrderData {
-  totalPrice: number;
-  shippingAddress: string;
-  shippingPhone: string;
-  paymentMethod: "bank" | "wallet" | "cod";
-  paymentStatus: "unpaid" | "paid";
-  name?: string;
-  note?: string;
-  items: OrderItem[];
-}
-
-export interface Order {
-  id: string;
-  userId: string;
-  totalPrice: number;
-  status: string;
-  shippingAddress?: string;
-  shippingPhone?: string;
-  paymentMethod?: string;
-  paymentStatus: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { OrderItem, CreateOrderData, Order, CreateOrderResponse } from "@/types/order";
 
 const ORDERS_API = "/orders";
 
+// Helper: Ensure all numeric fields are numbers
+const sanitizeOrderData = (data: CreateOrderData): CreateOrderData => {
+  return {
+    ...data,
+    totalPrice:
+      typeof data.totalPrice === "string"
+        ? parseFloat(data.totalPrice)
+        : data.totalPrice,
+    items: data.items.map((item) => ({
+      ...item,
+      price:
+        typeof item.price === "string" ? parseFloat(item.price) : item.price,
+      quantity:
+        typeof item.quantity === "string"
+          ? parseInt(item.quantity)
+          : item.quantity,
+      subtotal:
+        typeof item.subtotal === "string"
+          ? parseFloat(item.subtotal)
+          : item.subtotal,
+    })),
+  };
+};
+
 export const checkoutService = {
-  // Tạo đơn hàng mới
-  createOrder: async (data: CreateOrderData): Promise<Order> => {
+  createOrder: async (data: CreateOrderData): Promise<CreateOrderResponse> => {
     try {
-      const response = await axios.post<Order>(ORDERS_API, {
-        totalPrice: data.totalPrice,
-        shippingAddress: data.shippingAddress,
-        shippingPhone: data.shippingPhone,
-        paymentMethod: data.paymentMethod,
-        paymentStatus: data.paymentStatus,
-        name: data.name,
-        note: data.note,
-        items: data.items,
+      const sanitized = sanitizeOrderData(data);
+      const response = await axios.post<CreateOrderResponse>(ORDERS_API, {
+        totalPrice: sanitized.totalPrice,
+        shippingAddress: sanitized.shippingAddress,
+        shippingPhone: sanitized.shippingPhone,
+        paymentMethod: sanitized.paymentMethod,
+        paymentStatus: sanitized.paymentStatus,
+        name: sanitized.name,
+        note: sanitized.note,
+        items: sanitized.items,
       });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response?.status === 422) {
+        const details = error.response?.data?.details || [];
+        const errorMsg = details.length
+          ? details.join("\n")
+          : error.response?.data?.message || "Dữ liệu không hợp lệ";
+        const validationError = new Error(errorMsg);
+        validationError.name = "ValidationError";
+        throw validationError;
+      }
       throw error;
     }
   },

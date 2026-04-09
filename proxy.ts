@@ -1,79 +1,122 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export function proxy(request: NextRequest) {
-  const refreshToken = request.cookies.get("refreshToken")?.value;
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+// Routes yêu cầu đăng nhập (user thông thường)
+const PROTECTED_CLIENT_ROUTES = [
+  "/cart",
+  "/checkout",
+  "/profile",
+  "/order-processing",
+  "/order-completed",
+  "/favorite",
+];
+
+// ─── Security Headers ─────────────────────────────────────────────────────────
+
+function applySecurityHeaders(response: NextResponse): NextResponse {
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=()",
+  );
+  return response;
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+// Lấy role từ user cookie để bảo vệ admin route ở tầng UI
+// BẢO MẬT: user cookie KHÔNG phải httpOnly → chỉ dùng cho UI guard.
+// Lớp bảo mật thật sự phải ở backend (verify JWT + role trong mỗi API request).
+function extractUserRole(request: NextRequest): string {
+  // Ưu tiên 1: cookie "role" riêng nếu backend set (httpOnly)
+  const roleCookie = request.cookies.get("role")?.value;
+  if (roleCookie) return roleCookie.toUpperCase();
+
+  // Ưu tiên 2: parse từ user cookie JSON
   const userCookie = request.cookies.get("user")?.value;
+  if (!userCookie) return "";
 
-  // Giải mã dữ liệu user từ cookie (thường Backend lưu dạng string JSON)
-  let userRole = "";
-  if (userCookie) {
-    try {
-      // Decode các ký tự đặc biệt như %7B, %22...
-      let decodedCookie = decodeURIComponent(userCookie);
-
-      // Loại bỏ tiền tố 'j:' nếu Backend Express set cookie dạng Object
-      if (decodedCookie.startsWith("j:")) {
-        decodedCookie = decodedCookie.replace("j:", "");
-      }
-
-      const userData = JSON.parse(decodedCookie);
-      userRole = userData.role;
-    } catch (e) {
-      // Fallback nếu cookie chỉ là chuỗi thuần hoặc lỗi parse
-      userRole = userCookie;
-    }
+  try {
+    let decoded = decodeURIComponent(userCookie);
+    if (decoded.startsWith("j:")) decoded = decoded.slice(2);
+    const userData = JSON.parse(decoded);
+    return (userData?.role ?? "").toUpperCase();
+  } catch {
+    return "";
   }
+}
 
+// ─── Proxy ────────────────────────────────────────────────────────────────────
+
+export function proxy(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
 
-  // Danh sách các route
-  const protectedClientRoutes = ["/cart", "/checkout", "/profile"];
+  // refreshToken là httpOnly cookie → chỉ server đọc được, không thể giả mạo từ JS client
+  const refreshToken = request.cookies.get("refreshToken")?.value;
+  const isAuthenticated = Boolean(refreshToken);
+
   const isProtectedAdminRoute =
     pathname.startsWith("/admin") && pathname !== "/admin/login";
 
-  const isProtectedClientRoute = protectedClientRoutes.some((route) =>
+  const isProtectedClientRoute = PROTECTED_CLIENT_ROUTES.some((route) =>
     pathname.startsWith(route),
   );
 
-  // --- LOGIC KIỂM TRA QUYỀN ---
-
-  // 1. Kiểm tra Admin Route
+  // ─── 1. Admin Route ──────────────────────────────────────────────────────────
   if (isProtectedAdminRoute) {
-    // Nếu chưa đăng nhập -> về trang login admin
-    if (!refreshToken) {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
+    if (!isAuthenticated) {
+      const loginUrl = new URL("/admin/login", request.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return applySecurityHeaders(NextResponse.redirect(loginUrl));
     }
 
-    // Nếu ĐÃ đăng nhập nhưng role KHÔNG PHẢI ADMIN -> Chuyển sang trang 404
+    const userRole = extractUserRole(request);
     if (userRole !== "ADMIN") {
-      // rewrite sẽ giữ nguyên URL trên thanh địa chỉ nhưng hiển thị nội dung trang 404
-      return NextResponse.rewrite(new URL("/access-denied", request.url));
+      return applySecurityHeaders(
+        NextResponse.rewrite(new URL("/access-denied", request.url)),
+      );
     }
   }
 
-  // 2. Kiểm tra Client Route (Yêu cầu đăng nhập thông thường)
-  if (isProtectedClientRoute && !refreshToken) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  // ─── 2. Client Protected Route ───────────────────────────────────────────────
+  // Note: Khi user có refreshToken hợp lệ, SessionProvider sẽ tự refresh accessToken
+  // trên client. Middleware chỉ cần kiểm tra refreshToken đủ để quyết định routing.
+  if (isProtectedClientRoute && !isAuthenticated) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    return applySecurityHeaders(NextResponse.redirect(loginUrl));
   }
 
-  // 3. Đã login mà cố vào lại trang Login
-  if (refreshToken) {
+  // ─── 3. Đã login → chặn vào lại trang login ─────────────────────────────────
+  if (isAuthenticated) {
     if (pathname === "/login") {
-      return NextResponse.redirect(new URL("/", request.url));
+      return applySecurityHeaders(
+        NextResponse.redirect(new URL("/", request.url)),
+      );
     }
     if (pathname === "/admin/login") {
-      return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+      return applySecurityHeaders(
+        NextResponse.redirect(new URL("/admin/dashboard", request.url)),
+      );
     }
   }
 
-  return NextResponse.next();
+  return applySecurityHeaders(NextResponse.next());
 }
+
+// ─── Matcher ──────────────────────────────────────────────────────────────────
 
 export const config = {
   matcher: [
     "/cart/:path*",
     "/checkout/:path*",
     "/profile/:path*",
+    "/order-processing/:path*",
+    "/order-completed/:path*",
+    "/favorite/:path*",
     "/login",
     "/admin/:path*",
   ],

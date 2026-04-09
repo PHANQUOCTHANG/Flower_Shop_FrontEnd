@@ -49,12 +49,14 @@ export default function LoginPage() {
       console.log({
         email: credentials.email,
         password: credentials.password,
-        role: "ADMIN"
-      })
+        role: "ADMIN",
+        rememberMe: credentials.rememberMe,
+      });
       await login({
         email: credentials.email,
         password: credentials.password,
-        role: "ADMIN"
+        role: "ADMIN",
+        rememberMe: credentials.rememberMe,
       });
       setSuccessMessage("Đăng nhập thành công! Chuyển hướng...");
     } catch (err) {
@@ -63,11 +65,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f6f6f8] dark:bg-[#101622] font-['Inter',_sans-serif] flex items-center justify-center p-4 transition-colors duration-300">
+    <div className="min-h-screen bg-[#f6f6f8] font-['Inter',_sans-serif] flex items-center justify-center p-4 transition-colors duration-300">
       {/* Container chính của trang Login */}
-      <div className="w-full max-w-[1100px] grid grid-cols-1 lg:grid-cols-2 bg-white dark:bg-[#1a2235] shadow-2xl rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-700">
+      <div className="w-full max-w-[1100px] grid grid-cols-1 lg:grid-cols-2 bg-white shadow-2xl rounded-3xl overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-700">
         {/* Cột trái: Hình ảnh & Giới thiệu (Ẩn trên mobile) */}
-        <div className="hidden lg:flex relative bg-[#1152d4]/5 flex-col items-center justify-center p-16 overflow-hidden border-r border-slate-100 dark:border-slate-800">
+        <div className="hidden lg:flex relative bg-[#1152d4]/5 flex-col items-center justify-center p-16 overflow-hidden border-r border-slate-100 ">
           {/* Hiệu ứng chấm nền (Radial Gradient) */}
           <div
             className="absolute inset-0 opacity-20 pointer-events-none"
@@ -79,7 +81,7 @@ export default function LoginPage() {
           ></div>
 
           <div className="relative z-10 flex flex-col items-center text-center">
-            <div className="size-64 bg-white dark:bg-[#242f47] rounded-full flex items-center justify-center shadow-2xl border-8 border-[#1152d4]/10 mb-10 overflow-hidden group">
+            <div className="size-64 bg-white rounded-full flex items-center justify-center shadow-2xl border-8 border-[#1152d4]/10 mb-10 overflow-hidden group">
               <img
                 alt="Flower arrangement"
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
@@ -87,25 +89,25 @@ export default function LoginPage() {
               />
             </div>
 
-            <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-tighter uppercase leading-none">
+            <h1 className="text-4xl font-black text-slate-900 mb-4 tracking-tighter uppercase leading-none">
               Flower Shop <span className="text-[#1152d4]">CMS</span>
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 max-w-sm leading-relaxed font-medium">
+            <p className="text-slate-500 max-w-sm leading-relaxed font-medium">
               Hệ thống quản lý cửa hàng chuyên nghiệp. Theo dõi đơn hàng và báo
               cáo doanh thu thời gian thực.
             </p>
 
             {/* Badges bảo mật */}
             <div className="mt-12 flex gap-4">
-              <div className="px-5 py-2.5 bg-white dark:bg-[#242f47] rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex items-center gap-2 hover:translate-y-[-2px] transition-transform">
+              <div className="px-5 py-2.5 bg-white rounded-2xl shadow-sm border border-slate-100 flex items-center gap-2 hover:translate-y-[-2px] transition-transform">
                 <ShieldCheck size={18} className="text-[#1152d4]" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 ">
                   Bảo mật SSL
                 </span>
               </div>
-              <div className="px-5 py-2.5 bg-white dark:bg-[#242f47] rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex items-center gap-2 hover:translate-y-[-2px] transition-transform">
+              <div className="px-5 py-2.5 bg-white rounded-2xl shadow-sm border border-slate-100 flex items-center gap-2 hover:translate-y-[-2px] transition-transform">
                 <Fingerprint size={18} className="text-[#1152d4]" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 ">
                   Mã hóa AES
                 </span>
               </div>
@@ -120,24 +122,24 @@ export default function LoginPage() {
             <div className="p-2.5 bg-[#1152d4] rounded-2xl text-white shadow-lg shadow-[#1152d4]/30">
               <Flower2 size={24} />
             </div>
-            <h2 className="text-xl font-black tracking-tighter uppercase text-slate-900 dark:text-white">
+            <h2 className="text-xl font-black tracking-tighter uppercase text-slate-900 ">
               Admin Portal
             </h2>
           </div>
 
           <div className="mb-10">
-            <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tight leading-none">
+            <h3 className="text-3xl font-black text-slate-900 mb-2 uppercase tracking-tight leading-none">
               Đăng nhập
             </h3>
-            <p className="text-slate-500 dark:text-slate-400 font-medium">
+            <p className="text-slate-500 font-medium">
               Chào mừng trở lại! Vui lòng nhập thông tin quản trị.
             </p>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-2xl">
-              <p className="text-sm font-bold text-red-600 dark:text-red-400">
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl">
+              <p className="text-sm font-bold text-red-600 ">
                 {error.message || "Đăng nhập thất bại. Vui lòng thử lại."}
               </p>
             </div>
@@ -145,8 +147,8 @@ export default function LoginPage() {
 
           {/* Success Message */}
           {successMessage && (
-            <div className="mb-6 p-4 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-2xl">
-              <p className="text-sm font-bold text-green-600 dark:text-green-400">
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-2xl">
+              <p className="text-sm font-bold text-green-600 ">
                 {successMessage}
               </p>
             </div>
@@ -170,7 +172,7 @@ export default function LoginPage() {
                   disabled={isLoading}
                   value={credentials.email}
                   onChange={handleInputChange}
-                  className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-[#101622]/50 border-2 border-slate-100 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-[#1152d4]/10 focus:border-[#1152d4] outline-none transition-all text-slate-900 dark:text-white font-bold placeholder:text-slate-400 shadow-inner disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-[#1152d4]/10 focus:border-[#1152d4] outline-none transition-all text-slate-900 font-bold placeholder:text-slate-400 shadow-inner disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="admin@flowershop.vn"
                 />
               </div>
@@ -200,7 +202,7 @@ export default function LoginPage() {
                   disabled={isLoading}
                   value={credentials.password}
                   onChange={handleInputChange}
-                  className="w-full pl-12 pr-12 py-4 bg-slate-50 dark:bg-[#101622]/50 border-2 border-slate-100 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-[#1152d4]/10 focus:border-[#1152d4] outline-none transition-all text-slate-900 dark:text-white font-bold placeholder:text-slate-400 shadow-inner disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full pl-12 pr-12 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-[#1152d4]/10 focus:border-[#1152d4] outline-none transition-all text-slate-900 font-bold placeholder:text-slate-400 shadow-inner disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="••••••••"
                 />
                 <button
@@ -224,7 +226,7 @@ export default function LoginPage() {
                 className="h-5 w-5 rounded-lg border-slate-300 text-[#1152d4] focus:ring-[#1152d4] cursor-pointer transition-all"
               />
               <label
-                className="ml-3 block text-sm font-bold text-slate-500 dark:text-slate-400 cursor-pointer select-none"
+                className="ml-3 block text-sm font-bold text-slate-500 cursor-pointer select-none"
                 htmlFor="remember-me"
               >
                 Duy trì đăng nhập
@@ -255,8 +257,8 @@ export default function LoginPage() {
           </form>
 
           {/* Footer chân trang */}
-          <div className="mt-16 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-black tracking-[0.2em]">
+          <div className="mt-16 pt-8 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-[10px] text-slate-400 uppercase font-black tracking-[0.2em]">
               © 2024 FlowerShop CMS
             </span>
             <div className="flex gap-4">

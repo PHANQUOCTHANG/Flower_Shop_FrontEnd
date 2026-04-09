@@ -1,9 +1,6 @@
 import axios from "@/lib/axios";
 
-export interface LogoutResponse {
-  success: boolean;
-  message?: string;
-}
+import { LogoutResponse } from "@/types/auth";
 
 /**
  * Gọi API logout

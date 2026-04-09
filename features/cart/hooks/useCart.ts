@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { cartService } from "@/features/cart/services/cartService";
 import { useCartStore } from "@/stores/cart.store";
-import { CartItemResponse } from "@/features/cart/types/cart";
+import { CartItemResponse } from "@/types/cart";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

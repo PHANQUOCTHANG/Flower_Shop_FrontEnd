@@ -1,5 +1,6 @@
 import { Product } from "@/features/admin/products/types";
 import api from "@/lib/axios";
+import { CreateProductDto } from "@/types";
 import { ApiResponse } from "@/types/response";
 
 interface ProductsParams {
@@ -37,7 +38,15 @@ export const productService = {
     return res.data.data;
   },
 
-  async createProduct(data: FormData | Partial<Product>) {
+  async getProductBySLug(slug: string) {
+    const res = await api.get<ApiResponse<Product>>(`/products/slug/${slug}`);
+    if (res.data.status !== "success") {
+      throw new Error(res.data.message || "Fetch failed");
+    }
+    return res.data.data;
+  },
+
+  async createProduct(data: CreateProductDto) {
     const isFormData = data instanceof FormData;
     const res = await api.post<ApiResponse<Product>>("/products", data, {
       headers: isFormData ? { "Content-Type": "multipart/form-data" } : {},

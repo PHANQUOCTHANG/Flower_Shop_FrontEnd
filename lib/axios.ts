@@ -13,8 +13,22 @@ interface CustomConfig extends InternalAxiosRequestConfig {
 
 interface RefreshTokenResponse {
   accessToken?: string;
+  user?: {
+    id: string;
+    email: string;
+    fullName: string;
+    avatar?: string;
+    role?: string;
+  };
   data?: {
     accessToken?: string;
+    user?: {
+      id: string;
+      email: string;
+      fullName: string;
+      avatar?: string;
+      role?: string;
+    };
   };
 }
 
@@ -93,7 +107,22 @@ const requestNewAccessToken = async (): Promise<string> => {
     throw new Error("No access token in refresh response");
   }
 
-  useAuthStore.getState().setAccessToken(newToken);
+  // Lấy user từ response (backend trả về cùng với accessToken)
+  const userData = response.data?.user ?? response.data?.data?.user;
+
+  if (userData) {
+    // Update đầy đủ cả token lẫn user để Zustand nhất quán
+    useAuthStore.getState().setAuth(newToken, {
+      id: userData.id,
+      email: userData.email,
+      name: userData.fullName,
+      role: userData.role,
+    });
+  } else {
+    // Fallback: chỉ update token (isAuthenticated = true được set trong setAccessToken)
+    useAuthStore.getState().setAccessToken(newToken);
+  }
+
   return newToken;
 };
 
@@ -173,9 +202,11 @@ api.interceptors.response.use(
       const isTimeout = axiosRefreshError?.code === "ECONNABORTED";
 
       if (isRetryableStatus(refreshStatus) || isTimeout) {
+        console.debug("[Axios] Refresh failed - logging out user");
         logout();
       }
 
+      // Retornar erro sem logar no console para 401s esperados (cookies expirados)
       return Promise.reject(refreshError);
     }
   },

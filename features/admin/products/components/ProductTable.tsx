@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
-import React from "react";
 import { Edit, Trash2 } from "lucide-react";
 import { Pagination } from "@/components/ui/admin/Pagination";
 import { Product } from "@/features/admin/products/types";
+import { useRouter } from "next/navigation";
 
 interface ProductTableProps {
   products: Product[];
@@ -21,26 +21,26 @@ export const ProductTable = ({
   onDelete,
   isLoading = false,
 }: ProductTableProps) => {
+  const router = useRouter();
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden relative flex flex-col">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden relative flex flex-col">
       <div
-        className="overflow-x-auto overflow-y-auto"
-        style={{ maxHeight: "calc(6 * 80px + 60px)" }}
+        className="overflow-x-auto"
       >
         {isLoading && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm rounded-2xl">
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/50 backdrop-blur-sm rounded-2xl">
             <div className="relative">
               {/* Spinner xoay */}
               <div className="relative flex items-center justify-center">
-                <div className="size-12 border-3 border-slate-300 dark:border-zinc-700 border-t-[#13ec5b] rounded-full animate-spin"></div>
-                <span className="absolute text-xs font-bold text-slate-500 dark:text-slate-400"></span>
+                <div className="size-12 border-3 border-slate-300 border-t-[#13ec5b] rounded-full animate-spin"></div>
+                <span className="absolute text-xs font-bold text-slate-500 "></span>
               </div>
             </div>
           </div>
         )}
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50 dark:bg-zinc-800/30 border-b border-slate-200 dark:border-zinc-800">
+            <tr className="bg-slate-50 border-b border-slate-200 ">
               <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-24 text-center">
                 Ảnh
               </th>
@@ -50,22 +50,22 @@ export const ProductTable = ({
               <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
                 Đơn giá
               </th>
-              <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
-                Tồn kho
-              </th>
               <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Trạng thái
+              </th>
+              <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                Thời gian tạo
               </th>
               <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
                 Hành động
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
+          <tbody className="divide-y divide-slate-100 ">
             {products.length === 0 ? (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={6}
                   className="px-6 py-12 text-center text-slate-500"
                 >
                   Không có sản phẩm
@@ -75,12 +75,12 @@ export const ProductTable = ({
               products.map((product) => (
                 <tr
                   key={product.id}
-                  className="hover:bg-slate-50 dark:hover:bg-zinc-800/40 transition-colors group"
+                  className="hover:bg-slate-50 transition-colors group"
                 >
                   <td className="px-6 py-4 text-center">
-                    <div className="size-14 rounded-xl bg-slate-100 dark:bg-zinc-800 overflow-hidden border border-slate-200 dark:border-zinc-700 mx-auto">
+                    <div className="size-14 rounded-xl bg-slate-100 overflow-hidden border border-slate-200 mx-auto">
                       <img
-                        className={`w-full h-full object-cover ${product.stockQuantity === 0 ? "grayscale opacity-50" : ""}`}
+                        className="w-full h-full object-cover"
                         src={product.thumbnailUrl || undefined}
                         alt={product.name}
                       />
@@ -88,9 +88,7 @@ export const ProductTable = ({
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
-                      <span
-                        className={`font-bold text-base ${product.stockQuantity === 0 ? "text-slate-400 dark:text-zinc-600" : "text-slate-900 dark:text-white"}`}
-                      >
+                      <span className="font-bold text-base text-slate-900 ">
                         {product.name}
                       </span>
                       <div className="flex items-center gap-2 mt-0.5">
@@ -107,31 +105,46 @@ export const ProductTable = ({
                   <td className="px-6 py-4 text-right font-black text-[#13ec5b]">
                     {product.price.toLocaleString("vi-VN")}₫
                   </td>
-                  <td
-                    className={`px-6 py-4 text-center text-sm font-black ${product.stockQuantity === 0 ? "text-red-500" : "text-slate-600 dark:text-zinc-400"}`}
-                  >
-                    {product.stockQuantity}
-                  </td>
                   <td className="px-6 py-4">
-                    <div
-                      className={`flex items-center gap-2 ${product.stockQuantity > 0 ? "text-[#13ec5b]" : "text-red-500"}`}
-                    >
+                    <div className="flex items-center gap-2">
                       <div
-                        className={`size-2 rounded-full ${product.stockQuantity > 0 ? "bg-[#13ec5b] animate-pulse" : "bg-red-500"}`}
+                        className={`size-2 rounded-full ${
+                          product.status === "active"
+                            ? "bg-[#13ec5b] animate-pulse"
+                            : product.status === "hidden"
+                              ? "bg-yellow-500"
+                              : "bg-slate-400"
+                        }`}
                       ></div>
                       <span className="text-[10px] font-black uppercase tracking-wider">
-                        {product.stockQuantity > 0 ? "Còn hàng" : "Hết hàng"}
+                        {product.status === "active"
+                          ? "Hoạt động"
+                          : product.status === "hidden"
+                            ? "Ẩn"
+                            : "Nháp"}
                       </span>
                     </div>
                   </td>
+                  <td className="px-6 py-4 text-sm text-slate-600 ">
+                    {new Date(product.createdAt).toLocaleDateString("vi-VN", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div
+                      onClick={() => router.push(`products/${product.slug}`)}
+                      className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
                       <button className="p-2.5 text-slate-400 hover:text-[#13ec5b] transition-colors hover:bg-[#13ec5b]/10 rounded-xl">
                         <Edit size={18} />
                       </button>
                       <button
                         onClick={() => onDelete(product)}
-                        className="p-2.5 text-slate-400 hover:text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl"
+                        className="p-2.5 text-slate-400 hover:text-red-500 transition-colors hover:bg-red-50 rounded-xl"
                       >
                         <Trash2 size={18} />
                       </button>

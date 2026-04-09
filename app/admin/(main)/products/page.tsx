@@ -1,155 +1,199 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loading } from "@/components/ui/Loading";
 import { DeleteConfirmDialog } from "@/components/ui/admin/DeleteConfirmDialog";
+
+// Components
 import {
   FilterBar,
   ProductTable,
   ProductStats,
   ProductPageHeader,
 } from "@/features/admin/products/components";
+
+// Hooks
 import {
   useProducts,
   useDeleteProduct,
 } from "@/features/admin/products/hooks/useProducts";
 import { useCategories } from "@/features/admin/products/hooks/useCategories";
+
+// Utils & helpers
+import {
+  parseQueryParams,
+  buildQueryParams,
+  hasActiveFilters,
+  normalizeCategoryValue,
+} from "@/features/admin/products/utils/filterHelpers";
+
+// Types & constants
 import { Product } from "@/features/admin/products/types";
+import {
+  PRODUCT_CONFIG,
+  PRODUCT_PRICE_RANGES,
+  FILTER_DEFAULTS,
+} from "@/features/admin/products/constants/productConfig";
+
+// Trang danh sách sản phẩm
 
 export default function ProductsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // ─── Pending filters (chưa áp dụng) ────────────────────────────────────────
+  // Thử lọc chưa áp dụng
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     undefined,
   );
-  const [sortBy, setSortBy] = useState("newest");
+  const [sortBy, setSortBy] = useState(FILTER_DEFAULTS.SORT_NEWEST);
+  const [statusFilter, setStatusFilter] = useState(FILTER_DEFAULTS.STATUS_ALL);
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
 
-  // ─── Applied filters (đã áp dụng, dùng để fetch) ────────────────────────────
+  // Bộ lọc đã áp dụng
   const [appliedSearchKeyword, setAppliedSearchKeyword] = useState("");
   const [appliedCategory, setAppliedCategory] = useState<string | undefined>(
     undefined,
   );
-  const [appliedSortBy, setAppliedSortBy] = useState("newest");
+  const [appliedSortBy, setAppliedSortBy] = useState(
+    FILTER_DEFAULTS.SORT_NEWEST,
+  );
+  const [appliedStatusFilter, setAppliedStatusFilter] = useState(
+    FILTER_DEFAULTS.STATUS_ALL,
+  );
   const [appliedMinPrice, setAppliedMinPrice] = useState<number | null>(null);
   const [appliedMaxPrice, setAppliedMaxPrice] = useState<number | null>(null);
 
-  // ─── Pagination & UI ─────────────────────────────────────────────────────────
-  const [currentPage, setCurrentPage] = useState(1);
+  // Phân trang và UI state
+  const [currentPage, setCurrentPage] = useState(FILTER_DEFAULTS.PAGE_DEFAULT);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProductForDelete, setSelectedProductForDelete] =
     useState<Product | null>(null);
 
-  // ─── Data fetching ───────────────────────────────────────────────────────────
+  // Lấy dữ liệu sản phẩm và danh mục
   const {
     products,
     loading: productsLoading,
+    meta,
     fetching,
     totalPages = 1,
   } = useProducts({
     search: appliedSearchKeyword,
-    category: appliedCategory === "Tất cả" ? undefined : appliedCategory,
-    sort: appliedSortBy === "newest" ? undefined : appliedSortBy,
+    category: appliedCategory,
+    sort:
+      appliedSortBy === FILTER_DEFAULTS.SORT_NEWEST ? undefined : appliedSortBy,
+    status: appliedStatusFilter,
     priceMin: appliedMinPrice,
     priceMax: appliedMaxPrice,
     page: currentPage,
+    limit: PRODUCT_CONFIG.ITEMS_PER_PAGE,
   });
 
-  const { categories, loading: categoriesLoading } = useCategories({
-    limit: 6,
-  });
+  console.log(products);
+  const { categories, loading: categoriesLoading } = useCategories();
 
-  // ─── Mutations ────────────────────────────────────────────────────────────────
+  // Xóa sản phẩm - mutation
   const { deleteProduct, isPending: isDeleting } = useDeleteProduct();
 
-  // ─── Init từ URL ──────────────────────────────────────────────────────────────
+  // Quản lý URL query parameters
+
+  // Cập nhật URL query parameters từ filter state
+  const updateQueryParams = useCallback(
+    (
+      keyword: string,
+      category: string | undefined,
+      page: number,
+      sort: string,
+      minPriceParam: number | null,
+      maxPriceParam: number | null,
+      statusParam: string,
+    ) => {
+      const params = buildQueryParams({
+        search: keyword,
+        category,
+        page,
+        sort,
+        status: statusParam,
+        minPrice: minPriceParam,
+        maxPrice: maxPriceParam,
+      });
+
+      const qs = params.toString();
+      router.push(qs ? `?${qs}` : "/admin/products");
+    },
+    [router],
+  );
+
+  // Khởi tạo filter từ URL params
   useEffect(() => {
-    const keyword = searchParams.get("search") || "";
-    const category = searchParams.get("category") || undefined;
-    const page = parseInt(searchParams.get("page") || "1");
-    const sort = searchParams.get("sort") || "newest";
-    const minPriceVal = searchParams.get("minPrice")
-      ? parseInt(searchParams.get("minPrice")!)
-      : null;
-    const maxPriceVal = searchParams.get("maxPrice")
-      ? parseInt(searchParams.get("maxPrice")!)
-      : null;
+    const { keyword, category, page, sort, status, minPrice, maxPrice } =
+      parseQueryParams(searchParams);
 
     setSearchKeyword(keyword);
     setSelectedCategory(category);
     setCurrentPage(page);
     setSortBy(sort);
-    setMinPrice(minPriceVal);
-    setMaxPrice(maxPriceVal);
+    setStatusFilter(status);
+    setMinPrice(minPrice);
+    setMaxPrice(maxPrice);
 
     setAppliedSearchKeyword(keyword);
     setAppliedCategory(category);
     setAppliedSortBy(sort);
-    setAppliedMinPrice(minPriceVal);
-    setAppliedMaxPrice(maxPriceVal);
+    setAppliedStatusFilter(status);
+    setAppliedMinPrice(minPrice);
+    setAppliedMaxPrice(maxPrice);
   }, [searchParams]);
 
-  // ─── URL helper ───────────────────────────────────────────────────────────────
-  const updateQueryParams = (
-    keyword?: string,
-    category?: string,
-    page?: number,
-    sort?: string,
-    minPriceParam?: number | null,
-    maxPriceParam?: number | null,
-  ) => {
-    const params = new URLSearchParams();
+  // Các hàm xử lý
 
-    const kw = keyword !== undefined ? keyword : searchKeyword;
-    if (kw) params.set("search", kw);
-
-    const cat = category !== undefined ? category : selectedCategory;
-    if (cat) params.set("category", cat);
-
-    const pageNum = page !== undefined ? page : currentPage;
-    if (pageNum > 1) params.set("page", pageNum.toString());
-
-    const sortVal = sort !== undefined ? sort : sortBy;
-    if (sortVal !== "newest") params.set("sort", sortVal);
-
-    const minVal = minPriceParam !== undefined ? minPriceParam : minPrice;
-    const maxVal = maxPriceParam !== undefined ? maxPriceParam : maxPrice;
-    if (minVal !== null) params.set("minPrice", minVal.toString());
-    if (maxVal !== null) params.set("maxPrice", maxVal.toString());
-
-    const qs = params.toString();
-    router.push(qs ? `?${qs}` : "/admin/products");
-  };
-
-  // ─── Handlers ────────────────────────────────────────────────────────────────
+  // Xử lý thay đổi search keyword
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchKeyword(e.target.value);
   };
 
+  // Xử lý thay đổi category
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCategory(e.target.value || undefined);
+    setSelectedCategory(normalizeCategoryValue(e.target.value));
   };
 
+  // Xử lý thay đổi sort
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const sort = e.target.value;
     setSortBy(sort);
     setAppliedSortBy(sort);
-    setCurrentPage(1);
+    setCurrentPage(FILTER_DEFAULTS.PAGE_DEFAULT);
     updateQueryParams(
       appliedSearchKeyword,
       appliedCategory,
-      1,
+      FILTER_DEFAULTS.PAGE_DEFAULT,
       sort,
       appliedMinPrice,
       appliedMaxPrice,
+      appliedStatusFilter,
     );
   };
 
+  // Xử lý thay đổi status filter
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const statusVal = e.target.value;
+    setStatusFilter(statusVal);
+    setAppliedStatusFilter(statusVal);
+    setCurrentPage(FILTER_DEFAULTS.PAGE_DEFAULT);
+    updateQueryParams(
+      appliedSearchKeyword,
+      appliedCategory,
+      FILTER_DEFAULTS.PAGE_DEFAULT,
+      appliedSortBy,
+      appliedMinPrice,
+      appliedMaxPrice,
+      statusVal,
+    );
+  };
+
+  // Xử lý thay đổi price range
   const handlePriceRangeChange = (
     minVal: number | null,
     maxVal: number | null,
@@ -158,6 +202,7 @@ export default function ProductsPage() {
     setMaxPrice(maxVal);
   };
 
+  // Xử lý thay đổi trang
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
     updateQueryParams(
@@ -167,53 +212,66 @@ export default function ProductsPage() {
       appliedSortBy,
       appliedMinPrice,
       appliedMaxPrice,
+      appliedStatusFilter,
     );
   };
 
+  // Xử lý áp dụng filters
   const handleApplyFilter = () => {
+    const normalizedCategory = normalizeCategoryValue(selectedCategory);
+
     setAppliedSearchKeyword(searchKeyword);
-    setAppliedCategory(selectedCategory);
+    setAppliedCategory(normalizedCategory);
     setAppliedSortBy(sortBy);
+    setAppliedStatusFilter(statusFilter);
     setAppliedMinPrice(minPrice);
     setAppliedMaxPrice(maxPrice);
-    setCurrentPage(1);
+    setCurrentPage(FILTER_DEFAULTS.PAGE_DEFAULT);
+
     updateQueryParams(
       searchKeyword,
-      selectedCategory,
-      1,
+      normalizedCategory,
+      FILTER_DEFAULTS.PAGE_DEFAULT,
       sortBy,
       minPrice,
       maxPrice,
+      statusFilter,
     );
   };
 
+  // Xử lý xóa tất cả filters
   const handleClearFilter = () => {
-    setSearchKeyword("");
+    setSearchKeyword(FILTER_DEFAULTS.SEARCH_DEFAULT);
     setSelectedCategory(undefined);
-    setSortBy("newest");
+    setSortBy(FILTER_DEFAULTS.SORT_NEWEST);
+    setStatusFilter(FILTER_DEFAULTS.STATUS_ALL);
     setMinPrice(null);
     setMaxPrice(null);
-    setAppliedSearchKeyword("");
+    setAppliedSearchKeyword(FILTER_DEFAULTS.SEARCH_DEFAULT);
     setAppliedCategory(undefined);
-    setAppliedSortBy("newest");
+    setAppliedSortBy(FILTER_DEFAULTS.SORT_NEWEST);
+    setAppliedStatusFilter(FILTER_DEFAULTS.STATUS_ALL);
     setAppliedMinPrice(null);
     setAppliedMaxPrice(null);
-    setCurrentPage(1);
+    setCurrentPage(FILTER_DEFAULTS.PAGE_DEFAULT);
     router.push("/admin/products");
   };
 
-  // ─── Delete handlers ──────────────────────────────────────────────────────────
+  // Xóa sản phẩm - các hàm liên quan
+
+  // Mở dialog xác nhận xóa
   const handleOpenDeleteDialog = (product: Product) => {
     setSelectedProductForDelete(product);
     setIsDeleteDialogOpen(true);
   };
 
+  // Đóng dialog xác nhận xóa
   const handleCloseDeleteDialog = () => {
     setIsDeleteDialogOpen(false);
     setSelectedProductForDelete(null);
   };
 
-  // ✅ Dùng useDeleteProduct thay vì simulate API
+  // Xác nhận xóa sản phẩm
   const handleConfirmDelete = () => {
     if (!selectedProductForDelete) return;
     deleteProduct(selectedProductForDelete.id, {
@@ -221,37 +279,27 @@ export default function ProductsPage() {
     });
   };
 
-  // ─── Derived state ────────────────────────────────────────────────────────────
-  const hasActiveFilters =
-    appliedSearchKeyword !== "" ||
-    appliedCategory !== undefined ||
-    appliedSortBy !== "newest" ||
-    appliedMinPrice !== null ||
-    appliedMaxPrice !== null;
+  // Derived state
 
-  const priceRanges = [
-    { value: "all", label: "Tất cả giá", min: null, max: null },
-    { value: "under-500k", label: "Dưới 500.000₫", min: 1, max: 499000 },
-    {
-      value: "500k-1m",
-      label: "500.000₫ - 1.000.000₫",
-      min: 500000,
-      max: 1000000,
-    },
-    {
-      value: "1m-2m",
-      label: "1.000.000₫ - 2.000.000₫",
-      min: 1000000,
-      max: 2000000,
-    },
-    { value: "above-2m", label: "Trên 2.000.000₫", min: 2000000, max: null },
-  ];
+  // Kiểm tra có filter nào được áp dụng không
+  const isFiltersActive = hasActiveFilters({
+    search: appliedSearchKeyword,
+    category: appliedCategory,
+    sort: appliedSortBy,
+    status: appliedStatusFilter,
+    minPrice: appliedMinPrice,
+    maxPrice: appliedMaxPrice,
+  });
 
-  // ✅ Chỉ block toàn trang lần đầu, sau đó dùng fetching overlay trên table
+  // Loading state
+
   if (productsLoading || categoriesLoading) return <Loading />;
+
+  // Render
 
   return (
     <>
+      {/* Delete confirm dialog */}
       <DeleteConfirmDialog
         isOpen={isDeleteDialogOpen}
         title="Xóa sản phẩm"
@@ -262,37 +310,44 @@ export default function ProductsPage() {
         isLoading={isDeleting}
       />
 
-      <div className="flex flex-col h-full overflow-hidden bg-[#f6f8f6] dark:bg-[#102216] font-['Inter',_sans-serif]">
+      <div className="flex flex-col min-h-screen overflow-auto bg-[#f6f8f6] font-['Inter',_sans-serif]">
+        {/* Header */}
         <ProductPageHeader />
 
-        <main className="p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-8 animate-in fade-in duration-500">
+        {/* Main content */}
+        <main className="p-4 sm:p-6 md:p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-6 sm:gap-8 animate-in fade-in duration-500">
+          {/* Filters */}
           <FilterBar
             searchKeyword={searchKeyword}
-            selectedCategory={selectedCategory || "Tất cả"}
+            selectedCategory={selectedCategory || FILTER_DEFAULTS.CATEGORY_ALL}
+            selectedStatus={statusFilter}
             sortBy={sortBy}
             minPrice={minPrice}
             maxPrice={maxPrice}
             categories={categories}
-            priceRanges={priceRanges}
-            hasActiveFilters={hasActiveFilters}
+            priceRanges={PRODUCT_PRICE_RANGES as any}
+            hasActiveFilters={isFiltersActive}
             onSearchChange={handleSearchChange}
             onCategoryChange={handleCategoryChange}
+            onStatusChange={handleStatusChange}
             onSortChange={handleSortChange}
             onPriceRangeChange={handlePriceRangeChange}
             onApplyFilter={handleApplyFilter}
             onClearFilter={handleClearFilter}
           />
 
+          {/* Product table */}
           <ProductTable
             products={products}
             totalPages={totalPages}
             currentPage={currentPage}
             onPageChange={handlePageChange}
             onDelete={handleOpenDeleteDialog}
-            isLoading={fetching} // ✅ fetching từ React Query, không phải local state
+            isLoading={fetching}
           />
 
-          <ProductStats />
+          {/* Stats */}
+          <ProductStats data={meta} />
         </main>
       </div>
     </>

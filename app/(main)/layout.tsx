@@ -7,20 +7,22 @@ import { useFetchCart } from "@/features/cart/hooks/useCart";
 import { useAuthStore } from "@/stores/auth.store";
 
 export default function MainLayout({
-  children,
+ children,
 }: Readonly<{
-  children: React.ReactNode;
+ children: React.ReactNode;
 }>) {
 
-  const isLoggedIn = useAuthStore((state) => state.isAuthenticated) ;
+ const isLoggedIn = useAuthStore((state) => state.isAuthenticated) ;
 
-  useFetchCart(isLoggedIn);
-  return (
-    <>
-      <Header />
-      <main>{children}</main>
-      <FloatingActions />
-      <Footer />
-    </>
-  );
+ useFetchCart(isLoggedIn);
+ return (
+ <>
+ <Header />
+ <main>{children}</main>
+ <FloatingActions />
+ <Footer />
+ </>
+ );
 }
+
+

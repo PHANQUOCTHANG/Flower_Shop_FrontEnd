@@ -7,9 +7,8 @@ import {
   loginService,
   loginWithGoogleService,
   loginWithFacebookService,
-  LoginPayload,
-  LoginResponse,
 } from "../services/loginService";
+import { LoginPayload, LoginResponse } from "@/types/auth";
 
 interface UseLoginReturn {
   login: (loginRequest: LoginPayload) => Promise<LoginResponse>;
@@ -41,7 +40,7 @@ export const useLogin = (): UseLoginReturn => {
         role: data.user.role,
       });
 
-      console.log(data);
+
       if (data.user.role === "ADMIN") return router.push("/admin/dashboard");
 
       // Redirect đến trang home

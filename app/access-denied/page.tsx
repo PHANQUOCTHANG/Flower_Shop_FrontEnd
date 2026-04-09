@@ -1,11 +1,9 @@
-'use client'
+"use client";
 
 import { Lock, ArrowLeft, Home } from "lucide-react";
 import Link from "next/link";
 
-/**
- * Trang Access Denied (403 Forbidden) - Phiên bản tối giản
- */
+// Trang Access Denied (403 Forbidden) - Phiên bản tối giản
 export default function AccessDeniedPage() {
   const handleGoBack = () => {
     if (typeof window !== "undefined") {
@@ -14,7 +12,7 @@ export default function AccessDeniedPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#fcf8f9] dark:bg-[#101412] font-['Inter',_sans-serif] p-6 transition-colors duration-300">
+    <div className="min-h-screen flex items-center justify-center bg-[#fcf8f9] font-['Inter',_sans-serif] p-6 transition-colors duration-300">
       <div className="w-full max-w-md text-center animate-in fade-in zoom-in-95 duration-500">
         {/* Biểu tượng khóa tối giản */}
         <div className="mb-8 flex justify-center">
@@ -25,7 +23,7 @@ export default function AccessDeniedPage() {
 
         {/* Thông báo lỗi */}
         <div className="space-y-3 mb-10">
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+          <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tight">
             Truy cập bị từ chối
           </h2>
         </div>
@@ -42,7 +40,7 @@ export default function AccessDeniedPage() {
 
           <button
             onClick={handleGoBack}
-            className="w-full h-14 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-slate-300 font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all uppercase tracking-widest text-xs"
+            className="w-full h-14 bg-white border border-slate-200 text-slate-600 font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-50 transition-all uppercase tracking-widest text-xs"
           >
             <ArrowLeft size={18} />
             Quay lại trang trước

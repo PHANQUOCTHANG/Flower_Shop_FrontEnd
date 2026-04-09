@@ -1,21 +1,7 @@
 import api from "@/lib/axios";
 import { ApiResponse } from "@/types/response";
 
-export interface RegisterPayload {
-  fullName: string;
-  email: string;
-  password: string;
-  phone?: string;
-}
-
-export interface RegisterResponse {
-  id: string;
-  email: string;
-  fullName: string;
-  phone?: string;
-  role: string;
-  createdAt: string;
-}
+import { RegisterPayload, RegisterResponse } from "@/types/auth";
 
 /**
  * Đăng ký tài khoản người dùng mới

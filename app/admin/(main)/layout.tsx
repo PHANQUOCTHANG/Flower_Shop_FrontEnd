@@ -14,9 +14,13 @@ export default function MainLayout({
   const currentPath = pathname.split("/").pop() || "dashboard";
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f6f8f6] dark:bg-[#102216]">
-      <Sidebar currentPath={currentPath} />
-      <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
+    <div className="flex h-screen overflow-hidden bg-[#f6f8f6]">
+      <div className="hidden md:block flex-shrink-0">
+        <Sidebar currentPath={currentPath} />
+      </div>
+      <main className="flex-1 flex flex-col overflow-hidden w-full">
+        {children}
+      </main>
     </div>
   );
 }

@@ -37,7 +37,7 @@ export const useProducts = (params?: UseProductsParams) => {
   return {
     products: query.data?.products ?? [],
     meta: query.data?.meta,
-    totalPages: (query.data?.meta as any)?.totalPages ?? 1,
+    totalPages: query.data?.meta?.totalPages ?? 1,
     loading: query.isPending,
     fetching: query.isFetching,
     error: query.error ?? null,

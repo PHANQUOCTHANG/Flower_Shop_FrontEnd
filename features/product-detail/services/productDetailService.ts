@@ -33,6 +33,27 @@ export const productDetailService = {
     };
   },
 
+  // Lấy sản phẩm cùng danh mục (sản phẩm liên quan)
+  async getRelatedProducts(categorySlug: string, limit: number = 4) {
+    try {
+      const res = await api.get<ApiResponse<Product[]>>(`/products`, {
+        params: {
+          category: categorySlug,
+          limit: limit + 1, // +1 để loại bỏ sản phẩm hiện tại nếu có
+        },
+      });
+
+      if (res.data.status !== "success" || !res.data.data) {
+        return [];
+      }
+
+      return res.data.data.slice(0, limit);
+    } catch (error) {
+      console.error("Error fetching related products:", error);
+      return [];
+    }
+  },
+
   // Thêm sản phẩm vào giỏ (chỉ gửi productId + quantity)
   addToCart(productId: string, quantity: number = 1) {
     return cartService.addItem(productId, quantity);

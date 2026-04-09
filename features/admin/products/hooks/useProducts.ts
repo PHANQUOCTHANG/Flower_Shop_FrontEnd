@@ -1,18 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { productService } from "@/features/admin/products/services/productService";
-import { Product } from "@/features/admin/products/types";
+import { type CreateProductDto } from "@/types";
+import { Product } from "@/types/product";
 
-// ─── Query keys ───────────────────────────────────────────────────────────────
+// Query keys
 const productKeys = {
-  all: ["products"] as const,
+  all: ["admin", "products"] as const,
   lists: () => [...productKeys.all, "list"] as const,
   list: (params?: object) => [...productKeys.lists(), params] as const,
   details: () => [...productKeys.all, "detail"] as const,
   detail: (id: string) => [...productKeys.details(), id] as const,
+  bySlug: (slug: string) => ["product", "slug", slug] as const,
 };
 
-// ─── Params type ──────────────────────────────────────────────────────────────
+// Params kiểu dữ liệu
 interface UseProductsParams {
   page?: number;
   limit?: number;
@@ -21,14 +23,14 @@ interface UseProductsParams {
   priceMax?: number | null;
   category?: string;
   sort?: string;
+  status?: string;
 }
 
-// ─── useProducts ──────────────────────────────────────────────────────────────
+// Hook lấy danh sách sản phẩm
 export const useProducts = (params?: UseProductsParams) => {
   const query = useQuery({
     queryKey: productKeys.list(params),
     queryFn: () => {
-      // Loại bỏ các giá trị null/undefined trước khi gọi API
       const apiParams = Object.fromEntries(
         Object.entries({
           page: params?.page,
@@ -38,18 +40,20 @@ export const useProducts = (params?: UseProductsParams) => {
           priceMax: params?.priceMax ?? undefined,
           category: params?.category || undefined,
           sort: params?.sort || undefined,
+          status: params?.status || undefined,
         }).filter(([, v]) => v !== undefined),
       );
       return productService.getProducts(apiParams);
     },
     placeholderData: (prev) => prev,
-    staleTime: 30_000, // 30 giây — product list không cần real-time
+    staleTime: 30_000,
   });
+
 
   return {
     products: query.data?.products ?? [],
     meta: query.data?.meta,
-    totalPages: (query.data?.meta as any)?.totalPages ?? 1,
+    totalPages: query.data?.meta?.totalPages ?? 1,
     loading: query.isPending,
     fetching: query.isFetching,
     error: query.error ?? null,
@@ -58,17 +62,38 @@ export const useProducts = (params?: UseProductsParams) => {
   };
 };
 
-// ─── useCreateProduct ─────────────────────────────────────────────────────────
+// Hook lấy sản phẩm theo slug
+export const useProductBySlug = (slug?: string) => {
+  const query = useQuery({
+    queryKey: slug ? productKeys.bySlug(slug) : ["product"],
+    queryFn: () => {
+      if (!slug) throw new Error("Slug is required");
+      return productService.getProductBySLug(slug);
+    },
+    enabled: !!slug,
+    staleTime: 30_000,
+  });
+
+  return {
+    product: query.data ?? null,
+    loading: query.isPending,
+    fetching: query.isFetching,
+    error: query.error ?? null,
+    refetch: query.refetch,
+  };
+};
+
+// Hook tạo sản phẩm mới
 export const useCreateProduct = () => {
   const queryClient = useQueryClient();
 
   const { mutate, mutateAsync, isPending, isError, error, reset } = useMutation(
     {
-      mutationFn: (data: FormData | Partial<Product>) =>
+      // Nhận thẳng CreateProductDto — service tự build FormData nếu cần
+      mutationFn: (data: CreateProductDto) =>
         productService.createProduct(data),
 
       onSuccess: () => {
-        // Invalidate toàn bộ list để fetch lại trang 1 với data mới nhất
         queryClient.invalidateQueries({ queryKey: productKeys.lists() });
       },
     },
@@ -84,7 +109,7 @@ export const useCreateProduct = () => {
   };
 };
 
-// ─── useUpdateProduct ─────────────────────────────────────────────────────────
+// Hook cập nhật sản phẩm
 export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
 
@@ -92,27 +117,32 @@ export const useUpdateProduct = () => {
     mutationFn: ({
       productId,
       data,
+      slug,
     }: {
       productId: string;
       data: FormData | Partial<Product>;
+      slug?: string;
     }) => productService.updateProduct(productId, data),
 
-    // Optimistic update cho detail cache
     onMutate: async ({ productId, data }) => {
-      await queryClient.cancelQueries({
-        queryKey: productKeys.detail(productId),
-      });
+      // Only do optimistic update if data is not FormData (can't spread FormData)
+      if (!(data instanceof FormData)) {
+        await queryClient.cancelQueries({
+          queryKey: productKeys.detail(productId),
+        });
 
-      const previousDetail = queryClient.getQueryData(
-        productKeys.detail(productId),
-      );
+        const previousDetail = queryClient.getQueryData(
+          productKeys.detail(productId),
+        );
 
-      queryClient.setQueryData(
-        productKeys.detail(productId),
-        (old: any) => old && { ...old, ...data },
-      );
+        queryClient.setQueryData(
+          productKeys.detail(productId),
+          (old: any) => old && { ...old, ...data },
+        );
 
-      return { previousDetail };
+        return { previousDetail };
+      }
+      return { previousDetail: null };
     },
 
     onError: (_err, { productId }, context) => {
@@ -124,9 +154,22 @@ export const useUpdateProduct = () => {
       }
     },
 
-    onSettled: (_data, _err, { productId }) => {
+    onSettled: (_data, _err, { productId, slug }) => {
       queryClient.invalidateQueries({ queryKey: productKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: productKeys.detail(productId) });
+      queryClient.invalidateQueries({
+        queryKey: productKeys.detail(productId),
+      });
+      // Invalidate slug-based query if slug is provided
+      if (slug) {
+        queryClient.invalidateQueries({
+          queryKey: productKeys.bySlug(slug),
+        });
+      } else {
+        // If no slug provided, invalidate all slug-based queries
+        queryClient.invalidateQueries({
+          queryKey: ["product", "slug"],
+        });
+      }
     },
   });
 
@@ -139,14 +182,13 @@ export const useUpdateProduct = () => {
   };
 };
 
-// ─── useDeleteProduct ─────────────────────────────────────────────────────────
+// Hook xóa sản phẩm
 export const useDeleteProduct = () => {
   const queryClient = useQueryClient();
 
   const { mutate, mutateAsync, isPending, isError, error } = useMutation({
     mutationFn: (productId: string) => productService.deleteProduct(productId),
 
-    // Optimistic: xoá khỏi list ngay lập tức
     onMutate: async (productId) => {
       await queryClient.cancelQueries({ queryKey: productKeys.lists() });
 

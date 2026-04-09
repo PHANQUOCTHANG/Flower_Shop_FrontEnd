@@ -1,8 +1,9 @@
 import React from "react";
 import { Eye } from "lucide-react";
-import { OrderResponse } from "../types/order";
+import { OrderResponse } from "@/types/order";
 import { StatusBadge } from "./StatusBadge";
 import { Pagination } from "@/components/ui/admin/Pagination";
+import { formatDate } from "@/utils/format";
 
 interface OrdersTableProps {
   orders: OrderResponse[];
@@ -15,11 +16,6 @@ interface OrdersTableProps {
   onPageChange: (page: number) => void;
 }
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("vi-VN");
-};
-
 export const OrdersTable: React.FC<OrdersTableProps> = ({
   orders,
   loading,
@@ -31,25 +27,22 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   onPageChange,
 }) => {
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden relative flex flex-col">
-      <div
-        className="overflow-x-auto overflow-y-auto"
-        style={{ maxHeight: "calc(6 * 80px + 60px)" }}
-      >
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden relative flex flex-col">
+      <div className="overflow-x-auto">
         {loading && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm rounded-2xl">
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/50 backdrop-blur-sm rounded-2xl">
             <div className="relative">
               {/* Spinner xoay */}
               <div className="relative flex items-center justify-center">
-                <div className="size-12 border-3 border-slate-300 dark:border-zinc-700 border-t-[#13ec5b] rounded-full animate-spin"></div>
-                <span className="absolute text-xs font-bold text-slate-500 dark:text-slate-400"></span>
+                <div className="size-12 border-3 border-slate-300 border-t-[#13ec5b] rounded-full animate-spin"></div>
+                <span className="absolute text-xs font-bold text-slate-500 "></span>
               </div>
             </div>
           </div>
         )}
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50 dark:bg-zinc-800/30 border-b border-slate-200 dark:border-zinc-800">
+            <tr className="bg-slate-50 border-b border-slate-200 ">
               <th className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">
                 Mã đơn
               </th>
@@ -76,7 +69,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
+          <tbody className="divide-y divide-slate-100 ">
             {orders.length === 0 ? (
               <tr>
                 <td
@@ -90,7 +83,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
               orders.map((order) => (
                 <tr
                   key={order.id}
-                  className="hover:bg-slate-50/80 dark:hover:bg-zinc-800/40 transition-colors group"
+                  className="hover:bg-slate-50/80 transition-colors group"
                 >
                   <td className="px-6 py-5 text-sm font-black text-[#13ec5b]">
                     {order.id}
@@ -98,13 +91,13 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   <td className="px-6 py-5 text-sm text-slate-500 font-medium">
                     {formatDate(order.createdAt)}
                   </td>
-                  <td className="px-6 py-5 text-sm font-bold text-slate-900 dark:text-white">
+                  <td className="px-6 py-5 text-sm font-bold text-slate-900 ">
                     {order.user?.fullName}
                   </td>
                   <td className="px-6 py-5 text-sm text-slate-500 font-medium">
                     {order.shippingPhone}
                   </td>
-                  <td className="px-6 py-5 text-sm font-black text-slate-900 dark:text-white text-right">
+                  <td className="px-6 py-5 text-sm font-black text-slate-900 text-right">
                     ₫{Math.floor(order.totalPrice).toLocaleString("vi-VN")}
                   </td>
                   <td className="px-6 py-5 text-center">

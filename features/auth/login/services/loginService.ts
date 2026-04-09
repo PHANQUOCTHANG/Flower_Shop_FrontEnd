@@ -2,25 +2,7 @@
 import api from "@/lib/axios";
 import { ApiResponse } from "@/types/response";
 
-export interface LoginPayload {
-  email: string;
-  password: string;
-  role : string ;
-  rememberMe?: boolean;
-}
-
-export interface LoginResponse {
-  accessToken: string;
-  refreshToken?: string;
-  user: {
-    id: string;
-    email: string;
-    fullName: string;
-    avatar?: string;
-    role?: string;
-  };
-}
-
+import { LoginPayload, LoginResponse } from "@/types/auth";
 // Gọi API login auth .
 export const loginService = async (
   loginRequest: LoginPayload,
@@ -29,7 +11,8 @@ export const loginService = async (
     const response = await api.post<ApiResponse<LoginResponse>>("/auth/login", {
       email: loginRequest.email,
       password: loginRequest.password,
-      role: loginRequest.role
+      role: loginRequest.role,
+      rememberMe: loginRequest.rememberMe || false,
     });
 
     if (response.data.status === "error") {

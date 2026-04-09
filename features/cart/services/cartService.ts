@@ -1,13 +1,14 @@
 import axios from "@/lib/axios";
-import { CartResponse } from "@/features/cart/types/cart";
+import { CartResponse } from "@/types/cart";
+import { ApiResponse } from "@/types/response";
 
 const CART_API = "/cart";
 
 // Dịch vụ quản lý giỏ hàng - gọi API cart
 export const cartService = {
   // Lấy danh sách giỏ hàng từ server
-  fetchCart: async (): Promise<CartResponse> => {
-    const response = await axios.get<CartResponse>(CART_API);
+  fetchCart: async (): Promise<ApiResponse<CartResponse>> => {
+    const response = await axios.get<ApiResponse<CartResponse>>(CART_API);
     return response.data;
   },
 

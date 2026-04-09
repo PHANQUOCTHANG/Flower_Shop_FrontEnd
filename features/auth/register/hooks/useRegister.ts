@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { registerUser, RegisterPayload } from "../services/registerService";
+import { registerUser } from "../services/registerService";
+import { RegisterPayload } from "@/types/auth";
 
 export interface RegisterFormData {
   fullName: string;
@@ -167,7 +168,7 @@ export const useRegister = (): UseRegisterReturn => {
       // Redirect to login page sau 1 giây để người dùng thấy thông báo
       setTimeout(() => {
         router.push("/login?registered=true");
-      }, 10000);
+      }, 1000);
     } catch (err) {
       const errorMessage =
         err instanceof Error

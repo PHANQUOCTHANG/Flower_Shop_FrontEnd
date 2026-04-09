@@ -2,17 +2,15 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ProgressTracker } from "@/components/ui/ProgressTracker";
+import { Loading } from "@/components/ui/Loading";
 import { checkoutEventTracker } from "@/features/checkout/hooks/checkoutEventTracker";
 import {
-  CartTable,
-  CartItemsMobile,
-  EmptyCart,
+  CartHeader,
+  CartContent,
+  CartSidebar,
   GiftCard,
-  OrderSummary,
-  PromoCode,
 } from "@/features/cart/components";
 import { calculateShippingFee } from "@/features/cart/utils/cartHelpers";
 import {
@@ -20,92 +18,97 @@ import {
   useRemoveFromCart,
   useUpdateCartQuantity,
 } from "@/features/cart/hooks";
-import { Loading } from "@/components/ui/Loading";
+import { CART_CONFIG, CART_COLORS } from "@/features/cart/constants/cartConfig";
 
+// Component chính trang giỏ hàng
 export default function CartPage() {
   const router = useRouter();
-  const { items: cartItems, total: cartTotal, itemCount , isLoading } = useCart();
+
+  // Lấy dữ liệu giỏ hàng
+  const {
+    items: cartItems,
+    total: cartTotal,
+    itemCount,
+    isLoading,
+  } = useCart();
+
+  // Hook xóa sản phẩm
   const { mutate: removeItem } = useRemoveFromCart();
+
+  // Hook cập nhật số lượng
   const { mutate: updateQuantityMutate } = useUpdateCartQuantity();
+
+  // Trạng thái cục bộ
   const [includeCard, setIncludeCard] = React.useState(false);
   const [cardMessage, setCardMessage] = React.useState("");
   const [promoCode, setPromoCode] = React.useState("");
   const [isNavigating, setIsNavigating] = React.useState(false);
 
-  // Track step start on mount
+  // Theo dõi bước checkout khi mount
   React.useEffect(() => {
-    checkoutEventTracker.trackStepStart("cart");
+    checkoutEventTracker.trackStepStart(CART_CONFIG.STEP_NAME);
 
     return () => {
-      checkoutEventTracker.trackStepComplete("cart");
+      checkoutEventTracker.trackStepComplete(CART_CONFIG.STEP_NAME);
     };
   }, []);
 
+  // Tính toán giá vận chuyển & tổng cộng
   const shippingFee = calculateShippingFee();
   const total = cartTotal + shippingFee;
 
+  // Xử lý cập nhật số lượng sản phẩm
   const handleUpdateQuantity = (productId: string, quantity: number) => {
     updateQuantityMutate({ productId, quantity });
   };
 
+  // Xử lý thanh toán
   const handleCheckout = () => {
-    checkoutEventTracker.trackNavigation("cart", "checkout");
+    checkoutEventTracker.trackNavigation(CART_CONFIG.STEP_NAME, "checkout");
     setIsNavigating(true);
     setTimeout(() => {
-      router.push("/checkout");
-    }, 300);
+      router.push(CART_CONFIG.CHECKOUT_ROUTE);
+    }, CART_CONFIG.NAVIGATION_DELAY);
   };
 
-  if (isLoading) return <Loading></Loading>
+  // Trạng thái tải
+  if (isLoading) return <Loading />;
 
+  // Hiển thị
   return (
     <div
-      className={`min-h-screen bg-[#fcfbf9] dark:bg-[#1a0f12] text-[#1b0d11] dark:text-white transition-all duration-500 font-sans antialiased ${isNavigating ? "opacity-50 pointer-events-none" : "opacity-100"}`}
+      className="min-h-screen transition-all duration-500 font-sans antialiased"
+      style={{
+        backgroundColor: CART_COLORS.BACKGROUND,
+        color: CART_COLORS.TEXT,
+        opacity: isNavigating ? 0.5 : 1,
+        pointerEvents: isNavigating ? "none" : "auto",
+      }}
     >
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {/* Breadcrumbs */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-8 py-6 sm:py-8 md:py-10 lg:py-12">
+        {/* Breadcrumb & tên trang */}
         <Breadcrumbs
           items={[{ label: "Trang chủ", href: "/" }, { label: "Giỏ hàng" }]}
         />
 
-        {/* Progress Tracker */}
+        {/* Thanh tiến độ checkout */}
         <ProgressTracker currentStep="cart" />
 
-        <div className="flex flex-col gap-6 sm:gap-8">
-          <div className="flex flex-col lg:flex-row gap-8 items-start">
-            {/* Left Column: Product List */}
+        <div className="flex flex-col gap-6 sm:gap-8 md:gap-8">
+          <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 md:gap-8 lg:gap-8 items-start">
+            {/* Cột trái: Danh sách sản phẩm */}
             <div className="flex-1 w-full space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
-                <h1 className="typo-heading-lg">
-                  Giỏ hàng <span className="text-[#ee2b5b]">({itemCount})</span>
-                </h1>
-                <button onClick={() => {router.push("/products")}} className="text-[#ee2b5b] hover:text-[#ee2b5b]/80 typo-button-sm flex items-center gap-2 group transition-all self-start sm:self-center">
-                  <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                  Tiếp tục mua sắm
-                </button>
-              </div>
+              {/* Header với tiêu đề & nút */}
+              <CartHeader itemCount={itemCount} />
 
-              {cartItems?.length > 0 ? (
-                <div className="space-y-4">
-                  {/* Desktop Table View */}
-                  <CartTable
-                    items={cartItems}
-                    onUpdateQuantity={handleUpdateQuantity}
-                    onRemoveItem={removeItem}
-                  />
+              {/* Nội dung giỏ hàng */}
+              <CartContent
+                items={cartItems || []}
+                onUpdateQuantity={handleUpdateQuantity}
+                onRemoveItem={removeItem}
+              />
 
-                  {/* Mobile Card View */}
-                  <CartItemsMobile
-                    items={cartItems}
-                    onUpdateQuantity={handleUpdateQuantity}
-                    onRemoveItem={removeItem}
-                  />
-                </div>
-              ) : (
-                <EmptyCart />
-              )}
-
-              {/* Gift Card */}
+              {/* Thẻ quà tặng */}
               <GiftCard
                 includeCard={includeCard}
                 cardMessage={cardMessage}
@@ -114,24 +117,17 @@ export default function CartPage() {
               />
             </div>
 
-            {/* Right: Summary and Promo Code */}
-            <div className="w-full lg:w-[380px] space-y-6">
-              <OrderSummary
-                itemCount={itemCount}
-                subtotal={cartTotal}
-                shippingFee={shippingFee}
-                total={total}
-                onCheckout={handleCheckout}
-                isCheckoutDisabled={itemCount === 0}
-              />
-
-              {/* Promo Code */}
-              <PromoCode
-                promoCode={promoCode}
-                onPromoCodeChange={setPromoCode}
-                onApply={() => console.log("Apply promo:", promoCode)}
-              />
-            </div>
+            {/* Cột phải: Tóm tắt & mã khuyến mãi */}
+            <CartSidebar
+              itemCount={itemCount}
+              subtotal={cartTotal}
+              shippingFee={shippingFee}
+              total={total}
+              promoCode={promoCode}
+              onPromoCodeChange={setPromoCode}
+              onPromoCodeApply={() => console.log("Áp dụng mã:", promoCode)}
+              onCheckout={handleCheckout}
+            />
           </div>
         </div>
       </main>

@@ -3,7 +3,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/auth.store";
 import { useRouter } from "next/navigation";
-import { logoutService, LogoutResponse } from "../services/logoutService";
+import { logoutService } from "../services/logoutService";
+import { LogoutResponse } from "@/types/auth";
 import { useCartStore } from "@/stores/cart.store";
 
 interface UseLogoutReturn {
@@ -19,7 +20,7 @@ interface UseLogoutReturn {
  * - Xóa auth store
  * - Redirect đến trang login
  */
-export const useLogout = (role? : string | undefined): UseLogoutReturn => {
+export const useLogout = (role?: string | undefined): UseLogoutReturn => {
   const router = useRouter();
   const clearAuth = useAuthStore((state) => state.logout);
   const clearCart = useCartStore((state) => state.clearCart);
@@ -33,8 +34,10 @@ export const useLogout = (role? : string | undefined): UseLogoutReturn => {
       // Clear cart store
       clearCart();
 
+
+
       // Redirect đến trang login
-      if (role && role === "CUSTOMER") router.push("/");
+      if (!role || role === "CUSTOMER") router.push("/");
       else router.push("/admin/login");
     },
     onError: (error: Error) => {
@@ -42,7 +45,7 @@ export const useLogout = (role? : string | undefined): UseLogoutReturn => {
       // Vẫn clear store và redirect dù lỗi
       clearAuth();
 
-      if (role === "CUSTOMER") router.push("/login");
+      if (!role || role === "CUSTOMER") router.push("/");
       else router.push("/admin/login");
     },
   });

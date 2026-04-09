@@ -23,10 +23,12 @@ export const categoryService = {
     };
   },
 
-  async createCategory(data: { name: string; slug?: string }) {
+  async createCategory(data: FormData | { name: string; slug?: string }) {
+    const isFormData = data instanceof FormData;
     const res = await api.post<ApiResponse<ProductCategory>>(
       "/categories",
       data,
+      isFormData ? { headers: { "Content-Type": "multipart/form-data" } } : undefined
     );
     if (res.data.status !== "success") {
       throw new Error(res.data.message || "Create failed");

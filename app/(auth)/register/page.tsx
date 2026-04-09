@@ -35,20 +35,20 @@ function Field({
     <div>
       <label
         htmlFor={id}
-        className="block text-sm font-semibold text-[#1b0d11] dark:text-white mb-1.5"
+        className="block text-sm font-semibold text-[#1b0d11] mb-1.5"
       >
         {label}
       </label>
       <div className="relative">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 select-none pointer-events-none">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 select-none pointer-events-none">
           {icon}
         </div>
         <input
           id={id}
-          className={`w-full pl-10 ${rightSlot ? "pr-12" : "pr-4"} py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg
-                      text-[#1b0d11] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500
-                      focus:ring-2 focus:ring-[#ee2b5b] focus:border-[#ee2b5b] outline-none transition-all
-                      disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+          className={`w-full pl-10 ${rightSlot ? "pr-12" : "pr-4"} py-3 bg-white border border-gray-200 rounded-lg
+ text-[#1b0d11] placeholder:text-gray-400 
+ focus:ring-2 focus:ring-[#ee2b5b] focus:border-[#ee2b5b] outline-none transition-all
+ disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
           {...rest}
         />
         {rightSlot && (
@@ -68,7 +68,7 @@ export default function RegisterPage() {
   const [showAlert, setShowAlert] = useState(true);
 
   return (
-    <div className="flex min-h-screen w-full flex-col lg:flex-row bg-[#fcfbf9] dark:bg-[#1a0f12] text-[#1b0d11] dark:text-white transition-colors duration-300 font-sans antialiased">
+    <div className="flex min-h-screen w-full flex-col lg:flex-row bg-[#fcfbf9] text-[#1b0d11] transition-colors duration-300 font-sans antialiased">
       {/* ── Cột trái: ảnh nền (ẩn trên mobile) ── */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative items-center justify-center overflow-hidden">
         <div
@@ -101,7 +101,7 @@ export default function RegisterPage() {
       </div>
 
       {/* ── Cột phải: form ── */}
-      <div className="flex flex-1 flex-col justify-center bg-white dark:bg-white/5 px-6 py-12 sm:px-12 lg:w-1/2 xl:w-2/5 shadow-2xl z-10">
+      <div className="flex flex-1 flex-col justify-center bg-white px-6 py-12 sm:px-12 lg:w-1/2 xl:w-2/5 shadow-2xl z-10">
         <div className="mx-auto w-full max-w-md">
           {/* Logo mobile */}
           <div className="flex lg:hidden items-center justify-center gap-2 mb-8 text-[#ee2b5b]">
@@ -111,10 +111,10 @@ export default function RegisterPage() {
 
           {/* Tiêu đề */}
           <div className="mb-10 text-center lg:text-left">
-            <h2 className="text-3xl font-black text-[#1b0d11] dark:text-white tracking-tight mb-2">
+            <h2 className="text-3xl font-black text-[#1b0d11] tracking-tight mb-2">
               Tạo Tài Khoản
             </h2>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-gray-500 ">
               Tham gia cùng chúng tôi để bắt đầu trải nghiệm mua sắm tuyệt vời.
             </p>
           </div>
@@ -190,7 +190,7 @@ export default function RegisterPage() {
                   type="button"
                   disabled={isLoading}
                   onClick={() => setShowPass(!showPass)}
-                  className="text-gray-400 dark:text-gray-500 hover:text-[#ee2b5b] transition-colors disabled:opacity-50"
+                  className="text-gray-400 hover:text-[#ee2b5b] transition-colors disabled:opacity-50"
                 >
                   {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -215,10 +215,10 @@ export default function RegisterPage() {
                 type="submit"
                 disabled={isLoading}
                 className="group flex w-full justify-center items-center gap-2 rounded-lg
-                           bg-[#ee2b5b] hover:bg-[#d9244f] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
-                           px-4 py-4 text-sm font-bold text-white
-                           shadow-lg shadow-[#ee2b5b]/25 transition-all
-                           focus:outline-none focus:ring-2 focus:ring-[#ee2b5b] focus:ring-offset-2"
+ bg-[#ee2b5b] hover:bg-[#d9244f] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
+ px-4 py-4 text-sm font-bold text-white
+ shadow-lg shadow-[#ee2b5b]/25 transition-all
+ focus:outline-none focus:ring-2 focus:ring-[#ee2b5b] focus:ring-offset-2"
               >
                 {isLoading ? (
                   <>
@@ -239,8 +239,8 @@ export default function RegisterPage() {
           </form>
 
           {/* Chuyển sang đăng nhập */}
-          <div className="mt-10 text-center border-t border-gray-200 dark:border-white/10 pt-8">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="mt-10 text-center border-t border-gray-200 pt-8">
+            <p className="text-sm text-gray-600 ">
               Đã có tài khoản?{" "}
               <Link
                 href="/login"
@@ -251,7 +251,7 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <p className="mt-10 text-center text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-medium">
+          <p className="mt-10 text-center text-[10px] uppercase tracking-widest text-gray-400 font-medium">
             © 2024 Flower Shop. All Rights Reserved.
           </p>
         </div>

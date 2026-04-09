@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Providers from "@/providers/react-query-provider";
+import { SessionProvider } from "@/providers/SessionProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,10 +29,11 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.className} ${playfairDisplay.className}`}
+      // style={{ colorScheme: 'light' }} // <--- Dòng này khóa chế độ sáng
     >
       <body>
         <Providers>
-          {children}
+          <SessionProvider>{children}</SessionProvider>
         </Providers>
       </body>
     </html>
