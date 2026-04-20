@@ -8,7 +8,7 @@ import {
   type Chat,
   type Message,
 } from "../services/adminChatService";
-import * as socketChatService from "@/features/chat/services/socketChatService";
+import * as socketChatService from "@/features/auth/chat/services/socketChatService";
 import { useAuthStore } from "@/stores/auth.store";
 import { getSocket, initializeSocket } from "@/lib/socket";
 
@@ -307,7 +307,11 @@ export const useAdminChat = () => {
 
   // Tải thêm tin nhắn
   const loadMoreMessages = useCallback(async () => {
-    if (!state.selectedChat || !state.hasMoreMessages || isLoadingMoreRef.current) {
+    if (
+      !state.selectedChat ||
+      !state.hasMoreMessages ||
+      isLoadingMoreRef.current
+    ) {
       return;
     }
 
@@ -318,16 +322,13 @@ export const useAdminChat = () => {
     const chatId = state.selectedChat.id;
 
     try {
-      const result = await adminChatService.loadMoreMessages(
-        chatId,
-        nextPage,
-      );
+      const result = await adminChatService.loadMoreMessages(chatId, nextPage);
 
       setState((prev) => {
         // Dùng Set để lọc bỏ các tin nhắn bị trùng lặp id
         const existingIds = new Set(prev.messages.map((m) => m.id));
         const newFilteredMessages = result.data.filter(
-          (m) => !existingIds.has(m.id)
+          (m) => !existingIds.has(m.id),
         );
 
         return {

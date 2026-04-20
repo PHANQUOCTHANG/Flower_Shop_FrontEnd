@@ -20,6 +20,14 @@ import {
 import { useCart } from "@/features/cart/hooks";
 import { useCheckout } from "@/features/checkout/hooks/useCheckout";
 import { checkoutEventTracker } from "@/features/checkout/hooks/checkoutEventTracker";
+import {
+  useAddressesForCheckout,
+  useDefaultAddress,
+  formatFullAddress,
+} from "@/features/checkout/hooks/useAddressesForCheckout";
+
+// Import types
+import type { Address } from "@/types/profile";
 
 // Import utils & constants
 import {
@@ -40,11 +48,20 @@ export default function CheckoutPage() {
   // Lấy dữ liệu giỏ hàng
   const { items: cartItems, total: cartTotal } = useCart();
 
+  // Fetch dữ liệu addresses
+  const defaultAddress = useDefaultAddress();
+
   // Trạng thái form
   const [name, setName] = useState("");
   const [shippingPhone, setShippingPhone] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
   const [note, setNote] = useState("");
+
+  // Trạng thái địa chỉ được chọn
+  const [selectedAddressId, setSelectedAddressId] = useState<
+    string | undefined
+  >();
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
   // Trạng thái thanh toán
   const [paymentMethod, setPaymentMethod] = useState<"bank" | "wallet" | "cod">(
@@ -63,6 +80,7 @@ export default function CheckoutPage() {
 
   // Hook tạo đơn hàng
   const { createOrder, isLoading: isCreatingOrder } = useCheckout({
+    queryClient, // Pass queryClient để hook xử lí cache invalidation
     onJobIdReceived: (jobId) => {
       // Redirect sang trang xử lí đơn hàng khi nhận jobId (202 response)
       console.log(
@@ -72,9 +90,7 @@ export default function CheckoutPage() {
       router.push(`/order-processing?jobId=${jobId}`);
     },
     onSuccess: (order) => {
-      // Invalidate cart cache khi hoàn thành
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-
+      // Hook đã xử lí cache invalidation, page chỉ cần track events
       checkoutEventTracker.trackNavigation(
         CHECKOUT_CONFIG.STEP_NAME,
         "completed",
@@ -98,9 +114,50 @@ export default function CheckoutPage() {
     };
   }, []);
 
+  // Auto-fill form khi có default address
+  React.useEffect(() => {
+    if (defaultAddress && !selectedAddress) {
+      setSelectedAddress(defaultAddress);
+      setSelectedAddressId(defaultAddress.id);
+      setName(defaultAddress.name);
+      setShippingPhone(defaultAddress.phone);
+      setShippingAddress(formatFullAddress(defaultAddress));
+    }
+  }, [defaultAddress, selectedAddress]);
+
   // Tính toán tổng giá tiền
   const subtotal = cartTotal;
   const totalPrice = subtotal;
+
+  // Xử lý chọn địa chỉ từ danh sách
+  const handleAddressSelect = (address: Address) => {
+    // Nếu đã chọn rồi, bỏ chọn
+    if (selectedAddressId === address.id) {
+      setSelectedAddress(null);
+      setSelectedAddressId(undefined);
+
+      // Nếu có default address, auto-fill lại default
+      if (defaultAddress) {
+        setName(defaultAddress.name);
+        setShippingPhone(defaultAddress.phone);
+        setShippingAddress(formatFullAddress(defaultAddress));
+      } else {
+        // Nếu không có default address, reset toàn bộ form
+        setName("");
+        setShippingPhone("");
+        setShippingAddress("");
+        setNote("");
+      }
+      return;
+    }
+
+    // Nếu chưa chọn, chọn địa chỉ này
+    setSelectedAddress(address);
+    setSelectedAddressId(address.id);
+    setName(address.name);
+    setShippingPhone(address.phone);
+    setShippingAddress(formatFullAddress(address));
+  };
 
   // Xử lý xác nhận đơn hàng
   const handleConfirmOrder = async () => {
@@ -207,21 +264,25 @@ export default function CheckoutPage() {
         <ProgressTracker currentStep="checkout" />
 
         {/* Form + Sidebar */}
-        <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 md:gap-10 lg:gap-16">
+        <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 md:gap-8 lg:gap-8 items-start">
           {/* Cột trái: Form thông tin */}
-          <CheckoutForm
-            name={name}
-            shippingPhone={shippingPhone}
-            shippingAddress={shippingAddress}
-            note={note}
-            paymentMethod={paymentMethod}
-            errors={errors}
-            onNameChange={setName}
-            onShippingPhoneChange={setShippingPhone}
-            onShippingAddressChange={setShippingAddress}
-            onNoteChange={setNote}
-            onPaymentMethodChange={setPaymentMethod}
-          />
+          <div className="flex-1 w-full">
+            <CheckoutForm
+              name={name}
+              shippingPhone={shippingPhone}
+              shippingAddress={shippingAddress}
+              note={note}
+              paymentMethod={paymentMethod}
+              errors={errors}
+              selectedAddressId={selectedAddressId}
+              onNameChange={setName}
+              onShippingPhoneChange={setShippingPhone}
+              onShippingAddressChange={setShippingAddress}
+              onNoteChange={setNote}
+              onPaymentMethodChange={setPaymentMethod}
+              onAddressSelect={handleAddressSelect}
+            />
+          </div>
 
           {/* Cột phải: Tóm tắt & hỗ trợ */}
           <CheckoutSidebar

@@ -2,23 +2,23 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface User {
-  id: string;
-  email: string;
-  name: string;
-  role?: string;
+  id: string; // ID người dùng
+  email: string; // Email đăng nhập
+  name: string; // Tên hiển thị
+  role?: string; // Vai trò (admin, user, ...)
 }
 
 interface AuthState {
-  accessToken: string | null;
-  user: User | null;
-  isAuthenticated: boolean;
-  isHydrated: boolean;
-  hasLoggedIn: boolean;
+  accessToken: string | null; // JWT access token dùng cho API requests
+  user: User | null; // Thông tin user (lưu ở localStorage)
+  isAuthenticated: boolean; // Trạng thái đăng nhập hiện tại
+  isHydrated: boolean; // Zustand tải xong từ localStorage chưa?
+  hasLoggedIn: boolean; // Từng login lần nào? (dùng để persist login state)
 
-  setAuth: (token: string, user: User) => void;
-  setAccessToken: (token: string) => void;
-  logout: () => void;
-  setHydrated: (hydrated: boolean) => void;
+  setAuth: (token: string, user: User) => void; // Lưu token + user khi login/refresh thành công
+  setAccessToken: (token: string) => void; // Cập nhật token mới khi refresh (giữ user info)
+  logout: () => void; // Xóa tất cả auth data
+  setHydrated: (hydrated: boolean) => void; // Đánh dấu hydration xong
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -30,7 +30,10 @@ export const useAuthStore = create<AuthState>()(
       isHydrated: false,
       hasLoggedIn: false,
 
-      setAuth: (token, user) =>
+      setAuth: (
+        token,
+        user, // Login thành công: lưu token + user info
+      ) =>
         set({
           accessToken: token,
           user,
@@ -38,14 +41,16 @@ export const useAuthStore = create<AuthState>()(
           hasLoggedIn: true,
         }),
 
-      setAccessToken: (token) =>
+      setAccessToken: (
+        token, // Token refresh: cập nhật token, giữ user cũ
+      ) =>
         set({
           accessToken: token,
-          isAuthenticated: true, // Đảm bảo UI phản ánh đúng trạng thái sau khi refresh
+          isAuthenticated: true,
         }),
 
-
       logout: () =>
+        // Logout: xóa sạch auth data
         set({
           accessToken: null,
           user: null,
@@ -53,7 +58,9 @@ export const useAuthStore = create<AuthState>()(
           hasLoggedIn: false,
         }),
 
-      setHydrated: (hydrated) =>
+      setHydrated: (
+        hydrated, // Zustand hydrate xong: set flag này
+      ) =>
         set({
           isHydrated: hydrated,
         }),
@@ -61,11 +68,13 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "auth-storage",
       partialize: (state) => ({
+        // Lưu vào localStorage: token, user, login history
         accessToken: state.accessToken,
         user: state.user,
         hasLoggedIn: state.hasLoggedIn,
       }),
       onRehydrateStorage: () => (state) => {
+        // Tải từ localStorage xong: tính toán isAuthenticated
         if (state) {
           state.isAuthenticated = !!state.accessToken && !!state.user;
           state.isHydrated = true;

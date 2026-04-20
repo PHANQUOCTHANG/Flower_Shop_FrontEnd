@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2,
   ArrowRight,
+  ArrowLeft,
   Gift,
   Truck,
   Heart,
@@ -130,20 +131,28 @@ export default function OrderCompletedPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <button
+                onClick={() => router.back()}
+                className="flex-1 border-2 border-[#e7cfd5] text-[#4c9a66] hover:bg-[#4c9a66]/5 py-3 sm:py-4 rounded-xl sm:rounded-2xl typo-button transition-all flex items-center justify-center gap-2 group hover:border-[#4c9a66]/70"
+              >
+                <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                QUAY LẠI
+              </button>
+
               <button
                 onClick={() => router.push("/")}
-                className="w-full bg-[#ee2b5b] hover:bg-[#ee2b5b]/90 text-white py-4 rounded-2xl typo-button-lg transition-all flex items-center justify-center gap-3 group shadow-xl shadow-[#ee2b5b]/20"
+                className="flex-1 bg-[#ee2b5b] hover:bg-[#ee2b5b]/90 text-white py-3 sm:py-4 rounded-xl sm:rounded-2xl typo-button-lg transition-all flex items-center justify-center gap-2 group shadow-lg shadow-[#ee2b5b]/20 hover:shadow-xl"
               >
-                QUAY LẠI TRANG CHỦ
+                TRANG CHỦ
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
 
               <button
                 onClick={() => router.push("/products")}
-                className="w-full border-2 border-dashed border-[#e7cfd5] text-[#ee2b5b] hover:border-[#ee2b5b] hover:bg-[#ee2b5b]/5 py-4 rounded-2xl typo-button transition-all flex items-center justify-center gap-3 group"
+                className="flex-1 border-2 border-[#13ec5b] text-[#13ec5b] hover:bg-[#13ec5b]/5 py-3 sm:py-4 rounded-xl sm:rounded-2xl typo-button transition-all flex items-center justify-center gap-2 group hover:border-[#13ec5b]/70"
               >
-                TIẾP TỤC MUA SẮM
+                MUA THÊM
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>

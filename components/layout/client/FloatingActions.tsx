@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
-import { useChat } from "@/features/chat/hooks/useChat";
+import { useChat } from "@/features/auth/chat/hooks/useChat";
 import { useAuthStore } from "@/stores/auth.store";
 
 // Zalo Icon Component
@@ -70,13 +70,14 @@ export default function FloatingActions() {
     const container = messagesContainerRef.current;
     if (container && previousScrollHeightRef.current > 0) {
       const newScrollHeight = container.scrollHeight;
-      const heightDifference = newScrollHeight - previousScrollHeightRef.current;
-      
+      const heightDifference =
+        newScrollHeight - previousScrollHeightRef.current;
+
       // Nếu thêm tin nhắn vào mốc trên cùng
       if (heightDifference > 0 && container.scrollTop < 100) {
         container.scrollTop = previousScrollTopRef.current + heightDifference;
       }
-      
+
       previousScrollHeightRef.current = 0;
     }
   }, [messages]);
@@ -147,7 +148,6 @@ export default function FloatingActions() {
       console.error("Error sending message:", err);
     }
   };
-
 
   // Xử lý phím Enter
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {

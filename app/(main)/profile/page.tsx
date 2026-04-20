@@ -2,7 +2,8 @@
 
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import Alert from "@/components/ui/Alert";
 import { useAuthStore } from "@/stores/auth.store";
@@ -20,11 +21,17 @@ import type { ProfileTabType } from "@/features/profile/constants/profile.consta
 import { ORDERS_PAGE_LIMIT } from "@/features/profile/constants/profile.constants";
 
 export default function UserAccountPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const user = useAuthStore((state) => state.user);
   const { logout, isLoading: isLogoutLoading } = useLogout();
 
-  // Tab được chọn hiện tại
-  const [activeTab, setActiveTab] = useState<ProfileTabType>("profile");
+  // Đọc tab từ URL, mặc định là "profile"
+  const urlTab = searchParams.get("tab") as ProfileTabType | null;
+  const [activeTab, setActiveTab] = useState<ProfileTabType>(
+    urlTab || "profile",
+  );
   // Thông báo thành công
   const [successMessage, setSuccessMessage] = useState("");
   // Trang đơn hàng hiện tại
@@ -38,19 +45,29 @@ export default function UserAccountPage() {
   // Trạng thái loading khi làm mới danh sách
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Lấy dữ liệu đơn hàng từ API
+  // Sync active tab khi URL param thay đổi
+  useEffect(() => {
+    if (urlTab && urlTab !== activeTab) {
+      setActiveTab(urlTab);
+    }
+  }, [urlTab]);
+
+  // Lấy dữ liệu đơn hàng từ API - chỉ enable khi activeTab === "orders"
   const {
     orders,
     meta,
     isLoading: ordersLoading,
     error: ordersError,
     refetch: refetchOrders,
-  } = useFetchMyOrders({
-    page,
-    limit: ORDERS_PAGE_LIMIT,
-    status,
-    sort,
-  });
+  } = useFetchMyOrders(
+    {
+      page,
+      limit: ORDERS_PAGE_LIMIT,
+      status,
+      sort,
+    },
+    activeTab === "orders", // ← Chỉ fetch khi tab = orders
+  );
 
   // Xử lý đăng xuất
   const handleLogout = useCallback(async () => {
@@ -69,9 +86,18 @@ export default function UserAccountPage() {
   }, [refetchOrders]);
 
   // Xử lý khi thay đổi tab
-  const handleTabChange = useCallback((tab: ProfileTabType) => {
-    setActiveTab(tab);
-  }, []);
+  const handleTabChange = useCallback(
+    (tab: ProfileTabType) => {
+      setActiveTab(tab);
+      // Chỉ thêm query param nếu tab không phải "profile" (default)
+      if (tab === "profile") {
+        router.replace(`/profile`);
+      } else {
+        router.replace(`/profile?tab=${tab}`);
+      }
+    },
+    [router],
+  );
 
   // Xử lý khi thay đổi trạng thái bộ lọc
   const handleStatusChange = useCallback((newStatus: string) => {
@@ -89,7 +115,7 @@ export default function UserAccountPage() {
     <div className="min-h-screen bg-[#fcf8f9] font-['Inter',_sans-serif] text-slate-900 transition-colors duration-300">
       {/* Thông báo thành công */}
       {successMessage && (
-        <div className="fixed bottom-6 right-6 z-50 max-w-sm">
+        <div className="fixed bottom-4 right-4 left-4 sm:bottom-6 sm:right-6 sm:left-auto sm:max-w-sm z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
           <Alert
             type="success"
             message={successMessage}
@@ -100,7 +126,7 @@ export default function UserAccountPage() {
       )}
 
       {/* Main content */}
-      <main className="mx-auto w-full max-w-[1300px] px-6 md:px-12 py-10 animate-in fade-in duration-700">
+      <main className="mx-auto w-full max-w-[1300px] px-4 sm:px-6 md:px-8 lg:px-12 py-6 sm:py-8 md:py-10 animate-in fade-in duration-700">
         {/* Breadcrumbs */}
         <Breadcrumbs
           items={[
@@ -110,7 +136,7 @@ export default function UserAccountPage() {
         />
 
         {/* Layout: Sidebar + Content */}
-        <div className="flex flex-col lg:flex-row gap-10">
+        <div className="flex flex-col md:flex-row gap-4 sm:gap-6 lg:gap-10">
           {/* Sidebar */}
           <ProfileSidebar
             userName={user?.name}
@@ -164,13 +190,7 @@ export default function UserAccountPage() {
             )}
 
             {/* Tab: Sổ địa chỉ */}
-            {activeTab === "address" && (
-              <AddressSection
-                onAddAddress={() => {
-                  // TODO: Implement add address functionality
-                }}
-              />
-            )}
+            {activeTab === "address" && <AddressSection />}
 
             {/* Tab: Đổi mật khẩu */}
             {activeTab === "password" && <ChangePasswordForm />}
@@ -185,6 +205,7 @@ export default function UserAccountPage() {
         onStatusUpdate={() => {
           // Optional: Refresh orders list after status update
         }}
+        role="CUSTOMER"
       />
     </div>
   );

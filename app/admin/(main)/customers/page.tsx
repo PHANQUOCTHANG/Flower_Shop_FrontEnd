@@ -25,7 +25,7 @@ export default function CustomersPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Lấy dữ liệu khách hàng từ hook
-  const { customers, loading, error } = useCustomers({
+  const { customers , meta , loading, error } = useCustomers({
     page: currentPage,
     limit: 10,
     search: searchKeyword || undefined,
@@ -68,7 +68,7 @@ export default function CustomersPage() {
               iconBgColor="bg-blue-500/10"
               iconColor="text-blue-500"
               label="Khách hàng mới"
-              value="+42"
+              value={`+${meta?.newCustomersThisMonth ?? 0}`} // Hiển thị số khách hàng mới trong tháng, nếu có dữ liệu từ backend
             />
             <StatCard
               icon={Star}

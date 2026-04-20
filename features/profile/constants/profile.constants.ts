@@ -1,4 +1,4 @@
-// Các hăng số và cấu hình cho trang profile
+// Các hằng số và cấu hình cho trang profile
 
 import { User, Package, MapPin, LogOut, LucideIcon } from "lucide-react";
 

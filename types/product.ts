@@ -67,7 +67,7 @@ export type ViewMode = "grid" | "list";
 
 export const PRODUCTS_CONFIG = {
   ITEMS_PER_PAGE: 6,
-  CATEGORIES_LIMIT: 6,
+  CATEGORIES_LIMIT: 10,
   DEFAULT_VIEW: "grid" as const,
   DEFAULT_SORT: "newest" as const,
   ROUTE: "/products" as const,

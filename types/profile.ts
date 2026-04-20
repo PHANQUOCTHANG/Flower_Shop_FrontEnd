@@ -41,7 +41,7 @@ export interface MyOrdersResponse {
     limit: number;
     totalPages: number;
   };
-  meta: any ;
+  meta: any;
 }
 
 /**
@@ -59,4 +59,53 @@ export interface ChangePasswordRequest {
 export interface ChangePasswordResponse {
   message: string;
   success: boolean;
+}
+
+/**
+ * Địa chỉ giao hàng của người dùng
+ */
+export interface Address {
+  id: string;
+  userId: string;
+  name: string;
+  phone: string;
+  provinceCode: string;
+  provinceName: string;
+  districtCode: string;
+  districtName: string;
+  wardCode: string;
+  wardName: string;
+  streetDetail: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Request tạo/cập nhật địa chỉ
+ */
+export interface CreateAddressRequest {
+  name: string;
+  phone: string;
+  provinceCode: string;
+  provinceName: string;
+  districtCode: string;
+  districtName: string;
+  wardCode: string;
+  wardName: string;
+  streetDetail: string;
+  isDefault?: boolean;
+}
+
+export interface UpdateAddressRequest extends CreateAddressRequest {
+  id?: string;
+}
+
+/**
+ * Response danh sách địa chỉ
+ */
+export interface AddressesResponse {
+  data: Address[];
+  message?: string;
+  success?: boolean;
 }

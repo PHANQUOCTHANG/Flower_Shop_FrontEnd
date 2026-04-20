@@ -60,8 +60,10 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
   const fieldType = FIELD_TYPE_MAP[name] as "current" | "new" | "confirm";
 
   return (
-    <div className="space-y-3">
-      <label className="text-sm font-bold text-slate-700 block">{label}</label>
+    <div className="space-y-2 sm:space-y-3">
+      <label className="text-xs sm:text-sm font-bold text-slate-700 block">
+        {label}
+      </label>
       <div className="relative">
         <input
           type={isVisible ? "text" : "password"}
@@ -69,7 +71,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`w-full px-5 py-3.5 rounded-xl border-2 transition-all outline-none font-medium ${
+          className={`w-full px-3 sm:px-5 py-2.5 sm:py-3.5 rounded-lg sm:rounded-xl border-2 transition-all outline-none font-medium text-sm ${
             error
               ? "border-rose-300 bg-rose-50/50 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
               : "border-slate-200 bg-slate-50 focus:border-[#ee2b5b] focus:ring-2 focus:ring-[#ee2b5b]/20"
@@ -79,7 +81,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
         <button
           type="button"
           onClick={() => onToggleVisibility(fieldType)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+          className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
           aria-label={isVisible ? "Hide password" : "Show password"}
         >
           {isVisible ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -186,17 +188,17 @@ export const ChangePasswordForm: React.FC = () => {
   };
 
   return (
-    <section className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm animate-in slide-in-from-right-10 duration-500">
+    <section className="bg-white rounded-2xl sm:rounded-[1.75rem] md:rounded-2xl lg:rounded-[2.5rem] p-6 sm:p-8 md:p-10 border border-slate-100 shadow-sm animate-in slide-in-from-right-10 duration-500">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-10">
-        <div className="size-14 bg-slate-50 rounded-2xl flex items-center justify-center text-[#ee2b5b]">
+      <div className="flex items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8 md:mb-10">
+        <div className="size-12 sm:size-14 bg-slate-50 rounded-lg sm:rounded-2xl flex items-center justify-center text-[#ee2b5b] shrink-0">
           <Lock size={28} />
         </div>
-        <div>
-          <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-none">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-lg sm:text-2xl font-black text-slate-900 uppercase tracking-tight leading-tight">
             Đổi mật khẩu
           </h2>
-          <p className="text-xs text-slate-500 font-medium mt-1">
+          <p className="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5 sm:mt-1">
             Cập nhật mật khẩu của bạn để bảo mật tài khoản
           </p>
         </div>
@@ -204,7 +206,7 @@ export const ChangePasswordForm: React.FC = () => {
 
       {/* Success Alert */}
       {successMessage && (
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <Alert
             type="success"
             message={successMessage}
@@ -215,7 +217,7 @@ export const ChangePasswordForm: React.FC = () => {
 
       {/* Error Alert */}
       {errorMessage && (
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <Alert
             type="error"
             message={errorMessage}
@@ -226,7 +228,7 @@ export const ChangePasswordForm: React.FC = () => {
 
       {/* Validation Error Alert */}
       {validationMessage && (
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <Alert
             type="error"
             message={validationMessage}
@@ -236,7 +238,10 @@ export const ChangePasswordForm: React.FC = () => {
       )}
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4 sm:space-y-6 md:space-y-8"
+      >
         <PasswordInput
           label="Mật khẩu hiện tại"
           name="currentPassword"
@@ -262,11 +267,11 @@ export const ChangePasswordForm: React.FC = () => {
         />
 
         {/* Password Tips */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-          <p className="text-xs font-bold text-blue-900 mb-2 uppercase tracking-wide">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg sm:rounded-xl p-3 sm:p-4">
+          <p className="text-[11px] sm:text-xs font-bold text-blue-900 mb-2 uppercase tracking-wide">
             💡 Gợi ý mật khẩu mạnh
           </p>
-          <ul className="text-xs text-blue-800 space-y-1 font-medium">
+          <ul className="text-[11px] sm:text-xs text-blue-800 space-y-1 font-medium">
             {PASSWORD_TIPS.map((tip, i) => (
               <li key={i}>✓ {tip}</li>
             ))}
@@ -285,11 +290,19 @@ export const ChangePasswordForm: React.FC = () => {
         />
 
         {/* Action Buttons */}
-        <div className="flex gap-4 pt-8">
+        <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6 md:pt-8">
+          <button
+            type="button"
+            onClick={resetForm}
+            className="px-4 sm:px-8 py-2.5 sm:py-4 border-2 border-slate-200 text-slate-700 font-black text-xs sm:text-sm uppercase tracking-wider rounded-lg sm:rounded-xl hover:bg-slate-50 transition-colors w-full sm:w-auto"
+          >
+            Xóa
+          </button>
+
           <button
             type="submit"
             disabled={isPending}
-            className="flex-1 px-8 py-4 bg-[#ee2b5b] text-white font-black text-sm uppercase tracking-wider rounded-xl shadow-lg shadow-[#ee2b5b]/20 hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+            className="flex-1 px-4 sm:px-8 py-2.5 sm:py-4 bg-[#ee2b5b] text-white font-black text-xs sm:text-sm uppercase tracking-wider rounded-lg sm:rounded-xl shadow-lg shadow-[#ee2b5b]/20 hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
           >
             {isPending ? (
               <span className="flex items-center justify-center gap-2">
@@ -313,25 +326,17 @@ export const ChangePasswordForm: React.FC = () => {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                Đang xử lý...
+                <span className="hidden sm:inline">Đang xử lý...</span>
               </span>
             ) : (
               "Thay đổi mật khẩu"
             )}
           </button>
-
-          <button
-            type="button"
-            onClick={resetForm}
-            className="px-8 py-4 border-2 border-slate-200 text-slate-700 font-black text-sm uppercase tracking-wider rounded-xl hover:bg-slate-50 transition-colors"
-          >
-            Xóa
-          </button>
         </div>
       </form>
 
       {/* Security Footer */}
-      <div className="mt-10 pt-8 border-t border-slate-100">
+      <div className="mt-6 sm:mt-8 md:mt-10 pt-6 sm:pt-8 border-t border-slate-100">
         <p className="text-xs text-slate-500 font-medium leading-relaxed">
           <span className="font-bold text-slate-700">⚠️ Lưu ý bảo mật:</span>{" "}
           Hãy chọn mật khẩu mạnh mà chỉ bạn biết. Không chia sẻ mật khẩu với bất

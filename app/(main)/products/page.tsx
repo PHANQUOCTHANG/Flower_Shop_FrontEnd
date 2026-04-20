@@ -60,9 +60,7 @@ export default function FlowerCollection() {
     sort,
   });
 
-  const { categories, loading: categoriesLoading } = useCategories({
-    limit: PRODUCTS_CONFIG.CATEGORIES_LIMIT,
-  });
+  const { categories, loading: categoriesLoading } = useCategories() ;
 
   // Trạng thái dẫn xuất
   const hasActiveFilters = useMemo(

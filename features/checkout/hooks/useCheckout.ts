@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, type QueryClient } from "@tanstack/react-query";
 import { checkoutService } from "@/features/checkout/services/checkoutService";
 import { CreateOrderData, Order, CreateOrderResponse } from "@/types/order";
 import {
@@ -10,6 +10,7 @@ import {
 } from "@/features/checkout/hooks/useOrderStatus";
 
 interface UseCheckoutOptions {
+  queryClient?: QueryClient; // Optional QueryClient để invalidate cache
   onSuccess?: (order: Order) => void;
   onError?: (error: any) => void;
   onStatusChange?: (event: OrderStatusEvent) => void;
@@ -73,6 +74,15 @@ export const useCheckout = (options?: UseCheckoutOptions) => {
     },
     onSuccess: (response: CreateOrderResponse) => {
       setErrorMessage("");
+
+      // Invalidate cache sau khi order thành công
+      if (options?.queryClient) {
+        options.queryClient.invalidateQueries({ queryKey: ["cart"] });
+        options.queryClient.invalidateQueries({
+          queryKey: ["orders", "my-orders"],
+        });
+      }
+
       if (response.data?.jobId) {
         setJobId(response.data.jobId);
         options?.onJobIdReceived?.(response.data.jobId);

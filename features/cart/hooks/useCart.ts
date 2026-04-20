@@ -75,18 +75,24 @@ export const useAddToCart = () => {
   const { setError } = useCartStore();
 
   return useMutation({
-    mutationFn: ({ productId, quantity }: { productId: string; quantity: number }) =>
-      cartService.addItem(productId, quantity),
-    onSuccess: () => {
-      // Thêm mới → cần refetch để lấy item mới từ server (có id, metadata)
-      queryClient.invalidateQueries({ queryKey: CART_QUERY_KEY });
+    mutationFn: ({
+      productId,
+      quantity,
+    }: {
+      productId: string;
+      quantity: number;
+    }) => cartService.addItem(productId, quantity),
+    onSuccess: async () => {
+      // Refetch cart ngay để update header + cart page
+      await queryClient.refetchQueries({ queryKey: CART_QUERY_KEY });
       setError(null);
     },
     onError: (error: unknown) => {
       const errorMsg =
-        error instanceof Error ? error.message : "Lỗi khi thêm sản phẩm vào giỏ";
+        error instanceof Error
+          ? error.message
+          : "Lỗi khi thêm sản phẩm vào giỏ";
       setError(errorMsg);
-      queryClient.invalidateQueries({ queryKey: CART_QUERY_KEY });
     },
   });
 };
@@ -104,7 +110,8 @@ export const useRemoveFromCart = () => {
       await queryClient.cancelQueries({ queryKey: CART_QUERY_KEY });
 
       // Snapshot để rollback nếu lỗi
-      const previousData = queryClient.getQueryData<CartQueryData>(CART_QUERY_KEY);
+      const previousData =
+        queryClient.getQueryData<CartQueryData>(CART_QUERY_KEY);
 
       // Optimistic: xóa khỏi React Query cache
       queryClient.setQueryData<CartQueryData>(CART_QUERY_KEY, (old) => {
@@ -113,7 +120,9 @@ export const useRemoveFromCart = () => {
           ...old,
           data: {
             ...old.data,
-            items: old.data.items.filter((item) => item.product.id !== productId),
+            items: old.data.items.filter(
+              (item) => item.product.id !== productId,
+            ),
           },
         };
       });
@@ -150,14 +159,20 @@ export const useUpdateCartQuantity = () => {
   const { updateQuantity, setError, setItems } = useCartStore();
 
   return useMutation({
-    mutationFn: ({ productId, quantity }: { productId: string; quantity: number }) =>
-      cartService.updateQuantity(productId, quantity),
+    mutationFn: ({
+      productId,
+      quantity,
+    }: {
+      productId: string;
+      quantity: number;
+    }) => cartService.updateQuantity(productId, quantity),
 
     onMutate: async ({ productId, quantity }) => {
       await queryClient.cancelQueries({ queryKey: CART_QUERY_KEY });
 
       // Snapshot để rollback nếu API lỗi
-      const previousData = queryClient.getQueryData<CartQueryData>(CART_QUERY_KEY);
+      const previousData =
+        queryClient.getQueryData<CartQueryData>(CART_QUERY_KEY);
 
       // [OPTIMISTIC] Cập nhật React Query cache — không trigger refetch
       queryClient.setQueryData<CartQueryData>(CART_QUERY_KEY, (old) =>
@@ -199,7 +214,8 @@ export const useClearCart = () => {
 
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: CART_QUERY_KEY });
-      const previousData = queryClient.getQueryData<CartQueryData>(CART_QUERY_KEY);
+      const previousData =
+        queryClient.getQueryData<CartQueryData>(CART_QUERY_KEY);
 
       queryClient.setQueryData<CartQueryData>(CART_QUERY_KEY, (old) => {
         if (!old) return old;

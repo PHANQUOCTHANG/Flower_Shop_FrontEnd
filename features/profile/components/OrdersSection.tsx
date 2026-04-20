@@ -62,25 +62,25 @@ export const OrdersSection: FC<OrdersSectionProps> = ({
   };
 
   return (
-    <section className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm animate-in slide-in-from-right-10 duration-500">
+    <section className="bg-white rounded-2xl sm:rounded-[1.75rem] md:rounded-2xl lg:rounded-[2.5rem] p-6 sm:p-8 md:p-10 border border-slate-100 shadow-sm animate-in slide-in-from-right-10 duration-500">
       {/* Header */}
-      <div className="flex flex-col gap-6 mb-10">
+      <div className="flex flex-col gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-10">
         {/* Títl và nút làm mới */}
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-none">
+        <div className="flex flex-col xs:flex-row xs:justify-between xs:items-start gap-3 xs:gap-4">
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900 uppercase tracking-tight leading-tight">
             Đơn hàng của bạn
           </h2>
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#ee2b5b]/10 text-[#ee2b5b] rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#ee2b5b] hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center xs:justify-start gap-2 px-4 xs:px-5 py-2.5 bg-[#ee2b5b]/10 text-[#ee2b5b] rounded-lg xs:rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#ee2b5b] hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed w-full xs:w-auto"
             type="button"
           >
             <RefreshCw
               size={14}
               className={isRefreshing ? "animate-spin" : ""}
             />
-            <span className="hidden sm:inline">
+            <span className="hidden xs:inline">
               {isRefreshing ? "Đang tải..." : "Làm mới"}
             </span>
           </button>

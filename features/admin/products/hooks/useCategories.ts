@@ -3,7 +3,7 @@ import { categoryService } from "@/features/admin/products/services/categoryServ
 
 // Query keys
 const categoryKeys = {
-  all: ["admin" , "categories"] as const,
+  all: ["admin", "categories"] as const,
   lists: () => [...categoryKeys.all, "list"] as const,
   list: (params?: object) => [...categoryKeys.lists(), params] as const,
 };
@@ -17,7 +17,7 @@ interface UseCategoriesParams {
 
 export const useCategories = (params?: UseCategoriesParams) => {
   const query = useQuery({
-    queryKey: ["categories", "list", params],
+    queryKey: [categoryKeys.all[0], categoryKeys.all[1], "list", params], // ["categories", "list", params]
     queryFn: () => categoryService.getCategories(params),
     placeholderData: (prev) => prev,
     staleTime: 300_000, // 5 phút — category rất ít thay đổi
@@ -44,7 +44,10 @@ export const useCreateCategory = () => {
         categoryService.createCategory(data),
 
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: categoryKeys.lists() });
+        // Invalidate tất cả category queries để refetch
+        queryClient.invalidateQueries({
+          queryKey: [categoryKeys.all[0], categoryKeys.all[1], "list"],
+        });
       },
     },
   );

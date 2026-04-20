@@ -28,23 +28,30 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 // Lấy role từ user cookie để bảo vệ admin route ở tầng UI
-// BẢO MẬT: user cookie KHÔNG phải httpOnly → chỉ dùng cho UI guard.
-// Lớp bảo mật thật sự phải ở backend (verify JWT + role trong mỗi API request).
 function extractUserRole(request: NextRequest): string {
-  // Ưu tiên 1: cookie "role" riêng nếu backend set (httpOnly)
-  const roleCookie = request.cookies.get("role")?.value;
-  if (roleCookie) return roleCookie.toUpperCase();
-
-  // Ưu tiên 2: parse từ user cookie JSON
+  // Parse từ user cookie JSON
   const userCookie = request.cookies.get("user")?.value;
-  if (!userCookie) return "";
+  console.log(
+    "[extractUserRole] userCookie:",
+    userCookie ? "exists" : "NOT FOUND",
+  );
+
+  if (!userCookie) {
+    console.log(
+      "[extractUserRole] ✗ No user cookie found, returning empty string",
+    );
+    return "";
+  }
 
   try {
     let decoded = decodeURIComponent(userCookie);
     if (decoded.startsWith("j:")) decoded = decoded.slice(2);
     const userData = JSON.parse(decoded);
-    return (userData?.role ?? "").toUpperCase();
-  } catch {
+    const extractedRole = (userData?.role ?? "").toUpperCase();
+    console.log("[extractUserRole] ✓ Parsed user cookie, role:", extractedRole);
+    return extractedRole;
+  } catch (error) {
+    console.log("[extractUserRole] ✗ Error parsing user cookie:", error);
     return "";
   }
 }
@@ -67,18 +74,32 @@ export function proxy(request: NextRequest): NextResponse {
 
   // ─── 1. Admin Route ──────────────────────────────────────────────────────────
   if (isProtectedAdminRoute) {
+    console.log(`[MIDDLEWARE] Admin route access: ${pathname}`);
     if (!isAuthenticated) {
+      console.log(
+        "[MIDDLEWARE] ✗ Not authenticated, redirecting to admin/login",
+      );
       const loginUrl = new URL("/admin/login", request.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return applySecurityHeaders(NextResponse.redirect(loginUrl));
     }
 
+    // ✅ Allowlist: chỉ cho phép ADMIN
     const userRole = extractUserRole(request);
+    console.log(
+      `[MIDDLEWARE] Admin route check - User role: "${userRole}", Expected: "ADMIN"`,
+    );
+
     if (userRole !== "ADMIN") {
+      console.log(
+        `[MIDDLEWARE] ✗ Access DENIED! Role "${userRole}" is not "ADMIN"`,
+      );
       return applySecurityHeaders(
         NextResponse.rewrite(new URL("/access-denied", request.url)),
       );
     }
+
+    console.log("[MIDDLEWARE] ✓ Access ALLOWED - User is ADMIN");
   }
 
   // ─── 2. Client Protected Route ───────────────────────────────────────────────
@@ -98,9 +119,24 @@ export function proxy(request: NextRequest): NextResponse {
       );
     }
     if (pathname === "/admin/login") {
-      return applySecurityHeaders(
-        NextResponse.redirect(new URL("/admin/dashboard", request.url)),
+      // ✅ Kiểm tra role ADMIN trước khi redirect
+      const userRole = extractUserRole(request);
+      console.log(`[MIDDLEWARE] At /admin/login - User role: "${userRole}"`);
+
+      if (userRole === "ADMIN") {
+        console.log(
+          "[MIDDLEWARE] ✓ Admin user at /admin/login, redirecting to /admin/dashboard",
+        );
+        return applySecurityHeaders(
+          NextResponse.redirect(new URL("/admin/dashboard", request.url)),
+        );
+      }
+      // Nếu không phải ADMIN, cho xem trang login (hoặc chặn)
+      // để middleware admin route handler xử lý
+      console.log(
+        `[MIDDLEWARE] Non-admin at /admin/login, allowing access to login page`,
       );
+      return applySecurityHeaders(NextResponse.next());
     }
   }
 

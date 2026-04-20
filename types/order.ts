@@ -7,6 +7,7 @@ export interface OrderItemDetail {
   quantity: number;
   price: number;
   subtotal: number;
+  slug : string;
 }
 
 export interface UserBrief {
@@ -17,6 +18,7 @@ export interface UserBrief {
 
 export interface OrderResponse {
   id: string;
+  slug : string;
   totalPrice: number;
   status: string;
   name: string | null;

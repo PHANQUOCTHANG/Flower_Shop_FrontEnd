@@ -1,15 +1,27 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Hero from "@/features/home/components/Hero";
 import Features from "@/features/home/components/Features";
 import Categories from "@/features/home/components/Categories";
 import ProductSection from "@/features/home/components/ProductSection";
 import Consultation from "@/features/home/components/Consultation";
 import LazySection from "@/features/home/components/LazySection";
+import { Loading } from "@/components/ui/Loading";
 import { useHome } from "@/features/home/hooks/useHome";
 
 export default function HomePage() {
-  const { categories, categoriesLoading, productsByCategory } = useHome();
+  const { categories, categoriesLoading, productsByCategory, loading } =
+    useHome();
+  const [isClient, setIsClient] = useState(false);
+
+  // Fix hydration mismatch: chỉ render khi client ready
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null;
+  if (loading) return <Loading />;
 
   return (
     <div className="min-h-screen bg-[#fcfbf9] text-[#1b0d11] transition-colors duration-300 font-sans antialiased overflow-x-hidden">

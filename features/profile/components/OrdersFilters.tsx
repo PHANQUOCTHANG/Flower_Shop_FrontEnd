@@ -39,15 +39,15 @@ const CustomSelect: FC<CustomSelectProps> = ({
   onChange,
 }) => {
   return (
-    <div className="flex-1 space-y-2.5">
-      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+    <div className="flex-1 space-y-2 sm:space-y-2.5">
+      <label className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
         {label}
       </label>
       <div className="relative">
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#ee2b5b] focus:ring-4 focus:ring-[#ee2b5b]/10 transition-all cursor-pointer shadow-sm appearance-none"
+          className="w-full px-3 sm:px-5 py-2.5 sm:py-3.5 bg-white border border-slate-200 rounded-lg sm:rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#ee2b5b] focus:ring-4 focus:ring-[#ee2b5b]/10 transition-all cursor-pointer shadow-sm appearance-none"
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -85,7 +85,7 @@ export const OrdersFilters: FC<OrdersFiltersProps> = ({
   onSortChange,
 }) => {
   return (
-    <div className="flex flex-col md:flex-row gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100/80">
+    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-4 sm:p-5 bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-100/80">
       {/* Bộ lọc trạng thái */}
       <CustomSelect
         label="Trạng thái đơn hàng"

@@ -51,32 +51,34 @@ const OrderRow: FC<OrderRowProps> = ({ order, onViewOrder }) => {
   return (
     <tr className="group hover:bg-slate-50/50 transition-colors">
       {/* Mã đơn hàng */}
-      <td className="py-6 text-sm font-black text-[#ee2b5b]">{order.id}</td>
+      <td className="py-4 sm:py-6 text-xs sm:text-sm font-black text-[#ee2b5b] truncate max-w-[100px]">
+        {order.id}
+      </td>
 
-      {/* Ngày đặt */}
-      <td className="py-6 text-sm font-bold text-slate-500">
+      {/* Ngày đặt - ẩn trên mobile, hiện từ sm trở lên */}
+      <td className="py-4 sm:py-6 text-xs sm:text-sm font-bold text-slate-500 hidden sm:table-cell">
         {new Date(order.createdAt).toLocaleDateString("vi-VN")}
       </td>
 
       {/* Trạng thái */}
-      <td className="py-6">
+      <td className="py-4 sm:py-6">
         <StatusBadge status={order.status} />
       </td>
 
       {/* Thành tiền */}
-      <td className="py-6 text-right text-sm font-black text-slate-900">
+      <td className="py-4 sm:py-6 text-right text-xs sm:text-sm font-black text-slate-900">
         {order.totalPrice.toLocaleString("vi-VN")}₫
       </td>
 
       {/* Hành động */}
-      <td className="py-6 pl-6 text-center">
+      <td className="py-4 sm:py-6 pl-3 sm:pl-6 text-center">
         <button
           onClick={() => onViewOrder(order.id)}
-          className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#ee2b5b]/10 text-[#ee2b5b] rounded-lg text-xs font-black uppercase tracking-widest hover:bg-[#ee2b5b] hover:text-white transition-all"
+          className="inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 bg-[#ee2b5b]/10 text-[#ee2b5b] rounded-lg text-xs font-black uppercase tracking-widest hover:bg-[#ee2b5b] hover:text-white transition-all"
           type="button"
         >
           <Eye size={12} />
-          Xem
+          <span className="hidden sm:inline">Xem</span>
         </button>
       </td>
     </tr>
@@ -86,31 +88,32 @@ const OrderRow: FC<OrderRowProps> = ({ order, onViewOrder }) => {
 // Component chính
 export const OrdersTable: FC<OrdersTableProps> = ({ orders, onViewOrder }) => {
   return (
-    <div className="overflow-x-auto no-scrollbar">
-      <table className="w-full">
+    <div className="overflow-x-auto no-scrollbar -mx-2 px-2 sm:mx-0 sm:px-0">
+      <table className="w-full min-w-[600px] sm:min-w-full">
         {/* Header của bảng */}
         <thead>
           <tr className="text-left border-b border-slate-100">
-            <th className="pb-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-              Mã đơn hàng
+            <th className="pb-4 sm:pb-6 text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              Mã đơn
             </th>
-            <th className="pb-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <th className="pb-4 sm:pb-6 text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest hidden sm:table-cell">
               Ngày đặt
             </th>
-            <th className="pb-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <th className="pb-4 sm:pb-6 text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">
               Trạng thái
             </th>
-            <th className="pb-6 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <th className="pb-4 sm:pb-6 text-right text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">
               Thành tiền
             </th>
-            <th className="pb-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
-              Hành động
+            <th className="pb-4 sm:pb-6 text-center text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <span className="hidden sm:inline">Hành động</span>
+              <span className="sm:hidden">Xem</span>
             </th>
           </tr>
         </thead>
 
         {/* Nội dung bảng */}
-        <tbody className="divide-y divide-slate-50">
+        <tbody className="divide-y divide-slate-50 text-xs sm:text-sm">
           {orders.map((order) => (
             <OrderRow key={order.id} order={order} onViewOrder={onViewOrder} />
           ))}

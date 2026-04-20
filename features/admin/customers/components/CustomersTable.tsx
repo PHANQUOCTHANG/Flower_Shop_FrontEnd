@@ -9,7 +9,7 @@ interface Customer {
   fullName: string;
   email: string;
   phone: string;
-  avatar?: string;
+  // avatar?: string;
   totalSpent: number;
   lastOrderDate: string;
   isActive: boolean;

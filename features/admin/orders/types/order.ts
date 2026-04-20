@@ -5,6 +5,7 @@ export interface OrderItemDetail {
   id: string;
   productId: string;
   productName: string;
+  slug: string;
   thumbnail: string | null;
   quantity: number;
   price: number;

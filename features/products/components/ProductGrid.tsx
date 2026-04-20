@@ -27,11 +27,12 @@ export function ProductGrid({
           }
         >
           {products.map((product) => (
-            <ProductCard
+            <div
               key={product.id}
-              product={product}
-              viewMode={viewMode}
-            />
+              className={viewMode === "list" ? "px-4 py-3" : ""}
+            >
+              <ProductCard product={product} viewMode={viewMode} />
+            </div>
           ))}
         </div>
       ) : (
