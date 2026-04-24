@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loading } from "@/components/ui/Loading";
 import { DeleteConfirmDialog } from "@/components/ui/admin/DeleteConfirmDialog";
@@ -38,7 +38,7 @@ import {
 
 // Trang danh sách sản phẩm
 
-export default function ProductsPage() {
+function ProductsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -134,15 +134,15 @@ export default function ProductsPage() {
     setSearchKeyword(keyword);
     setSelectedCategory(category);
     setCurrentPage(page);
-    setSortBy(sort);
-    setStatusFilter(status);
+    setSortBy(sort as string);
+    setStatusFilter(status as string);
     setMinPrice(minPrice);
     setMaxPrice(maxPrice);
 
     setAppliedSearchKeyword(keyword);
     setAppliedCategory(category);
-    setAppliedSortBy(sort);
-    setAppliedStatusFilter(status);
+    setAppliedSortBy(sort as string);
+    setAppliedStatusFilter(status as string);
     setAppliedMinPrice(minPrice);
     setAppliedMaxPrice(maxPrice);
   }, [searchParams]);
@@ -351,5 +351,13 @@ export default function ProductsPage() {
         </main>
       </div>
     </>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ProductsPageContent />
+    </Suspense>
   );
 }

@@ -43,10 +43,8 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         // Update Zustand với đầy đủ token + user info
         // Sau đây isAuthenticated = true, UI sẽ phản ánh đúng trạng thái đăng nhập
         setAuth(newToken, {
-          id: user.id,
-          email: user.email,
-          name: user.fullName,
-          role: user.role,
+          ...user,
+          name: user.name || user.fullName || "",
         });
       } catch {
         // refreshToken hết hạn hoặc không hợp lệ → clear store

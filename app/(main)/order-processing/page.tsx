@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Home } from "lucide-react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { OrderStatusTracker } from "@/features/checkout/components";
 import { useOrderStatus } from "@/features/checkout/hooks/useOrderStatus";
 
-export default function OrderProcessingPage() {
+function OrderProcessingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const jobId = searchParams.get("jobId");
@@ -89,5 +89,13 @@ export default function OrderProcessingPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function OrderProcessingPage() {
+  return (
+    <Suspense fallback={null}>
+      <OrderProcessingContent />
+    </Suspense>
   );
 }

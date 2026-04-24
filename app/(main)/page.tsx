@@ -8,7 +8,7 @@ import ProductSection from "@/features/home/components/ProductSection";
 import Consultation from "@/features/home/components/Consultation";
 import LazySection from "@/features/home/components/LazySection";
 import { Loading } from "@/components/ui/Loading";
-import { useHome } from "@/features/home/hooks/useHome";
+import { useHome, type HomeCategoryGroup } from "@/features/home/hooks/useHome";
 
 export default function HomePage() {
   const { categories, categoriesLoading, productsByCategory, loading } =
@@ -34,7 +34,7 @@ export default function HomePage() {
         <Categories categories={categories} loading={categoriesLoading} />
 
         {/* Sản phẩm theo từng danh mục — lazy load khi scroll tới */}
-        {productsByCategory.map(({ category, products, loading }: any, idx: number) => {
+        {productsByCategory.map(({ category, products, loading }: HomeCategoryGroup, idx: number) => {
           if (!category) return null;
           return (
             <LazySection

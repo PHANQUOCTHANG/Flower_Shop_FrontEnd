@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import Alert from "@/components/ui/Alert";
@@ -38,7 +38,7 @@ const INITIAL_REVIEW_MODAL: ReviewModalState = {
   orderId: "",
 };
 
-export default function UserAccountPage() {
+function UserAccountContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -260,5 +260,13 @@ export default function UserAccountPage() {
         onSuccess={handleRefresh}
       />
     </div>
+  );
+}
+
+export default function UserAccountPage() {
+  return (
+    <Suspense fallback={null}>
+      <UserAccountContent />
+    </Suspense>
   );
 }

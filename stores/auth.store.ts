@@ -1,10 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface User {
+export interface User {
   id: string; // ID người dùng
   email: string; // Email đăng nhập
   name: string; // Tên hiển thị
+  fullName?: string; // Tên đầy đủ (phụ trợ cho một số API)
   role?: string; // Vai trò (admin, user, ...)
   avatar?: string | null;
   phone?: string | null;

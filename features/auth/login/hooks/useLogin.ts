@@ -34,10 +34,8 @@ export const useLogin = (): UseLoginReturn => {
     onSuccess: (data: LoginResponse) => {
       // Lưu token + user vào store
       setAuth(data.accessToken, {
-        id: data.user.id,
-        email: data.user.email,
-        name: data.user.fullName,
-        role: data.user.role,
+        ...data.user,
+        name: data.user.name || data.user.fullName || "",
       });
 
 
@@ -55,9 +53,8 @@ export const useLogin = (): UseLoginReturn => {
     mutationFn: loginWithGoogleService,
     onSuccess: (data: LoginResponse) => {
       setAuth(data.accessToken, {
-        id: data.user.id,
-        email: data.user.email,
-        name: data.user.fullName,
+        ...data.user,
+        name: data.user.name || data.user.fullName || "",
       });
       router.push("/");
     },
@@ -70,9 +67,8 @@ export const useLogin = (): UseLoginReturn => {
     mutationFn: loginWithFacebookService,
     onSuccess: (data: LoginResponse) => {
       setAuth(data.accessToken, {
-        id: data.user.id,
-        email: data.user.email,
-        name: data.user.fullName,
+        ...data.user,
+        name: data.user.name || data.user.fullName || "",
       });
       router.push("/");
     },

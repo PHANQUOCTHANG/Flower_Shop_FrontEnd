@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loading } from "@/components/ui/Loading";
 import {
@@ -18,7 +18,7 @@ import {
   OrderDetailModal,
 } from "@/features/admin/orders/components";
 
-export default function OrdersPage() {
+function OrdersPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -361,5 +361,13 @@ export default function OrdersPage() {
         onStatusUpdate={handleStatusUpdate}
       />
     </div>
+  );
+}
+
+export default function OrdersPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <OrdersPageContent />
+    </Suspense>
   );
 }

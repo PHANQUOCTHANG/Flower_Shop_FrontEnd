@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 // Nhập components
@@ -22,7 +22,7 @@ import { buildQuery } from "@/features/products/utils/buildQuery";
 import { PRODUCTS_CONFIG, type ViewMode } from "@/features/products/types";
 
 // Component chính
-export default function FlowerCollection() {
+function FlowerCollectionContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -190,5 +190,13 @@ export default function FlowerCollection() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function FlowerCollection() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <FlowerCollectionContent />
+    </Suspense>
   );
 }

@@ -196,7 +196,7 @@ export default function CheckoutPage() {
           : item.product.price;
 
       return {
-        productId: item.id,
+        productId: item.product.id,
         quantity: item.quantity,
         price: price,
         subtotal: price * item.quantity,

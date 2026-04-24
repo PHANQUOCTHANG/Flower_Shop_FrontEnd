@@ -4,6 +4,17 @@ import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/features/products/services/productService";
 import { categoryService } from "@/features/products/services/categoryService";
 
+export interface HomeCategoryGroup {
+  category: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+  products: any[];
+  loading: boolean;
+  isEmpty: boolean;
+}
+
 export const useHome = () => {
   const limit = 20;
 
@@ -24,10 +35,10 @@ export const useHome = () => {
     staleTime: 60_000, 
   });
 
-  const groupedData = groupedQuery.data || [];
+  const groupedData = (groupedQuery.data || []) as any[];
   
   // Format lại data đúng cấu trúc UI đang chờ
-  const productsByCategory = groupedData.map((group: { category: any; products: any[] }) => ({
+  const productsByCategory: HomeCategoryGroup[] = groupedData.map((group) => ({
     category: group.category,
     products: group.products,
     loading: false,

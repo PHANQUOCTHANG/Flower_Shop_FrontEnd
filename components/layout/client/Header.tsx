@@ -31,23 +31,6 @@ export default function Header() {
 
   const [favoriteCount] = useState(0); // TODO: lấy từ favorite store
 
-  // Force rerender khi auth state thay đổi
-  const [render, setRerender] = useState(0);
-  useEffect(() => {
-    const unsubscribe = useAuthStore.subscribe(() => {
-      setRerender((prev) => prev + 1);
-    });
-    return unsubscribe;
-  }, []);
-
-  // Force rerender khi cart items thay đổi
-  useEffect(() => {
-    const unsubscribe = useCartStore.subscribe(() => {
-      setRerender((prev) => prev + 1);
-    });
-    return unsubscribe;
-  }, []);
-
   // Kiểm tra trang hiện tại có khớp path không
   const isActive = (path: string): boolean => {
     return pathname === path || pathname.startsWith(path + "/");

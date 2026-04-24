@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect, Suspense } from "react";
 import {
   Search,
   Send,
@@ -22,7 +22,7 @@ import { formatTimeAgo, formatMessageTime } from "@/utils/format";
 
 // ============ Component chính ============
 
-export default function AdminChatPage() {
+function AdminChatContent() {
   // Trạng thái từ hook
   const {
     chats,
@@ -507,5 +507,13 @@ export default function AdminChatPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function AdminChatPage() {
+  return (
+    <Suspense fallback={<Loader className="animate-spin text-[#13ec5b]" size={32} />}>
+      <AdminChatContent />
+    </Suspense>
   );
 }

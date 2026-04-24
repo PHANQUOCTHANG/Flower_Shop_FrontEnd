@@ -31,7 +31,7 @@ export function useProductForm() {
   // ===== REF: SECTION REFS =====
   // Các UseRef dùng để tham chiếu tới giao diện hoặc trình soạn thảo văn bản
   const basicInfoRef = useRef<HTMLDivElement>(null);
-  const descEditorRef = useRef<RichEditorRef>(null) as React.RefObject<RichEditorRef>;
+  const descEditorRef = useRef<RichEditorRef>(null);
 
   // ===== STATE: ALERT & UI =====
   // State quản lý hiển thị thông báo trạng thái (thành công/lỗi)
@@ -69,6 +69,7 @@ export function useProductForm() {
         const categoryList: Category[] = fetchedCategories.map((cat: any) => ({
           id: String(cat.id),
           name: cat.name,
+          slug: cat.slug || "",
         }));
         setCategories(categoryList);
       });
@@ -144,7 +145,11 @@ export function useProductForm() {
       startTransition(() => {
         setCategories((prev) => [
           ...prev,
-          { id: categoryId, name: newCategory.name },
+          { 
+            id: categoryId, 
+            name: newCategory.name,
+            slug: newCategory.slug || ""
+          },
         ]);
         setSelectedCategoryIds((prev) => [...prev, categoryId]);
       });

@@ -1,6 +1,8 @@
 // Auth Types Chuẩn Hóa
 // Dùng chung cho toàn bộ các chức năng liên quan đăng nhập, đăng ký, quên mật khẩu
 
+import { User } from "@/stores/auth.store";
+
 // ─── LOGIN ────────────────────────────────────────────────────────
 export interface LoginPayload {
   email: string;
@@ -12,13 +14,7 @@ export interface LoginPayload {
 export interface LoginResponse {
   accessToken: string;
   refreshToken?: string;
-  user: {
-    id: string;
-    email: string;
-    fullName: string;
-    avatar?: string;
-    role?: string;
-  };
+  user: User;
 }
 
 // ─── REGISTER ──────────────────────────────────────────────────────
@@ -41,13 +37,7 @@ export interface RegisterResponse {
 // ─── SESSION & LOGOUT ──────────────────────────────────────────────
 export interface RefreshSessionResponse {
   accessToken: string;
-  user: {
-    id: string;
-    email: string;
-    fullName: string;
-    avatar?: string;
-    role?: string;
-  };
+  user: User;
 }
 
 export interface LogoutResponse {
