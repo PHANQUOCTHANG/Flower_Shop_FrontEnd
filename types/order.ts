@@ -7,7 +7,8 @@ export interface OrderItemDetail {
   quantity: number;
   price: number;
   subtotal: number;
-  slug : string;
+  slug: string;
+  isReview?: boolean;
 }
 
 export interface UserBrief {

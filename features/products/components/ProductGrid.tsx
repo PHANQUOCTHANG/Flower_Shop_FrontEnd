@@ -2,8 +2,10 @@ import { ProductCard } from "./ProductCard";
 
 type ViewMode = "grid" | "list";
 
+import { Product } from "@/types/product";
+
 interface ProductGridProps {
-  products: Array<{ id: string; [key: string]: unknown }>;
+  products: Product[];
   viewMode: ViewMode;
   fetching: boolean;
 }

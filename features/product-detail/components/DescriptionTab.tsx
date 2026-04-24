@@ -26,7 +26,7 @@ export const DescriptionTab: React.FC<DescriptionTabProps> = ({ product }) => {
  )}
  </div>
 
- {/* Bên phải - Lưu ý bảo quản */}
+ {/* Bên phải - Lưu ý bảo quản
  <div className="bg-[#13ec5b]/5 rounded-2xl p-6 border border-[#13ec5b]/10 h-fit">
  <h4 className="typo-heading-md mb-4">Lưu ý bảo quản:</h4>
  <ul className="space-y-3 typo-body-sm text-gray-600">
@@ -45,7 +45,7 @@ export const DescriptionTab: React.FC<DescriptionTabProps> = ({ product }) => {
  hơn.
  </li>
  </ul>
- </div>
+ </div> */}
  </div>
  );
 };

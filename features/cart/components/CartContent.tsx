@@ -1,12 +1,9 @@
 import { CartTable, CartItemsMobile, EmptyCart } from "./index";
 
-interface CartItem {
-  id: string;
-  [key: string]: unknown;
-}
+import { CartItemResponse } from "@/features/cart/types/cart";
 
 interface CartContentProps {
-  items: CartItem[];
+  items: CartItemResponse[];
   onUpdateQuantity: (productId: string, quantity: number) => void;
   onRemoveItem: (productId: string) => void;
 }

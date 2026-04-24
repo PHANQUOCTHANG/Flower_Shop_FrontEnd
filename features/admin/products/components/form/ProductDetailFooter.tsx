@@ -2,6 +2,7 @@
 import {
   PRODUCT_COLORS,
   PRODUCT_MESSAGES,
+  PRODUCT_FORM_LABELS,
 } from "../../constants/productConfig";
 
 interface ProductDetailFooterProps {
@@ -35,7 +36,7 @@ export function ProductDetailFooter({
           onClick={onCancel}
           className="px-5 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
         >
-          {PRODUCT_MESSAGES.CANCEL}
+          {PRODUCT_FORM_LABELS.CANCEL}
         </button>
         <button
           type="submit"

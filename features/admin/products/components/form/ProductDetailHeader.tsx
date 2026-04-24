@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   PRODUCT_CONFIG,
   PRODUCT_BREADCRUMBS,
+  PRODUCT_FORM_LABELS,
 } from "../../constants/productConfig";
 
 interface ProductDetailHeaderProps {
@@ -20,7 +21,7 @@ export function ProductDetailHeader({
           <button
             type="button"
             className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
-            title={PRODUCT_BREADCRUMBS.BACK}
+            title={PRODUCT_FORM_LABELS.BACK}
           >
             <svg
               className="w-5 h-5"

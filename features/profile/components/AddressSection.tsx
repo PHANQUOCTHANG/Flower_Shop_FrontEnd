@@ -1,7 +1,8 @@
 // Component section sổ địa chỉ
 "use client";
 
-import React, { FC, useState, useCallback } from "react";
+import React, { FC, useState, useCallback, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Plus, AlertCircle, Loader, Trash2 } from "lucide-react";
 import type { Address, CreateAddressRequest } from "@/types/profile";
 import { useAddresses } from "../hooks/useAddresses";
@@ -9,6 +10,9 @@ import { AddressForm } from "./AddressForm";
 import { AddressCard } from "./AddressCard";
 
 export const AddressSection: FC = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   // State quản lý form modal
   const [showForm, setShowForm] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
@@ -26,23 +30,59 @@ export const AddressSection: FC = () => {
     setDefaultMutation,
   } = useAddresses();
 
-  // Handler - mở form tạo mới address
+  const urlAction = searchParams.get("action");
+  const urlAddressId = searchParams.get("addressId");
+
+  // Đồng bộ URL -> State khi tải trang hoặc URL thay đổi
+  useEffect(() => {
+    // Chỉ xử lý khi danh sách addresses đã tải xong để có thể map ID
+    if (isLoading) return;
+
+    if (urlAction === "add") {
+      setSelectedAddress(null);
+      setShowForm(true);
+    } else if (urlAction === "edit" && urlAddressId) {
+      const addressToEdit = addresses.find((a) => a.id === urlAddressId);
+      if (addressToEdit) {
+        setSelectedAddress(addressToEdit);
+        setShowForm(true);
+      } else {
+        // ID không hợp lệ hoặc chưa load xong -> ẩn form, không bắt buộc xóa query ngay
+        setShowForm(false);
+        setSelectedAddress(null);
+      }
+    } else {
+      setShowForm(false);
+      setSelectedAddress(null);
+    }
+  }, [urlAction, urlAddressId, addresses, isLoading]);
+
+  // Handler - mở form tạo mới address -> Set URL
   const handleOpenAddForm = useCallback(() => {
-    setSelectedAddress(null);
-    setShowForm(true);
-  }, []);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("action", "add");
+    params.delete("addressId");
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [router, searchParams]);
 
-  // Handler - mở form chỉnh sửa address
-  const handleEditAddress = useCallback((address: Address) => {
-    setSelectedAddress(address);
-    setShowForm(true);
-  }, []);
+  // Handler - mở form chỉnh sửa address -> Set URL
+  const handleEditAddress = useCallback(
+    (address: Address) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("action", "edit");
+      params.set("addressId", address.id);
+      router.replace(`?${params.toString()}`, { scroll: false });
+    },
+    [router, searchParams],
+  );
 
-  // Handler - đóng form
+  // Handler - đóng form -> Xóa URL params
   const handleCloseForm = useCallback(() => {
-    setShowForm(false);
-    setSelectedAddress(null);
-  }, []);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("action");
+    params.delete("addressId");
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [router, searchParams]);
 
   // Handler - submit form (tạo hoặc cập nhật)
   const handleSubmitForm = useCallback(
@@ -154,17 +194,19 @@ export const AddressSection: FC = () => {
         </div>
       ) : (
         // Address list
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-5">
-          {addresses.map((address) => (
-            <AddressCard
-              key={address.id}
-              address={address}
-              isLoading={isAnyMutationLoading}
-              onEdit={handleEditAddress}
-              onDelete={(id) => setDeleteTarget(id)}
-              onSetDefault={handleSetDefault}
-            />
-          ))}
+        <div className="max-h-[900px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent hover:scrollbar-thumb-slate-400">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-5 pr-2">
+            {addresses.map((address) => (
+              <AddressCard
+                key={address.id}
+                address={address}
+                isLoading={isAnyMutationLoading}
+                onEdit={handleEditAddress}
+                onDelete={(id) => setDeleteTarget(id)}
+                onSetDefault={handleSetDefault}
+              />
+            ))}
+          </div>
         </div>
       )}
 

@@ -42,8 +42,8 @@ export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
  {/* Hình ảnh sản phẩm */}
  <div className="size-20 rounded-2xl overflow-hidden border border-gray-100 flex-shrink-0 shadow-sm bg-gray-50">
  <img
- src={item.image}
- alt={item.name}
+ src={item.product.thumbnailUrl}
+ alt={item.product.name}
  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
  />
  </div>
@@ -51,7 +51,7 @@ export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
  {/* Thông tin sản phẩm */}
  <div className="flex-1 min-w-0 py-1">
  <p className="typo-body leading-snug line-clamp-2 group-hover:text-[#ee2b5b] transition-colors">
- {item.name}
+ {item.product.name}
  </p>
  <p className="typo-label-sm text-gray-400 mt-2">
  Số lượng: {item.quantity}

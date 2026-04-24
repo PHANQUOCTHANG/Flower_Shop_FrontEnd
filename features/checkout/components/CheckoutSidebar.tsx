@@ -1,16 +1,9 @@
 import { OrderSummaryCheckout, SupportSection } from "./index";
 
-interface CartItem {
-  id: string;
-  quantity: number;
-  product: {
-    price: number;
-  };
-  [key: string]: unknown;
-}
+import { CartItemResponse } from "@/features/cart/types/cart";
 
 interface CheckoutSidebarProps {
-  cartItems: CartItem[];
+  cartItems: CartItemResponse[];
   subtotal: number;
   total: number;
   isLoading: boolean;

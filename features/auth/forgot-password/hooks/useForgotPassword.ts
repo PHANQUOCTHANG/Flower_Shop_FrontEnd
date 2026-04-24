@@ -4,6 +4,7 @@ import {
   verifyOtp,
   resetPassword,
 } from "../services/forgotPasswordService";
+import { useRouter } from "next/navigation";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -116,6 +117,7 @@ const getPasswordStrength = (password: string) => {
 
 export const useForgotPassword = (): UseForgotPasswordReturn => {
   // Trạng thái chính
+  const router = useRouter();
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState<string>("");
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
@@ -296,6 +298,7 @@ export const useForgotPassword = (): UseForgotPasswordReturn => {
       setConfirmPassword("");
       setStep("otp");
     }
+    else router.push("/login");
   }, [step]);
 
   return {

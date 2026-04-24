@@ -8,6 +8,7 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import Alert from "@/components/ui/Alert";
 import { useAuthStore } from "@/stores/auth.store";
 import { useLogout } from "@/features/auth/logout/hooks";
+import { useQueryClient } from "@tanstack/react-query";
 import { useFetchMyOrders } from "@/features/profile/hooks/useProfile";
 import {
   ProfileSidebar,
@@ -15,10 +16,27 @@ import {
   OrdersSection,
   AddressSection,
   ChangePasswordForm,
+  ReviewFormModal,
 } from "@/features/profile/components";
 import { OrderDetailModal } from "@/features/admin/orders/components";
 import type { ProfileTabType } from "@/features/profile/constants/profile.constants";
 import { ORDERS_PAGE_LIMIT } from "@/features/profile/constants/profile.constants";
+
+interface ReviewModalState {
+  isOpen: boolean;
+  productId: string;
+  productName: string;
+  productImage?: string;
+  orderId: string;
+}
+
+const INITIAL_REVIEW_MODAL: ReviewModalState = {
+  isOpen: false,
+  productId: "",
+  productName: "",
+  productImage: undefined,
+  orderId: "",
+};
 
 export default function UserAccountPage() {
   const router = useRouter();
@@ -29,21 +47,18 @@ export default function UserAccountPage() {
 
   // Đọc tab từ URL, mặc định là "profile"
   const urlTab = searchParams.get("tab") as ProfileTabType | null;
-  const [activeTab, setActiveTab] = useState<ProfileTabType>(
-    urlTab || "profile",
-  );
-  // Thông báo thành công
+  const [activeTab, setActiveTab] = useState<ProfileTabType>(urlTab || "profile");
   const [successMessage, setSuccessMessage] = useState("");
-  // Trang đơn hàng hiện tại
   const [page, setPage] = useState(1);
-  // Bộ lọc trạng thái đơn hàng
-  const [status, setStatus] = useState<string>("");
-  // Bộ lọc sắp xếp đơn hàng
-  const [sort, setSort] = useState<string>("newest");
-  // ID đơn hàng được chọn để xem chi tiết
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  // Trạng thái loading khi làm mới danh sách
+  const [status, setStatus] = useState("");
+  const [sort, setSort] = useState("newest");
+  
+  // Đọc orderId từ URL (để tải lại trang vẫn giữ nguyên popup)
+  const urlOrderId = searchParams.get("orderId");
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(urlOrderId);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [reviewModal, setReviewModal] = useState<ReviewModalState>(INITIAL_REVIEW_MODAL);
+  const queryClient = useQueryClient();
 
   // Sync active tab khi URL param thay đổi
   useEffect(() => {
@@ -52,7 +67,14 @@ export default function UserAccountPage() {
     }
   }, [urlTab]);
 
-  // Lấy dữ liệu đơn hàng từ API - chỉ enable khi activeTab === "orders"
+  // Sync orderId từ URL khi user navigate bằng back/forward
+  useEffect(() => {
+    if (urlOrderId !== selectedOrderId) {
+      setSelectedOrderId(urlOrderId);
+    }
+  }, [urlOrderId]);
+
+  // Lấy dữ liệu đơn hàng — chỉ enable khi activeTab === "orders"
   const {
     orders,
     meta,
@@ -60,36 +82,32 @@ export default function UserAccountPage() {
     error: ordersError,
     refetch: refetchOrders,
   } = useFetchMyOrders(
-    {
-      page,
-      limit: ORDERS_PAGE_LIMIT,
-      status,
-      sort,
-    },
-    activeTab === "orders", // ← Chỉ fetch khi tab = orders
+    { page, limit: ORDERS_PAGE_LIMIT, status, sort },
+    activeTab === "orders",
   );
 
-  // Xử lý đăng xuất
   const handleLogout = useCallback(async () => {
     setSuccessMessage("Đăng xuất thành công! Chuyển hướng...");
     await logout();
   }, [logout]);
 
-  // Xử lý làm mới danh sách đơn hàng
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     try {
+      if (selectedOrderId) {
+        await queryClient.invalidateQueries({
+          queryKey: ["admin", "orders", "detail", selectedOrderId],
+        });
+      }
       await refetchOrders?.();
     } finally {
       setIsRefreshing(false);
     }
-  }, [refetchOrders]);
+  }, [refetchOrders, queryClient, selectedOrderId]);
 
-  // Xử lý khi thay đổi tab
   const handleTabChange = useCallback(
     (tab: ProfileTabType) => {
       setActiveTab(tab);
-      // Chỉ thêm query param nếu tab không phải "profile" (default)
       if (tab === "profile") {
         router.replace(`/profile`);
       } else {
@@ -99,16 +117,50 @@ export default function UserAccountPage() {
     [router],
   );
 
-  // Xử lý khi thay đổi trạng thái bộ lọc
   const handleStatusChange = useCallback((newStatus: string) => {
     setStatus(newStatus);
     setPage(1);
   }, []);
 
-  // Xử lý khi thay đổi bộ lọc sắp xếp
   const handleSortChange = useCallback((newSort: string) => {
     setSort(newSort);
     setPage(1);
+  }, []);
+
+  // Set selected order and update URL without full reload
+  const handleViewOrder = useCallback(
+    (orderId: string) => {
+      setSelectedOrderId(orderId);
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.set("orderId", orderId);
+      router.replace(`/profile?${newParams.toString()}`, { scroll: false });
+    },
+    [router, searchParams],
+  );
+
+  // Close order and revert URL
+  const handleCloseOrderModal = useCallback(() => {
+    setSelectedOrderId(null);
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.delete("orderId");
+    router.replace(`/profile?${newParams.toString()}`, { scroll: false });
+  }, [router, searchParams]);
+
+  const handleReviewClick = useCallback(
+    (productId: string, productName: string, productImage?: string) => {
+      setReviewModal({
+        isOpen: true,
+        productId,
+        productName,
+        productImage,
+        orderId: selectedOrderId || "",
+      });
+    },
+    [selectedOrderId],
+  );
+
+  const handleCloseReviewModal = useCallback(() => {
+    setReviewModal(INITIAL_REVIEW_MODAL);
   }, []);
 
   return (
@@ -125,9 +177,7 @@ export default function UserAccountPage() {
         </div>
       )}
 
-      {/* Main content */}
       <main className="mx-auto w-full max-w-[1300px] px-4 sm:px-6 md:px-8 lg:px-12 py-6 sm:py-8 md:py-10 animate-in fade-in duration-700">
-        {/* Breadcrumbs */}
         <Breadcrumbs
           items={[
             { label: "Trang chủ", href: "/" },
@@ -135,48 +185,43 @@ export default function UserAccountPage() {
           ]}
         />
 
-        {/* Layout: Sidebar + Content */}
         <div className="flex flex-col md:flex-row gap-4 sm:gap-6 lg:gap-10">
           {/* Sidebar */}
           <ProfileSidebar
             userName={user?.name}
-            avatarUrl={user?.avatar}
+            avatarUrl={user?.avatar ?? undefined}
             activeTab={activeTab}
             onTabChange={handleTabChange}
             onLogout={handleLogout}
             isLogoutLoading={isLogoutLoading}
           />
 
-          {/* Content area */}
+          {/* Content */}
           <div className="flex-1 space-y-8">
-            {/* Tab: Thông tin cá nhân */}
             {activeTab === "profile" && (
               <ProfileInfo
                 fields={[
                   { label: "Họ và tên", value: user?.name || "N/A" },
                   { label: "Email liên hệ", value: user?.email || "N/A" },
-                  {
-                    label: "Số điện thoại",
-                    value: user?.phone || "Chưa cập nhật",
-                  },
-                  {
-                    label: "Giới tính",
-                    value: user?.gender || "Chưa cập nhật",
-                  },
+                  { label: "Số điện thoại", value: user?.phone || "Chưa cập nhật" },
+                  { label: "Giới tính", value: user?.gender || "Chưa cập nhật" },
                 ]}
                 onEdit={() => {
-                  // TODO: Implement edit profile functionality
+                  // TODO: Implement edit profile
                 }}
               />
             )}
 
-            {/* Tab: Đơn hàng */}
             {activeTab === "orders" && (
               <OrdersSection
                 orders={orders}
                 meta={meta}
                 isLoading={ordersLoading}
-                error={ordersError}
+                error={
+                  ordersError instanceof Error
+                    ? ordersError.message
+                    : (ordersError as string | null)
+                }
                 currentPage={page}
                 onPageChange={setPage}
                 status={status}
@@ -185,27 +230,34 @@ export default function UserAccountPage() {
                 onSortChange={handleSortChange}
                 onRefresh={handleRefresh}
                 isRefreshing={isRefreshing}
-                onViewOrder={(orderId) => setSelectedOrderId(orderId)}
+                onViewOrder={handleViewOrder}
               />
             )}
 
-            {/* Tab: Sổ địa chỉ */}
             {activeTab === "address" && <AddressSection />}
-
-            {/* Tab: Đổi mật khẩu */}
             {activeTab === "password" && <ChangePasswordForm />}
           </div>
         </div>
       </main>
 
-      {/* Order detail modal */}
+      {/* Order Detail Modal */}
       <OrderDetailModal
         orderId={selectedOrderId}
-        onClose={() => setSelectedOrderId(null)}
-        onStatusUpdate={() => {
-          // Optional: Refresh orders list after status update
-        }}
+        onClose={handleCloseOrderModal}
+        onStatusUpdate={() => {}}
         role="CUSTOMER"
+        onReviewClick={handleReviewClick}
+      />
+
+      {/* Review Form Modal */}
+      <ReviewFormModal
+        isOpen={reviewModal.isOpen}
+        onClose={handleCloseReviewModal}
+        productId={reviewModal.productId}
+        productName={reviewModal.productName}
+        productImage={reviewModal.productImage}
+        orderId={reviewModal.orderId}
+        onSuccess={handleRefresh}
       />
     </div>
   );

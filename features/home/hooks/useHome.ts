@@ -27,7 +27,7 @@ export const useHome = () => {
   const groupedData = groupedQuery.data || [];
   
   // Format lại data đúng cấu trúc UI đang chờ
-  const productsByCategory = groupedData.map((group: any) => ({
+  const productsByCategory = groupedData.map((group: { category: any; products: any[] }) => ({
     category: group.category,
     products: group.products,
     loading: false,

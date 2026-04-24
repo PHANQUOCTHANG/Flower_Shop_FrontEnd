@@ -34,7 +34,7 @@ export default function HomePage() {
         <Categories categories={categories} loading={categoriesLoading} />
 
         {/* Sản phẩm theo từng danh mục — lazy load khi scroll tới */}
-        {productsByCategory.map(({ category, products, loading }, idx) => {
+        {productsByCategory.map(({ category, products, loading }: any, idx: number) => {
           if (!category) return null;
           return (
             <LazySection

@@ -1,0 +1,77 @@
+﻿app/(main)/cart/page.tsx(106,17): error TS2322: Type 'CartItemResponse[]' is not assignable to type 'CartItem[]'.
+  Type 'CartItemResponse' is not assignable to type 'CartItem'.
+    Index signature for type 'string' is missing in type 'CartItemResponse'.
+app/(main)/checkout/page.tsx(289,13): error TS2322: Type 'CartItemResponse[]' is not assignable to type 'CartItem[]'.
+  Type 'CartItemResponse' is not assignable to type 'CartItem'.
+    Index signature for type 'string' is missing in type 'CartItemResponse'.
+app/(main)/order-processing/page.tsx(29,46): error TS18048: 'event.data' is possibly 'undefined'.
+app/(main)/page.tsx(37,36): error TS7031: Binding element 'category' implicitly has an 'any' type.
+app/(main)/page.tsx(37,46): error TS7031: Binding element 'products' implicitly has an 'any' type.
+app/(main)/page.tsx(37,56): error TS7031: Binding element 'loading' implicitly has an 'any' type.
+app/(main)/page.tsx(37,67): error TS7006: Parameter 'idx' implicitly has an 'any' type.
+app/(main)/products/page.tsx(178,15): error TS2322: Type 'Product[]' is not assignable to type '{ [key: string]: unknown; id: string; }[]'.
+  Type 'Product' is not assignable to type '{ [key: string]: unknown; id: string; }'.
+    Index signature for type 'string' is missing in type 'Product'.
+app/(main)/profile/page.tsx(192,30): error TS2339: Property 'avatar' does not exist on type 'User'.
+app/(main)/profile/page.tsx(206,58): error TS2339: Property 'phone' does not exist on type 'User'.
+app/(main)/profile/page.tsx(207,54): error TS2339: Property 'gender' does not exist on type 'User'.
+app/admin/(main)/customers/page.tsx(71,32): error TS2339: Property 'newCustomersThisMonth' does not exist on type 'PaginationMeta'.
+app/admin/(main)/products/[slug]/page.tsx(260,48): error TS2339: Property 'BACKGROUND' does not exist on type '{ readonly PRODUCTS_LIST_ROUTE: "/admin/products"; readonly ADD_PRODUCT_ROUTE: "/admin/products/add"; readonly BACKGROUND_COLOR: "#f8f6f6"; readonly PRIMARY_COLOR: "#ee2b5b"; readonly DARK_PRIMARY: "#d42552"; readonly ALERT_DURATION: 5000; readonly REDIRECT_DELAY: 1500; readonly ITEMS_PER_PAGE: 10; }'.
+app/admin/(main)/products/[slug]/page.tsx(297,13): error TS2322: Type 'RefObject<HTMLDivElement | null>' is not assignable to type 'RefObject<HTMLInputElement>'.
+  Type 'HTMLDivElement | null' is not assignable to type 'HTMLInputElement'.
+    Type 'null' is not assignable to type 'HTMLInputElement'.
+app/admin/(main)/products/[slug]/page.tsx(320,13): error TS2322: Type 'Dispatch<SetStateAction<"hidden" | "active" | "draft">>' is not assignable to type '(value: string) => void'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'string' is not assignable to type 'SetStateAction<"hidden" | "active" | "draft">'.
+app/admin/(main)/products/[slug]/page.tsx(321,13): error TS2322: Type 'Category[]' is not assignable to type 'ProductCategory[]'.
+  Property 'slug' is missing in type 'Category' but required in type 'ProductCategory'.
+app/admin/(main)/products/[slug]/page.tsx(326,13): error TS2322: Type 'ThumbnailState | null' is not assignable to type 'ThumbnailData | undefined'.
+  Type 'null' is not assignable to type 'ThumbnailData | undefined'.
+app/admin/(main)/products/add/page.tsx(166,48): error TS2339: Property 'BACKGROUND' does not exist on type '{ readonly PRODUCTS_LIST_ROUTE: "/admin/products"; readonly ADD_PRODUCT_ROUTE: "/admin/products/add"; readonly BACKGROUND_COLOR: "#f8f6f6"; readonly PRIMARY_COLOR: "#ee2b5b"; readonly DARK_PRIMARY: "#d42552"; readonly ALERT_DURATION: 5000; readonly REDIRECT_DELAY: 1500; readonly ITEMS_PER_PAGE: 10; }'.
+app/admin/(main)/products/add/page.tsx(193,13): error TS2322: Type 'RefObject<HTMLDivElement | null>' is not assignable to type 'RefObject<HTMLInputElement>'.
+  Type 'HTMLDivElement | null' is not assignable to type 'HTMLInputElement'.
+    Type 'null' is not assignable to type 'HTMLInputElement'.
+app/admin/(main)/products/add/page.tsx(216,13): error TS2322: Type 'Dispatch<SetStateAction<"hidden" | "active" | "draft">>' is not assignable to type '(value: string) => void'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'string' is not assignable to type 'SetStateAction<"hidden" | "active" | "draft">'.
+app/admin/(main)/products/add/page.tsx(217,13): error TS2322: Type 'Category[]' is not assignable to type 'ProductCategory[]'.
+  Property 'slug' is missing in type 'Category' but required in type 'ProductCategory'.
+app/admin/(main)/products/add/page.tsx(222,13): error TS2322: Type 'ThumbnailState | null' is not assignable to type 'ThumbnailData | undefined'.
+  Type 'null' is not assignable to type 'ThumbnailData | undefined'.
+app/admin/(main)/products/page.tsx(136,20): error TS2345: Argument of type 'number' is not assignable to parameter of type 'SetStateAction<1>'.
+app/admin/(main)/products/page.tsx(137,15): error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<"newest">'.
+app/admin/(main)/products/page.tsx(138,21): error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<"all">'.
+app/admin/(main)/products/page.tsx(144,22): error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<"newest">'.
+app/admin/(main)/products/page.tsx(145,28): error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<"all">'.
+app/admin/(main)/products/page.tsx(165,15): error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<"newest">'.
+app/admin/(main)/products/page.tsx(166,22): error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<"newest">'.
+app/admin/(main)/products/page.tsx(182,21): error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<"all">'.
+app/admin/(main)/products/page.tsx(183,28): error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<"all">'.
+app/admin/(main)/products/page.tsx(207,20): error TS2345: Argument of type 'number' is not assignable to parameter of type 'SetStateAction<1>'.
+components/layout/client/Header.tsx(39,7): error TS2554: Expected 1 arguments, but got 2.
+components/layout/client/Header.tsx(48,7): error TS2554: Expected 1 arguments, but got 2.
+features/admin/customers/components/CustomersTable.tsx(113,31): error TS2339: Property 'avatar' does not exist on type 'Customer'.
+features/admin/customers/components/CustomersTable.tsx(115,39): error TS2339: Property 'avatar' does not exist on type 'Customer'.
+features/admin/products/components/form/ProductDetailFooter.tsx(38,29): error TS2339: Property 'CANCEL' does not exist on type '{ readonly UPDATE_SUCCESS: "Sß║ún phß║⌐m ─æ├ú ─æ╞░ß╗úc cß║¡p nhß║¡t th├ánh c├┤ng!"; readonly UPDATE_ERROR: "Kh├┤ng thß╗â cß║¡p nhß║¡t sß║ún phß║⌐m. Vui l├▓ng thß╗¡ lß║íi."; readonly CREATE_SUCCESS: "Sß║ún phß║⌐m ─æ├ú ─æ╞░ß╗úc tß║ío th├ánh c├┤ng!"; ... 13 more ...; readonly LOADING_CREATE: "─Éang tß║ío..."; }'.
+features/admin/products/components/form/ProductDetailFormContent.tsx(9,15): error TS2305: Module '"../../utils/formDataBuilder"' has no exported member 'ValidationErrors'.
+features/admin/products/components/form/ProductDetailHeader.tsx(23,40): error TS2339: Property 'BACK' does not exist on type '{ readonly PRODUCTS: "Sß║ún phß║⌐m"; readonly DETAIL: "Chi tiß║┐t"; readonly ADD: "Th├¬m mß╗¢i"; readonly SLASH: "/"; }'.
+features/admin/products/components/form/ProductDetailSidebar.tsx(45,22): error TS2322: Type 'string' is not assignable to type '"hidden" | "active" | "draft"'.
+features/admin/products/components/form/ProductDetailSidebar.tsx(51,9): error TS2322: Type '(categoryId: string, isChecked: boolean) => void' is not assignable to type '(categoryId: string) => void'.
+  Target signature provides too few arguments. Expected 2 or more, but got 1.
+features/admin/products/components/form/ProductDetailSidebar.tsx(52,9): error TS2322: Type '(categoryName: string) => void' is not assignable to type '(categoryName: string, thumbFile: File | null) => Promise<void>'.
+  Type 'void' is not assignable to type 'Promise<void>'.
+features/admin/products/components/form/ProductStateComponents.tsx(53,29): error TS2339: Property 'BACK' does not exist on type '{ readonly UPDATE_SUCCESS: "Sß║ún phß║⌐m ─æ├ú ─æ╞░ß╗úc cß║¡p nhß║¡t th├ánh c├┤ng!"; readonly UPDATE_ERROR: "Kh├┤ng thß╗â cß║¡p nhß║¡t sß║ún phß║⌐m. Vui l├▓ng thß╗¡ lß║íi."; readonly CREATE_SUCCESS: "Sß║ún phß║⌐m ─æ├ú ─æ╞░ß╗úc tß║ío th├ánh c├┤ng!"; ... 13 more ...; readonly LOADING_CREATE: "─Éang tß║ío..."; }'.
+features/auth/logout/services/index.ts(1,30): error TS2459: Module '"./logoutService"' declares 'LogoutResponse' locally, but it is not exported.
+features/cart/components/CartContent.tsx(28,9): error TS2322: Type 'CartItem[]' is not assignable to type 'CartItemResponse[]'.
+  Type 'CartItem' is missing the following properties from type 'CartItemResponse': product, quantity
+features/cart/components/CartContent.tsx(35,9): error TS2322: Type 'CartItem[]' is not assignable to type 'CartItemResponse[]'.
+  Type 'CartItem' is missing the following properties from type 'CartItemResponse': product, quantity
+features/cart/components/index.ts(2,26): error TS2305: Module '"./CartTable"' has no exported member 'CartItem'.
+features/checkout/components/CheckoutSidebar.tsx(33,9): error TS2322: Type 'CartItem[]' is not assignable to type 'CartItemResponse[]'.
+  Type 'CartItem' is not assignable to type 'CartItemResponse'.
+    Types of property 'product' are incompatible.
+      Type '{ price: number; }' is missing the following properties from type 'ProductItem': id, name, thumbnailUrl, stockQuantity
+features/checkout/components/OrderSummaryCheckout.tsx(45,12): error TS2339: Property 'image' does not exist on type 'CartItemResponse'.
+features/checkout/components/OrderSummaryCheckout.tsx(46,12): error TS2339: Property 'name' does not exist on type 'CartItemResponse'.
+features/checkout/components/OrderSummaryCheckout.tsx(54,8): error TS2339: Property 'name' does not exist on type 'CartItemResponse'.
+features/products/components/ProductGrid.tsx(34,28): error TS2740: Type '{ [key: string]: unknown; id: string; }' is missing the following properties from type 'Product': name, slug, price, comparePrice, and 8 more.

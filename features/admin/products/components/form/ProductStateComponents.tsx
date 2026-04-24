@@ -2,6 +2,7 @@
 import {
   PRODUCT_CONFIG,
   PRODUCT_MESSAGES,
+  PRODUCT_FORM_LABELS,
 } from "../../constants/productConfig";
 
 interface ProductLoadingStateProps {
@@ -50,7 +51,7 @@ export function ProductErrorState({
         </svg>
         <p className="text-slate-600">{error}</p>
         <button onClick={onBack} className="text-[#ee2b5b] hover:underline">
-          {PRODUCT_MESSAGES.BACK}
+          {PRODUCT_FORM_LABELS.BACK}
         </button>
       </div>
     </div>

@@ -34,19 +34,17 @@ export default function Header() {
   // Force rerender khi auth state thay đổi
   const [render, setRerender] = useState(0);
   useEffect(() => {
-    const unsubscribe = useAuthStore.subscribe(
-      (state) => state.isAuthenticated,
-      () => setRerender((prev) => prev + 1),
-    );
+    const unsubscribe = useAuthStore.subscribe(() => {
+      setRerender((prev) => prev + 1);
+    });
     return unsubscribe;
   }, []);
 
   // Force rerender khi cart items thay đổi
   useEffect(() => {
-    const unsubscribe = useCartStore.subscribe(
-      (state) => state.items,
-      () => setRerender((prev) => prev + 1),
-    );
+    const unsubscribe = useCartStore.subscribe(() => {
+      setRerender((prev) => prev + 1);
+    });
     return unsubscribe;
   }, []);
 

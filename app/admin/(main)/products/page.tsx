@@ -47,8 +47,8 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     undefined,
   );
-  const [sortBy, setSortBy] = useState(FILTER_DEFAULTS.SORT_NEWEST);
-  const [statusFilter, setStatusFilter] = useState(FILTER_DEFAULTS.STATUS_ALL);
+  const [sortBy, setSortBy] = useState<string>(FILTER_DEFAULTS.SORT_NEWEST);
+  const [statusFilter, setStatusFilter] = useState<string>(FILTER_DEFAULTS.STATUS_ALL);
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
 
@@ -57,17 +57,17 @@ export default function ProductsPage() {
   const [appliedCategory, setAppliedCategory] = useState<string | undefined>(
     undefined,
   );
-  const [appliedSortBy, setAppliedSortBy] = useState(
+  const [appliedSortBy, setAppliedSortBy] = useState<string>(
     FILTER_DEFAULTS.SORT_NEWEST,
   );
-  const [appliedStatusFilter, setAppliedStatusFilter] = useState(
+  const [appliedStatusFilter, setAppliedStatusFilter] = useState<string>(
     FILTER_DEFAULTS.STATUS_ALL,
   );
   const [appliedMinPrice, setAppliedMinPrice] = useState<number | null>(null);
   const [appliedMaxPrice, setAppliedMaxPrice] = useState<number | null>(null);
 
   // Phân trang và UI state
-  const [currentPage, setCurrentPage] = useState(FILTER_DEFAULTS.PAGE_DEFAULT);
+  const [currentPage, setCurrentPage] = useState<number>(FILTER_DEFAULTS.PAGE_DEFAULT);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProductForDelete, setSelectedProductForDelete] =
     useState<Product | null>(null);

@@ -9,3 +9,4 @@ export { AddressSection } from "./AddressSection";
 export { AddressForm } from "./AddressForm";
 export { AddressCard } from "./AddressCard";
 export { ChangePasswordForm } from "./ChangePasswordForm";
+export { ReviewFormModal } from "./ReviewFormModal";

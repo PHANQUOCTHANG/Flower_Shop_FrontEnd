@@ -6,6 +6,9 @@ interface User {
   email: string; // Email đăng nhập
   name: string; // Tên hiển thị
   role?: string; // Vai trò (admin, user, ...)
+  avatar?: string | null;
+  phone?: string | null;
+  gender?: string | null;
 }
 
 interface AuthState {

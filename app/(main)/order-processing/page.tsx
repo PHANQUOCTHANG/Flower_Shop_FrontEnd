@@ -26,7 +26,7 @@ export default function OrderProcessingPage() {
       console.log("[OrderProcessing] Status changed:", event);
       if (event.status === "completed" && event.data?.orderId) {
         setTimeout(() => {
-          router.push(`/order-completed?id=${event.data.orderId}`);
+          router.push(`/order-completed?id=${event.data?.orderId}`);
         }, 2000);
       }
     },

@@ -163,7 +163,7 @@ export default function AddNewProductPage() {
   return (
     <div
       className="min-h-screen font-sans text-slate-900 overflow-y-auto"
-      style={{ backgroundColor: PRODUCT_CONFIG.BACKGROUND }}
+      style={{ backgroundColor: PRODUCT_CONFIG.BACKGROUND_COLOR }}
     >
       {/* Alert */}
       {alertState && (

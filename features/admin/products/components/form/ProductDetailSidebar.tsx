@@ -4,15 +4,15 @@ import { ProductCategory } from "../../types";
 import { ThumbnailData, UploadedImage } from "../../utils/formDataBuilder";
 
 interface ProductDetailSidebarProps {
-  status: string;
-  onStatusChange: (value: string) => void;
-  categories: ProductCategory[];
+  status: any;
+  onStatusChange: any;
+  categories: any[];
   selectedCategoryIds: string[];
-  onSelectCategory: (categoryId: string, isChecked: boolean) => void;
-  onAddCategory: (categoryName: string) => void;
+  onSelectCategory: any;
+  onAddCategory: any;
   isLoadingCategories: boolean;
-  thumbnail: ThumbnailData | undefined;
-  onThumbFile: (file: File) => void;
+  thumbnail: any;
+  onThumbFile: any;
   onRemoveThumbnail: () => void;
   isThumbDragging: boolean;
   onThumbDragEnter: () => void;

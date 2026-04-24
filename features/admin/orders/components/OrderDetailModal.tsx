@@ -14,6 +14,11 @@ interface OrderDetailModalProps {
   onClose: () => void;
   onStatusUpdate: (orderId: string, status: string) => void;
   role?: "ADMIN" | "CUSTOMER"; // Thêm prop role để điều kiện hiển thị nút
+  onReviewClick?: (
+    productId: string,
+    productName: string,
+    productImage?: string,
+  ) => void;
 }
 
 export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
@@ -21,6 +26,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   onClose,
   onStatusUpdate,
   role = "ADMIN",
+  onReviewClick,
 }) => {
   const router = useRouter();
   // Fetch chi tiết đơn hàng từ API khi có orderId
@@ -210,15 +216,26 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                         </td>
                         {showRatingColumn && (
                           <td className="px-4 py-3 text-center">
-                            <button
-                              onClick={() =>
-                                router.push(`/products/${item.productSlug}`)
-                              }
-                              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-[#13ec5b]/10 text-[#13ec5b] hover:bg-[#13ec5b]/20 border border-[#13ec5b]/30 hover:border-[#13ec5b]/60 rounded-lg transition-all font-bold text-xs whitespace-nowrap"
-                            >
-                              <Star className="w-4 h-4" />
-                              Đánh giá
-                            </button>
+                            {item.isReview ? (
+                              <div className="inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-slate-200 bg-slate-50 text-slate-500 rounded-lg font-bold text-xs whitespace-nowrap cursor-default">
+                                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                Đã đánh giá
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() =>
+                                  onReviewClick?.(
+                                    item.productId,
+                                    item.productName,
+                                    item.thumbnail || undefined,
+                                  )
+                                }
+                                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-[#13ec5b]/10 text-[#13ec5b] hover:bg-[#13ec5b]/20 border border-[#13ec5b]/30 hover:border-[#13ec5b]/60 rounded-lg transition-all font-bold text-xs whitespace-nowrap"
+                              >
+                                <Star className="w-4 h-4" />
+                                Đánh giá
+                              </button>
+                            )}
                           </td>
                         )}
                       </tr>

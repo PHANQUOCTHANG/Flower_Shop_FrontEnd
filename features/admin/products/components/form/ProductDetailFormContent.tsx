@@ -6,11 +6,11 @@ import {
   SkuSection,
   GallerySection,
 } from "./index";
-import type { ValidationErrors } from "../../utils/formDataBuilder";
+// type ValidationErrors from formDataBuilder removed
 import { UploadedImage } from "../../utils/formDataBuilder";
 
 interface ProductDetailFormContentProps {
-  basicInfoRef: React.RefObject<HTMLInputElement>;
+  basicInfoRef: React.RefObject<HTMLDivElement | null>;
   descEditorRef: React.RefObject<any>;
   name: string;
   onNameChange: (value: string) => void;
@@ -28,7 +28,7 @@ interface ProductDetailFormContentProps {
   isDragging: boolean;
   onDragEnter: () => void;
   onDragLeave: () => void;
-  errors?: ValidationErrors;
+  errors?: any;
 }
 
 // Cột trái: Tất cả form sections

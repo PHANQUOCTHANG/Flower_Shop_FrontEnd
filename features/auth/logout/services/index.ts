@@ -1,1 +1,1 @@
-export { logoutService, type LogoutResponse } from "./logoutService";
+export { logoutService } from "./logoutService";

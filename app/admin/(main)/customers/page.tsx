@@ -68,7 +68,7 @@ export default function CustomersPage() {
               iconBgColor="bg-blue-500/10"
               iconColor="text-blue-500"
               label="Khách hàng mới"
-              value={`+${meta?.newCustomersThisMonth ?? 0}`} // Hiển thị số khách hàng mới trong tháng, nếu có dữ liệu từ backend
+              value={`+${(meta as any)?.newCustomersThisMonth ?? 0}`} // Hiển thị số khách hàng mới trong tháng, nếu có dữ liệu từ backend
             />
             <StatCard
               icon={Star}
