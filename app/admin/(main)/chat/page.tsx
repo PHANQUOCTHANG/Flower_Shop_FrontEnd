@@ -46,6 +46,7 @@ function AdminChatContent() {
   // Trạng thái component
   const [messageInput, setMessageInput] = useState("");
   const [searchInput, setSearchInput] = useState(() => searchKeyword);
+  const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
 
   // Ref theo dõi vị trí cuộn
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -282,17 +283,34 @@ function AdminChatContent() {
                     {/* Thông tin */}
                     <div className="flex-1 overflow-hidden min-w-0">
                       <div className="flex justify-between items-center gap-2 mb-1">
-                        <p className="text-xs xs:text-sm font-bold truncate">
+                        <p className={`text-xs xs:text-sm truncate ${
+                          chat.lastMessage?.isRead === false && chat.lastMessage?.senderRole !== "admin"
+                            ? "font-black text-slate-900"
+                            : "font-bold text-slate-700"
+                        }`}>
                           {chat.user?.fullName || "Unknown"}
                         </p>
-                        <span className="text-[9px] xs:text-[10px] text-slate-400 font-bold whitespace-nowrap shrink-0">
-                          {chat.lastMessageAt
-                            ? formatTimeAgo(chat.lastMessageAt)
-                            : "Mới"}
-                        </span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {chat.lastMessage?.isRead === false && chat.lastMessage?.senderRole !== "admin" && (
+                            <div className="w-2 h-2 rounded-full bg-[#13ec5b] shadow-sm shadow-[#13ec5b]/50" />
+                          )}
+                          <span className={`text-[9px] xs:text-[10px] whitespace-nowrap ${
+                            chat.lastMessage?.isRead === false && chat.lastMessage?.senderRole !== "admin"
+                              ? "text-[#13ec5b] font-black"
+                              : "text-slate-400 font-bold"
+                          }`}>
+                            {chat.lastMessageAt
+                              ? formatTimeAgo(chat.lastMessageAt)
+                              : "Mới"}
+                          </span>
+                        </div>
                       </div>
 
-                      <p className="text-[11px] xs:text-xs truncate text-slate-500 line-clamp-1">
+                      <p className={`text-[11px] xs:text-xs truncate line-clamp-1 ${
+                        chat.lastMessage?.isRead === false && chat.lastMessage?.senderRole !== "admin"
+                          ? "font-bold text-slate-800"
+                          : "text-slate-500"
+                      }`}>
                         {chat.lastMessage?.senderRole === "admin"
                           ? `Bạn: ${chat.lastMessage.content}`
                           : chat.lastMessage?.content || "Không có tin nhắn"}
@@ -411,52 +429,93 @@ function AdminChatContent() {
                   </div>
                 ) : (
                   <>
-                    <div className="flex justify-center">
-                      <span className="px-4 py-1.5 bg-slate-200/50 text-[10px] font-black text-slate-500 rounded-full uppercase tracking-widest border border-white/20">
-                        Hôm nay
-                      </span>
-                    </div>
+                    {messages.map((msg, index) => {
+                      const currentDate = new Date(msg.createdAt);
+                      const prevDate = index > 0 ? new Date(messages[index - 1].createdAt) : null;
+                      const showDivider = !prevDate || currentDate.toDateString() !== prevDate.toDateString();
 
-                    {messages.map((msg) => (
-                      <div
-                        key={msg.id}
-                        className={`flex ${
-                          msg.senderRole === "admin"
-                            ? "justify-end"
-                            : "justify-start"
-                        }`}
-                      >
-                        <div
-                          className={`max-w-[55%] flex flex-col ${
-                            msg.senderRole === "admin"
-                              ? "items-end"
-                              : "items-start"
-                          }`}
-                        >
+                      let dateLabel = "";
+                      if (showDivider) {
+                        const today = new Date();
+                        const yesterday = new Date();
+                        yesterday.setDate(today.getDate() - 1);
+
+                        if (currentDate.toDateString() === today.toDateString()) {
+                          dateLabel = "Hôm nay";
+                        } else if (currentDate.toDateString() === yesterday.toDateString()) {
+                          dateLabel = "Hôm qua";
+                        } else {
+                          const days = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
+                          const dayName = days[currentDate.getDay()];
+                          const dateString = new Intl.DateTimeFormat("vi-VN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          }).format(currentDate);
+                          dateLabel = `${dayName}, ${dateString}`;
+                        }
+                      }
+
+                      return (
+                        <React.Fragment key={msg.id}>
+                          {showDivider && (
+                            <div className="flex justify-center mt-6 mb-2">
+                              <span className="px-4 py-1.5 bg-slate-100 text-[10px] font-bold text-slate-500 rounded-full border border-slate-200">
+                                {dateLabel}
+                              </span>
+                            </div>
+                          )}
                           <div
-                            className={`px-4 py-3 rounded-2xl text-sm font-medium shadow-sm ${
+                            className={`flex ${
                               msg.senderRole === "admin"
-                                ? "bg-[#13ec5b] text-[#102216] rounded-tr-none"
-                                : "bg-white text-slate-900 rounded-tl-none border border-slate-100"
+                                ? "justify-end"
+                                : "justify-start"
                             }`}
                           >
-                            {msg.content}
-                          </div>
+                            <div
+                              className={`max-w-[55%] flex flex-col ${
+                                msg.senderRole === "admin"
+                                  ? "items-end"
+                                  : "items-start"
+                              }`}
+                            >
+                              <div
+                                onClick={() => setActiveMessageId(prev => prev === msg.id ? null : msg.id)}
+                                className={`px-4 py-3 rounded-2xl text-sm font-medium shadow-sm cursor-pointer transition-all hover:opacity-90 active:scale-[0.98] select-none ${
+                                  msg.senderRole === "admin"
+                                    ? "bg-[#13ec5b] text-[#102216] rounded-tr-none"
+                                    : "bg-white text-slate-900 rounded-tl-none border border-slate-100"
+                                }`}
+                              >
+                                {msg.content}
+                              </div>
 
-                          <div className="flex items-center gap-1 mt-1 px-1">
-                            <span className="text-[9px] text-slate-400 font-bold uppercase">
-                              {formatMessageTime(msg.createdAt)}
-                            </span>
-                            {msg.senderRole === "admin" && (
-                              <CheckCheck
-                                size={10}
-                                className="text-[#13ec5b]"
-                              />
-                            )}
+                              <div 
+                                className={`flex items-center gap-1 px-1 overflow-hidden transition-all duration-300 ease-in-out ${
+                                  activeMessageId === msg.id ? "max-h-10 opacity-100 mt-1" : "max-h-0 opacity-0 mt-0"
+                                }`}
+                              >
+                                <span className="text-[10px] text-slate-400 font-bold whitespace-nowrap">
+                                  {new Intl.DateTimeFormat("vi-VN", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "numeric",
+                                  }).format(currentDate)}
+                                </span>
+                                {msg.senderRole === "admin" && (
+                                  <CheckCheck
+                                    size={12}
+                                    className="text-[#13ec5b]"
+                                  />
+                                )}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    ))}
+                        </React.Fragment>
+                      );
+                    })}
                     {/* Auto scroll to bottom */}
                     <div ref={messagesEndRef} />
                   </>

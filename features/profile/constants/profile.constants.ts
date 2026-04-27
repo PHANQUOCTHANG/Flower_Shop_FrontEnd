@@ -35,7 +35,7 @@ export const ORDER_STATUS_MAP: Record<string, StatusConfig> = {
     label: "Đang giao",
   },
   completed: { styles: "bg-green-100 text-green-700", label: "Hoàn thành" },
-  cancel: { styles: "bg-red-100 text-red-700", label: "Đã hủy" },
+  cancelled: { styles: "bg-red-100 text-red-700", label: "Đã hủy" },
 };
 
 // Tùy chọn bộ lọc đơn hàng

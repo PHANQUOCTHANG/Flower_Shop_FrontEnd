@@ -105,3 +105,29 @@ export const removeTypingListener = () => {
 
   socket.off("chat:typing");
 };
+
+// Lắng nghe cập nhật inbox cho admin (khi có tin nhắn mới từ user bất kỳ)
+export const listenForInboxUpdate = (
+  callback: (data: {
+    chatId: string;
+    lastMessage: { content: string; createdAt: string };
+    fromUserId: string;
+  }) => void,
+) => {
+  const socket = getSocket();
+  if (!socket) return;
+
+  socket.off("chat:inbox_update");
+  socket.on("chat:inbox_update", (data) => {
+    console.log("[Socket] Inbox update nhận được:", data);
+    callback(data);
+  });
+  console.log("[Socket] Đang lắng nghe inbox update");
+};
+
+export const removeInboxUpdateListener = () => {
+  const socket = getSocket();
+  if (!socket) return;
+
+  socket.off("chat:inbox_update");
+};

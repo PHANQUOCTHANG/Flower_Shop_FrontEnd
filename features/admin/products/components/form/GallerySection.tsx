@@ -1,6 +1,7 @@
 "use client";
 import { forwardRef } from "react";
-import Image from "next/image";
+import { X } from "lucide-react";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 export interface ProductImage {
   id?: string;
@@ -42,16 +43,12 @@ const GallerySection = forwardRef<HTMLDivElement, GallerySectionProps>(
       const files = Array.from(e.dataTransfer.files).filter((file) =>
         file.type.startsWith("image/"),
       );
-      if (files.length > 0) {
-        onFilesAdd(files);
-      }
+      if (files.length > 0) onFilesAdd(files);
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files || []);
-      if (files.length > 0) {
-        onFilesAdd(files);
-      }
+      if (files.length > 0) onFilesAdd(files);
       e.target.value = "";
     };
 
@@ -100,41 +97,25 @@ const GallerySection = forwardRef<HTMLDivElement, GallerySectionProps>(
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {images.map((image, index) => (
                 <div
-                  key={index}
-                  className="relative bg-slate-100 rounded-lg overflow-hidden group"
+                  key={image.id || index}
+                  className="relative group rounded-xl overflow-hidden bg-slate-100 border border-slate-200"
                 >
-                  <div className="relative w-full h-32 bg-slate-200 animate-pulse">
-                    <Image
+                  {/* aspect-square giữ tỷ lệ 1:1 cho tất cả ảnh gallery */}
+                  <div className="relative aspect-square">
+                    <OptimizedImage
                       src={image.url}
-                      alt={`Product image ${index + 1}`}
+                      alt={`Ảnh sản phẩm ${index + 1}`}
                       fill
-                      sizes="(max-width: 768px) 100vw, 300px"
-                      className="object-cover opacity-0 transition-opacity duration-500"
-                      onLoad={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.classList.remove('opacity-0');
-                        target.parentElement?.classList.remove('animate-pulse');
-                      }}
+                      sizes="(max-width: 768px) 50vw, 300px"
                     />
                   </div>
                   <button
                     onClick={() => onImageRemove(index)}
-                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-md"
                     type="button"
+                    aria-label="Xoá ảnh"
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
+                    <X size={14} />
                   </button>
                 </div>
               ))}

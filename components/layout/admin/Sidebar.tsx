@@ -13,9 +13,11 @@ import {
   Flower2,
   LogOut,
   MessageCircle,
+  Bell,
 } from "lucide-react";
 import { useLogout } from "@/features/auth/logout/hooks";
 import { useAuthStore } from "@/stores/auth.store";
+import { useUnreadCount } from "@/features/admin/activity-log/hooks/useActivityLog";
 
 // --- Định nghĩa kiểu dữ liệu (Interfaces) ---
 interface SidebarLinkProps {
@@ -70,6 +72,8 @@ export const Sidebar: FC<SidebarProps> = ({ currentPath, onNavigate }) => {
     router.push(`/admin/${path}`);
     onNavigate?.(path);
   };
+
+  const unreadCount = useUnreadCount();
 
   // Hook logout
   const { logout, isLoading: isLogoutLoading } = useLogout("ADMIN");
@@ -137,6 +141,13 @@ export const Sidebar: FC<SidebarProps> = ({ currentPath, onNavigate }) => {
           label="Báo cáo"
           active={currentPath === "reports"}
           onClick={() => handleNavigate("reports")}
+        />
+        <SidebarLink
+          icon={Bell}
+          label="Thông báo"
+          active={currentPath === "activity-logs"}
+          onClick={() => handleNavigate("activity-logs")}
+          badge={unreadCount > 0 ? unreadCount.toString() : undefined}
         />
 
         {/* Đường kẻ phân cách */}

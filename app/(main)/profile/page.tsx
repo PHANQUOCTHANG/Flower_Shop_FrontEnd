@@ -9,6 +9,7 @@ import Alert from "@/components/ui/Alert";
 import { useAuthStore } from "@/stores/auth.store";
 import { useLogout } from "@/features/auth/logout/hooks";
 import { useQueryClient } from "@tanstack/react-query";
+import { getSocket } from "@/lib/socket";
 import { useFetchMyOrders } from "@/features/profile/hooks/useProfile";
 import {
   ProfileSidebar,
@@ -162,6 +163,27 @@ function UserAccountContent() {
   const handleCloseReviewModal = useCallback(() => {
     setReviewModal(INITIAL_REVIEW_MODAL);
   }, []);
+
+  // Lắng nghe sự kiện realtime cập nhật trạng thái đơn hàng
+  useEffect(() => {
+    if (!user?.id) return;
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handleStatusUpdated = (payload: { orderId: string; status: string }) => {
+      // Invalidate list orders và chi tiết đơn hàng
+      queryClient.invalidateQueries({ queryKey: ["orders", "my-orders"] });
+      if (selectedOrderId === payload.orderId) {
+        queryClient.invalidateQueries({ queryKey: ["admin", "orders", "detail", payload.orderId] });
+      }
+    };
+
+    socket.on("order:status_updated", handleStatusUpdated);
+
+    return () => {
+      socket.off("order:status_updated", handleStatusUpdated);
+    };
+  }, [user?.id, queryClient, selectedOrderId]);
 
   return (
     <div className="min-h-screen bg-[#fcf8f9] font-['Inter',_sans-serif] text-slate-900 transition-colors duration-300">

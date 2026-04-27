@@ -236,3 +236,29 @@ export const useUpdatePaymentStatus = () => {
     error: error as Error | null,
   };
 };
+
+/**
+ * Hook để khách hàng hủy đơn hàng
+ */
+export const useCancelOrder = () => {
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending, isError, error } = useMutation({
+    mutationFn: async (orderId: string) => {
+      return await orderService.cancelOrder(orderId);
+    },
+    onSuccess: (_, orderId) => {
+      // Invalidate queries của user
+      queryClient.invalidateQueries({ queryKey: ["orders", "my-orders"] });
+      queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) });
+      queryClient.invalidateQueries({ queryKey: orderKeys.lists() });
+    },
+  });
+
+  return {
+    cancelOrder: mutate,
+    isPending,
+    isError,
+    error: error as Error | null,
+  };
+};

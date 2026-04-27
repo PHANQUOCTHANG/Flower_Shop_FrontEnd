@@ -7,6 +7,7 @@ export interface ChatLastMessage {
   content: string;
   createdAt: string;
   senderRole?: "user" | "admin" | string;
+  isRead?: boolean;
 }
 
 export interface Chat {
@@ -30,4 +31,5 @@ export interface Message {
   senderRole: "user" | "admin" | string;
   content: string;
   createdAt: string;
+  isRead?: boolean;
 }

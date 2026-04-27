@@ -117,4 +117,19 @@ export const orderService = {
 
     return res.data.data ?? ({} as OrderResponse);
   },
+
+  /**
+   * Khách hàng tự hủy đơn hàng
+   */
+  async cancelOrder(orderId: string): Promise<OrderResponse> {
+    const res = await api.patch<ApiResponse<OrderResponse>>(
+      `/orders/${orderId}/cancel`
+    );
+
+    if (res.data.status !== "success") {
+      throw new Error(res.data.message || "Failed to cancel order");
+    }
+
+    return res.data.data ?? ({} as OrderResponse);
+  },
 };

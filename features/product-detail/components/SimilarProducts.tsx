@@ -1,5 +1,5 @@
-/* eslint-disable @next/next/no-img-element */
 import React from "react";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { ShoppingCart } from "lucide-react";
 import { SimilarProduct } from "../types";
 import { formatCurrency } from "../../../utils/format";
@@ -40,14 +40,12 @@ export const SimilarProducts: React.FC<SimilarProductsProps> = ({
           <div onClick={() => router.push(`${item.slug}`)} key={item.id} className="group cursor-pointer">
             {/* Hình ảnh */}
             <div className="aspect-square rounded-2xl overflow-hidden mb-4 bg-white relative shadow-sm border border-gray-100 ">
-              <img
-                src={
-                  item.thumbnailUrl ||
-                  item.images?.[0]?.url ||
-                  "/placeholder.jpg"
-                }
+              <OptimizedImage
+                src={item.thumbnailUrl || item.images?.[0]?.url}
                 alt={item.name}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                fill
+                className="group-hover:scale-110 transition-transform duration-700"
+                sizes="(max-width: 768px) 50vw, 25vw"
               />
               <button className="absolute bottom-4 right-4 p-3 bg-white/90 backdrop-blur rounded-full opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all shadow-lg text-[#13ec5b]">
                 <ShoppingCart className="w-5 h-5" />

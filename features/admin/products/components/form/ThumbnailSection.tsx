@@ -1,6 +1,6 @@
 "use client";
 import { forwardRef } from "react";
-import Image from "next/image";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 interface ThumbnailSectionProps {
   thumbnail: string | null;
@@ -36,16 +36,12 @@ const ThumbnailSection = forwardRef<HTMLDivElement, ThumbnailSectionProps>(
       const files = Array.from(e.dataTransfer.files).filter((file) =>
         file.type.startsWith("image/"),
       );
-      if (files.length > 0) {
-        onFileSelect(files[0]);
-      }
+      if (files.length > 0) onFileSelect(files[0]);
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
-      if (file) {
-        onFileSelect(file);
-      }
+      if (file) onFileSelect(file);
       e.target.value = "";
     };
 
@@ -57,20 +53,15 @@ const ThumbnailSection = forwardRef<HTMLDivElement, ThumbnailSectionProps>(
         <h3 className="text-lg font-bold mb-6">🎯 Ảnh đại diện</h3>
 
         {thumbnail ? (
-          // Show existing thumbnail
           <div className="mb-4">
-            <div className="relative w-full h-48 bg-slate-200 animate-pulse rounded-xl overflow-hidden">
-              <Image
+            {/* aspect-[4/3] + overflow-hidden giữ tỷ lệ chuẩn */}
+            <div className="relative aspect-[4/3] w-full rounded-xl overflow-hidden bg-slate-100">
+              <OptimizedImage
                 src={thumbnail}
-                alt="Thumbnail"
+                alt="Ảnh đại diện sản phẩm"
                 fill
+                priority
                 sizes="(max-width: 768px) 100vw, 400px"
-                className="object-cover opacity-0 transition-opacity duration-500"
-                onLoad={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.classList.remove('opacity-0');
-                  target.parentElement?.classList.remove('animate-pulse');
-                }}
               />
             </div>
             <button
@@ -82,7 +73,6 @@ const ThumbnailSection = forwardRef<HTMLDivElement, ThumbnailSectionProps>(
             </button>
           </div>
         ) : (
-          // Show drag & drop area
           <div
             onDragOver={handleDragOver}
             onDragEnter={onDragEnter}

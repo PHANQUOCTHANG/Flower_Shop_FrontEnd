@@ -157,4 +157,14 @@ export const adminChatService = {
   ): Promise<ChatListResponse> {
     return this.getChatList({ status });
   },
+
+  // Đánh dấu tin nhắn trong chat là đã đọc
+  async markAsRead(chatId: string): Promise<void> {
+    try {
+      await api.patch(`/chats/${chatId}/read`);
+    } catch (error) {
+      console.error("[Admin Chat Service] Lỗi đánh dấu đã đọc", error);
+      throw error;
+    }
+  },
 };

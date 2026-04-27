@@ -3,7 +3,7 @@ import { Eye } from "lucide-react";
 import { OrderResponse } from "@/types/order";
 import { StatusBadge } from "./StatusBadge";
 import { Pagination } from "@/components/ui/admin/Pagination";
-import { formatDate } from "@/utils/format";
+import { formatCurrency, formatDate } from "@/utils/format";
 
 interface OrdersTableProps {
   orders: OrderResponse[];
@@ -34,7 +34,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
             <div className="relative">
               {/* Spinner xoay */}
               <div className="relative flex items-center justify-center">
-                <div className="size-12 border-3 border-slate-300 border-t-[#13ec5b] rounded-full animate-spin"></div>
+                <div className="size-12 border-3 border-slate-300 border-t-primary rounded-full animate-spin"></div>
                 <span className="absolute text-xs font-bold text-slate-500 "></span>
               </div>
             </div>
@@ -59,7 +59,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                 Tổng tiền
               </th>
               <th className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest text-center">
-                Thanh toán
+                Phương thức
               </th>
               <th className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest text-center">
                 Trạng thái
@@ -85,7 +85,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   key={order.id}
                   className="hover:bg-slate-50/80 transition-colors group"
                 >
-                  <td className="px-6 py-5 text-sm font-black text-[#13ec5b]">
+                  <td className="px-6 py-5 text-sm font-black text-primary">
                     {order.id}
                   </td>
                   <td className="px-6 py-5 text-sm text-slate-500 font-medium">
@@ -98,10 +98,10 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                     {order.shippingPhone}
                   </td>
                   <td className="px-6 py-5 text-sm font-black text-slate-900 text-right">
-                    ₫{Math.floor(order.totalPrice).toLocaleString("vi-VN")}
+                    {formatCurrency(order.totalPrice)}
                   </td>
                   <td className="px-6 py-5 text-center">
-                    <StatusBadge label={order.paymentStatus} type="payment" />
+                    <StatusBadge label={order.paymentMethod || "cod"} type="method" />
                   </td>
                   <td className="px-6 py-5 text-center">
                     <StatusBadge label={order.status} type="status" />
@@ -111,7 +111,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                       {order.status === "pending" && (
                         <button
                           onClick={() => onStatusUpdate(order.id, "processing")}
-                          className="bg-[#13ec5b] text-[#102216] text-[10px] font-black uppercase px-3 py-1.5 rounded-lg shadow-sm hover:scale-105 active:scale-95 transition-all opacity-0 group-hover:opacity-100"
+                          className="bg-primary text-[#102216] text-[10px] font-black uppercase px-3 py-1.5 rounded-lg shadow-sm hover:scale-105 active:scale-95 transition-all opacity-0 group-hover:opacity-100"
                         >
                           Giao hàng
                         </button>
@@ -126,7 +126,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                       )}
                       <button
                         onClick={() => onViewDetails(order.id)}
-                        className="p-2 text-slate-400 hover:text-[#13ec5b] hover:bg-[#13ec5b]/10 rounded-xl transition-all"
+                        className="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
                       >
                         <Eye size={18} />
                       </button>

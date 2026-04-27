@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Heart } from "lucide-react";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 interface Product {
  id: number;
@@ -34,10 +35,12 @@ export default function ProductCard({ product }: ProductCardProps) {
  {product.badge}
  </div>
  )}
- <img
+ <OptimizedImage
  src={product.image}
  alt={product.name}
- className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+ fill
+ className="group-hover:scale-110 transition-transform duration-500"
+ sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
  />
  <button className="absolute bottom-3 right-3 z-10 size-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-[#e91e63] shadow-md hover:scale-110 transition-transform">
  <Heart size={20} fill="currentColor" />

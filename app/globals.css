@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #13ec5b;
+  --color-danger: #ee2b5b;
+}
+
+:root {
+  --primary: #13ec5b;
+  --danger: #ee2b5b;
+}
+
+
 /* Global Font Styles */
 body {
   font-family: inherit;

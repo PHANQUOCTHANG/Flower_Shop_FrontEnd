@@ -3,11 +3,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { OrderResponse } from "@/types/order";
 import { StatusBadge } from "./StatusBadge";
-import { useOrderById } from "@/features/admin/orders/hooks/useOrder";
+import { useOrderById, useCancelOrder } from "@/features/admin/orders/hooks/useOrder";
 import { Oregano } from "next/font/google";
-import { formatDate } from "@/utils/format";
+import { formatCurrency, formatDate } from "@/utils/format";
 import { useAuthStore } from "@/stores/auth.store";
-import { Star } from "lucide-react";
+import { Star, X } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 interface OrderDetailModalProps {
   orderId: string | null;
@@ -31,12 +32,11 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   const router = useRouter();
   // Fetch chi tiết đơn hàng từ API khi có orderId
   const { order, isLoading, isFetching } = useOrderById(orderId);
+  const { cancelOrder, isPending: isCanceling } = useCancelOrder();
+  const [showConfirm, setShowConfirm] = React.useState(false);
 
   // Không render gì nếu modal chưa được mở
   if (!orderId) return null;
-
-  console.log("Role", role);
-  console.log("Item:", order?.items);
 
   // Kiểm tra xem có nên hiển thị cột đánh giá không
   const showRatingColumn = order?.status === "completed" && role === "CUSTOMER";
@@ -57,9 +57,10 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           )}
           <button
             onClick={onClose}
-            className="text-slate-500 hover:text-slate-700 text-2xl"
+            className="text-slate-500 hover:text-slate-700 p-1 hover:bg-slate-200 rounded-lg transition-colors"
+            aria-label="Đóng"
           >
-            ×
+            <X size={24} />
           </button>
         </div>
 
@@ -91,7 +92,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
               <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">
                 Mã đơn
               </p>
-              <p className="text-lg font-black text-[#13ec5b]">{order.id}</p>
+              <p className="text-lg font-black text-primary">{order.id}</p>
             </div>
 
             {/* Customer Info */}
@@ -129,7 +130,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   Tổng tiền
                 </p>
                 <p className="font-black text-lg text-slate-900 ">
-                  ₫{Math.floor(order.totalPrice).toLocaleString("vi-VN")}
+                  {formatCurrency(order.totalPrice)}
                 </p>
               </div>
             </div>
@@ -138,9 +139,9 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
-                  Trạng thái thanh toán
+                  Phương thức thanh toán
                 </p>
-                <StatusBadge label={order.paymentStatus} type="payment" />
+                <StatusBadge label={order.paymentMethod || "cod"} type="method" />
               </div>
               <div>
                 <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
@@ -206,13 +207,10 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                           {item.quantity}
                         </td>
                         <td className="px-4 py-3 text-sm font-bold text-slate-900 text-right whitespace-nowrap">
-                          ₫{Math.floor(item.price).toLocaleString("vi-VN")}
+                          {formatCurrency(item.price)}
                         </td>
                         <td className="px-4 py-3 text-sm font-black text-slate-900 text-right whitespace-nowrap">
-                          ₫
-                          {Math.floor(
-                            item.price * item.quantity,
-                          ).toLocaleString("vi-VN")}
+                          {formatCurrency(item.price * item.quantity)}
                         </td>
                         {showRatingColumn && (
                           <td className="px-4 py-3 text-center">
@@ -230,7 +228,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                                     item.thumbnail || undefined,
                                   )
                                 }
-                                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-[#13ec5b]/10 text-[#13ec5b] hover:bg-[#13ec5b]/20 border border-[#13ec5b]/30 hover:border-[#13ec5b]/60 rounded-lg transition-all font-bold text-xs whitespace-nowrap"
+                                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30 hover:border-primary/60 rounded-lg transition-all font-bold text-xs whitespace-nowrap"
                               >
                                 <Star className="w-4 h-4" />
                                 Đánh giá
@@ -245,8 +243,8 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 <div className="bg-slate-100 px-4 py-4 border-t border-slate-200 flex justify-end">
                   <div className="text-sm">
                     <span className="font-bold text-slate-700">Tổng cộng:</span>
-                    <span className="font-black text-lg text-[#13ec5b] ml-2">
-                      ₫{Math.floor(order.totalPrice).toLocaleString("vi-VN")}
+                    <span className="font-black text-lg text-primary ml-2">
+                      {formatCurrency(order.totalPrice)}
                     </span>
                   </div>
                 </div>
@@ -258,7 +256,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
               {order.status === "pending" && role === "ADMIN" && (
                 <button
                   onClick={() => onStatusUpdate(order.id, "processing")}
-                  className="flex-1 bg-[#13ec5b] text-[#102216] font-black py-2 rounded-lg hover:scale-105 transition-all"
+                  className="flex-1 bg-primary text-[#102216] font-black py-2 rounded-lg hover:scale-105 transition-all"
                 >
                   Xác nhận giao hàng
                 </button>
@@ -271,6 +269,15 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   Hoàn tất đơn hàng
                 </button>
               )}
+              {order.status === "pending" && role === "CUSTOMER" && (
+                <button
+                  onClick={() => setShowConfirm(true)}
+                  disabled={isCanceling}
+                  className="flex-1 bg-danger text-white font-black py-2 rounded-lg hover:bg-red-600 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isCanceling ? "Đang hủy..." : "Hủy đơn hàng"}
+                </button>
+              )}
               <button
                 onClick={onClose}
                 className="flex-1 bg-slate-200 text-slate-900 font-black py-2 rounded-lg hover:scale-105 transition-all"
@@ -278,6 +285,23 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 Đóng
               </button>
             </div>
+
+            {/* Modal xác nhận hủy */}
+            <ConfirmDialog
+              isOpen={showConfirm}
+              title="Xác nhận hủy đơn"
+              message="Bạn có chắc chắn muốn hủy đơn hàng này không? Hành động này không thể hoàn tác."
+              confirmLabel="Xác nhận hủy"
+              cancelLabel="Quay lại"
+              onConfirm={() => {
+                cancelOrder(order.id, {
+                  onSuccess: () => setShowConfirm(false)
+                });
+              }}
+              onCancel={() => setShowConfirm(false)}
+              isLoading={isCanceling}
+              type="danger"
+            />
           </div>
         )}
       </div>

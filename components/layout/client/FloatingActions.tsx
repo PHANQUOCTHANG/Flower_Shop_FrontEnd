@@ -45,6 +45,17 @@ export default function FloatingActions() {
     loadMoreMessages,
   } = useChat();
 
+  // Reset chat và đóng hộp thoại khi đăng xuất
+  useEffect(() => {
+    if (!isAuthenticated) {
+      if (isChatOpen) {
+        setIsChatOpen(false);
+      }
+      setInputValue("");
+      closeChat();
+    }
+  }, [isAuthenticated, isChatOpen, closeChat]);
+
   // Cập nhật ref khi loadMoreMessages thay đổi
   useEffect(() => {
     loadMoreMessagesRef.current = loadMoreMessages;

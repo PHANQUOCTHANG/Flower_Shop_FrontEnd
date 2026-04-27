@@ -1,8 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
 import { Edit, Trash2 } from "lucide-react";
 import { Pagination } from "@/components/ui/admin/Pagination";
 import { Product } from "@/features/admin/products/types";
 import { useRouter } from "next/navigation";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 interface ProductTableProps {
   products: Product[];
@@ -78,11 +78,12 @@ export const ProductTable = ({
                   className="hover:bg-slate-50 transition-colors group"
                 >
                   <td className="px-6 py-4 text-center">
-                    <div className="size-14 rounded-xl bg-slate-100 overflow-hidden border border-slate-200 mx-auto">
-                      <img
-                        className="w-full h-full object-cover"
-                        src={product.thumbnailUrl || undefined}
+                    <div className="relative size-14 rounded-xl bg-slate-100 overflow-hidden border border-slate-200 mx-auto">
+                      <OptimizedImage
+                        fill
+                        src={product.thumbnailUrl}
                         alt={product.name}
+                        sizes="56px"
                       />
                     </div>
                   </td>

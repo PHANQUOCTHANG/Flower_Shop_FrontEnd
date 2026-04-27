@@ -42,7 +42,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
  <input
  value={searchKeyword}
  onChange={onSearchChange}
- className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-[#13ec5b]/50"
+ className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/50"
  placeholder="Lọc nhanh..."
  />
  </div>
@@ -62,7 +62,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
  type="date"
  value={dateFrom}
  onChange={onDateFromChange}
- className="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#13ec5b]/50"
+ className="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/50"
  />
  </div>
 
@@ -74,7 +74,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
  type="date"
  value={dateTo}
  onChange={onDateToChange}
- className="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#13ec5b]/50"
+ className="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/50"
  />
  </div>
 
@@ -85,7 +85,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
  <select
  value={paymentStatusFilter}
  onChange={onPaymentStatusChange}
- className="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#13ec5b]/50"
+ className="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/50"
  >
  <option value="all">Tất cả</option>
  <option value="paid">Đã thanh toán</option>
@@ -100,7 +100,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
  <select
  value={sortBy}
  onChange={onSortChange}
- className="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#13ec5b]/50"
+ className="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/50"
  >
  <option value="newest">Mới nhất</option>
  <option value="oldest">Cũ nhất</option>
@@ -118,7 +118,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
  </button>
  <button
  onClick={onApplyFilter}
- className="px-4 py-2 text-xs font-bold text-white bg-[#13ec5b] rounded-xl hover:scale-105 active:scale-95 transition-all shadow-sm"
+ className="px-4 py-2 text-xs font-bold text-white bg-primary rounded-xl hover:scale-105 active:scale-95 transition-all shadow-sm"
  >
  Áp dụng lọc
  </button>

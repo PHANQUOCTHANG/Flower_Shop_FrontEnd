@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
@@ -7,6 +6,7 @@ import { Bolt, Heart, ShoppingCart, Check, Plus, Minus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAddToCart } from "@/features/cart/hooks/useCart";
 import { useAuthStore } from "@/stores/auth.store";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 // Hằng số
 const INITIAL_QUANTITY = 1;
@@ -193,7 +193,7 @@ export const ProductCard = ({
         className="flex gap-6 bg-white rounded-4xl overflow-hidden border border-transparent hover:border-[#13ec5b]/20 hover:shadow-2xl transition-all duration-500 p-6 cursor-pointer"
       >
         {/* Hình ảnh sản phẩm */}
-        <div className="relative w-32 h-40 shrink-0 overflow-hidden rounded-2xl">
+        <div className="relative w-36 h-44 shrink-0 overflow-hidden rounded-2xl bg-gray-50">
           {/* Badge: % giảm giá */}
           {discount > 0 && (
             <div className="absolute top-3 left-3 z-10 text-white typo-caption-xs px-3 py-1.5 rounded-full shadow-lg bg-[#e91e63]">
@@ -224,10 +224,13 @@ export const ProductCard = ({
           </button>
 
           {/* Ảnh */}
-          <img
-            src={product.thumbnailUrl || undefined}
+          <OptimizedImage
+            src={product.thumbnailUrl}
             alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110"
+            fill
+            objectFit="contain"
+            className="transition-transform duration-700 hover:scale-105 p-2"
+            sizes="144px"
           />
         </div>
 
@@ -295,11 +298,11 @@ export const ProductCard = ({
       onClick={() => router.push(`/products/${product.slug}`)}
       className="group flex flex-col bg-white rounded-4xl overflow-hidden border border-transparent hover:border-[#13ec5b]/20 hover:shadow-2xl transition-all duration-500 cursor-pointer"
     >
-      {/* Phần hình ảnh */}
-      <div className="relative aspect-4/5 overflow-hidden">
+      {/* Phần hình ảnh – aspect-[4/5] = tỷ lệ 4:5 chuẩn cho card hoa */}
+      <div className="relative aspect-[4/5] overflow-hidden bg-gray-50">
         {/* Badge: % giảm giá */}
         {discount > 0 && (
-          <div className="absolute top-5 left-5 z-10 text-white typo-caption-xs px-3 py-1.5 rounded-full shadow-lg bg-[#e91e63]">
+          <div className="absolute top-4 left-4 z-10 text-white typo-caption-xs px-3 py-1.5 rounded-full shadow-lg bg-[#e91e63]">
             -{discount}%
           </div>
         )}
@@ -313,7 +316,7 @@ export const ProductCard = ({
 
         {/* Badge: Sắp hết */}
         {isLowStock && (
-          <div className="absolute top-5 right-5 z-10 text-white typo-caption-xs px-3 py-1.5 rounded-full shadow-lg bg-[#ff9800]">
+          <div className="absolute top-4 right-4 z-10 text-white typo-caption-xs px-3 py-1.5 rounded-full shadow-lg bg-[#ff9800]">
             Sắp hết
           </div>
         )}
@@ -321,16 +324,19 @@ export const ProductCard = ({
         {/* Nút yêu thích */}
         <button
           onClick={(e) => e.stopPropagation()}
-          className="absolute top-5 right-5 z-10 size-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-gray-600 hover:text-[#e91e63] transition-all active:scale-90"
+          className="absolute top-4 right-4 z-10 size-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-gray-600 hover:text-[#e91e63] transition-all active:scale-90"
         >
           <Heart size={DROPDOWN_SIZE_DEFAULT} />
         </button>
 
         {/* Ảnh */}
-        <img
-          src={product.thumbnailUrl || undefined}
+        <OptimizedImage
+          src={product.thumbnailUrl}
           alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+          fill
+          objectFit="contain"
+          className="transition-transform duration-700 group-hover:scale-105 p-3"
+          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
         />
       </div>
 

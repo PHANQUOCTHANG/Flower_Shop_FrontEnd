@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Star, Image as ImageIcon, Video as VideoIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { useProductReviews } from "@/features/product-detail/hooks/useProductReviews";
 import { ProductReview } from "@/features/product-detail/types";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 interface ReviewsTabProps {
   slug: string;
@@ -50,10 +51,12 @@ function ReviewCard({ review }: { review: ProductReview }) {
         <div className="flex items-center gap-3">
           {/* Avatar */}
           {review.user.avatar ? (
-            <img
+            <OptimizedImage
               src={review.user.avatar}
               alt={review.user.fullName}
-              className="w-9 h-9 rounded-full object-cover border border-gray-200"
+              width={36}
+              height={36}
+              className="rounded-full border border-gray-200"
             />
           ) : (
             <div className="w-9 h-9 rounded-full bg-[#13ec5b]/20 flex items-center justify-center text-sm font-bold text-[#0d8a36]">
@@ -82,7 +85,12 @@ function ReviewCard({ review }: { review: ProductReview }) {
               className="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-200 bg-gray-100"
             >
               {m.type === "image" ? (
-                <img src={m.url} alt={`Ảnh ${i + 1}`} className="w-full h-full object-cover" />
+                <OptimizedImage 
+                  src={m.url} 
+                  alt={`Ảnh ${i + 1}`} 
+                  fill
+                  sizes="80px"
+                />
               ) : (
                 <video src={m.url} className="w-full h-full object-cover" />
               )}

@@ -8,6 +8,7 @@ import { useCartStore } from "@/stores/cart.store";
 import { useAuthStore } from "@/stores/auth.store";
 import { useProducts } from "@/features/products/hooks/useProducts";
 import { formatCurrency } from "@/utils/format";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 export default function Header() {
   const router = useRouter();
@@ -184,10 +185,12 @@ export default function Header() {
                         onClick={() => handleSelectProduct(product.slug)}
                         className="flex items-center gap-3 p-3 border-b border-gray-100 hover:bg-[#f6f8f6] cursor-pointer transition-colors last:border-b-0"
                       >
-                        <img
-                          src={product.thumbnailUrl || "/placeholder.jpg"}
+                        <OptimizedImage
+                          src={product.thumbnailUrl}
                           alt={product.name}
-                          className="w-12 h-12 object-cover rounded-lg"
+                          width={48}
+                          height={48}
+                          className="rounded-lg"
                         />
                         <div className="flex-1 min-w-0">
                           <h4 className="typo-body-sm font-semibold text-gray-900 line-clamp-1">

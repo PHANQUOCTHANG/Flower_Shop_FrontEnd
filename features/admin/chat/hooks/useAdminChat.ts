@@ -229,6 +229,25 @@ export const useAdminChat = () => {
         // Tham gia socket room
         socketChatService.joinChatRoom(chatId);
 
+        // Đánh dấu đã đọc
+        adminChatService.markAsRead(chatId).catch(err => console.error("Lỗi markAsRead:", err));
+        
+        // Optimistic Update danh sách chat
+        setState((prev) => {
+          const chats = [...prev.chats];
+          const index = chats.findIndex((c) => c.id === chatId);
+          if (index !== -1 && chats[index].lastMessage) {
+            chats[index] = {
+              ...chats[index],
+              lastMessage: {
+                ...chats[index].lastMessage!,
+                isRead: true,
+              },
+            };
+          }
+          return { ...prev, chats };
+        });
+
         // Tải tin nhắn
         const result = await adminChatService.getChatMessages(chatId);
         const chatInfo = state.chats.find((c) => c.id === chatId);
@@ -284,7 +303,7 @@ export const useAdminChat = () => {
 
   // Cập nhật last message trong danh sách
   const updateChatLastMessage = useCallback(
-    (chatId: string, message: Message) => {
+    (chatId: string, message: Message & { isRead?: boolean }) => {
       setState((prev) => ({
         ...prev,
         chats: prev.chats.map((chat) =>
@@ -295,6 +314,7 @@ export const useAdminChat = () => {
                   content: message.content,
                   createdAt: message.createdAt,
                   senderRole: message.senderRole,
+                  isRead: message.isRead ?? false,
                 },
                 lastMessageAt: message.createdAt,
               }
@@ -378,6 +398,7 @@ export const useAdminChat = () => {
 
   // ============ Lắng nghe Socket ============
 
+  // Lắng nghe tin nhắn trong phòng chat hiện tại
   useEffect(() => {
     if (!state.selectedChat) return;
 
@@ -386,7 +407,15 @@ export const useAdminChat = () => {
     const handleNewMessage = (message: Message) => {
       if (message.chatId === chatId) {
         addMessageFromSocket(message);
-        updateChatLastMessage(chatId, message);
+        
+        // Nếu tin nhắn là của khách gửi vào phòng Admin đang mở
+        // Tự động gọi API đánh dấu đã đọc và cập nhật UI ngay lập tức
+        if (message.senderRole !== "admin") {
+          adminChatService.markAsRead(chatId).catch(err => console.error("Lỗi tự động markAsRead:", err));
+          updateChatLastMessage(chatId, { ...message, isRead: true });
+        } else {
+          updateChatLastMessage(chatId, { ...message, isRead: true });
+        }
       }
     };
 
@@ -397,6 +426,52 @@ export const useAdminChat = () => {
       socketChatService.leaveChatRoom(chatId);
     };
   }, [state.selectedChat, addMessageFromSocket, updateChatLastMessage]);
+
+  // Lắng nghe cập nhật từ các cuộc hội thoại khác (inbox update)
+  useEffect(() => {
+    if (!accessToken) return;
+
+    const handleInboxUpdate = (data: {
+      chatId: string;
+      lastMessage: { content: string; createdAt: string };
+      fromUserId: string;
+    }) => {
+      setState((prev) => {
+        const chats = [...prev.chats];
+        const index = chats.findIndex((c) => c.id === data.chatId);
+        
+        if (index !== -1) {
+          // Đoạn chat đã tồn tại -> cập nhật tin nhắn cuối và đưa lên đầu
+          const chat = chats[index];
+          chats.splice(index, 1);
+          chats.unshift({
+            ...chat,
+            lastMessage: {
+              content: data.lastMessage.content,
+              createdAt: data.lastMessage.createdAt,
+              senderRole: "user",
+              isRead: false,
+            },
+            lastMessageAt: data.lastMessage.createdAt,
+          });
+          return { ...prev, chats };
+        } else {
+          // Đoạn chat chưa tồn tại (người dùng mới) -> tải lại trang 1
+          // Sử dụng setTimeout để đảm bảo transaction DB đã commit xong
+          setTimeout(() => {
+            loadChats(1, prev.searchKeyword || undefined);
+          }, 500);
+          return prev;
+        }
+      });
+    };
+
+    socketChatService.listenForInboxUpdate(handleInboxUpdate);
+
+    return () => {
+      socketChatService.removeInboxUpdateListener();
+    };
+  }, [accessToken, loadChats]);
 
   // ============ Return ============
 

@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useState } from "react";
@@ -9,6 +8,7 @@ import { useAddToCart } from "@/features/cart/hooks/useCart";
 import { useAuthStore } from "@/stores/auth.store";
 import ScrollReveal from "./ScrollReveal";
 import Link from "next/link";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 // ─── Mini ProductCard riêng cho home ────────────────────────────────────────
 function HomeProductCard({ product }: { product: Product }) {
@@ -63,7 +63,7 @@ function HomeProductCard({ product }: { product: Product }) {
  className="group bg-white rounded-2xl overflow-hidden border border-[#e7f3eb] hover:shadow-xl hover:border-[#13ec5b]/30 transition-all duration-300 cursor-pointer flex flex-col"
  >
  {/* Ảnh */}
- <div className="relative aspect-[3/4] overflow-hidden">
+ <div className="relative aspect-[3/4] overflow-hidden bg-gray-50">
  {discount > 0 && (
  <span className="absolute top-3 left-3 z-10 text-white text-[10px] font-bold px-2 py-1 rounded-md bg-[#e91e63]">
  -{discount}%
@@ -74,11 +74,13 @@ function HomeProductCard({ product }: { product: Product }) {
  <span className="text-white text-xs font-bold">Hết hàng</span>
  </div>
  )}
- <img
+ <OptimizedImage
  src={product.thumbnailUrl || "https://images.unsplash.com/photo-1561181286-d3efa7d11f63?q=80&w=400"}
  alt={product.name}
- className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
- loading="lazy"
+ fill
+ objectFit="contain"
+ className="transition-transform duration-500 group-hover:scale-105 p-3"
+ sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
  />
  </div>
 

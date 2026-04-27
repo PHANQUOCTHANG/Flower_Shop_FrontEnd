@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useCreateReview } from "@/features/profile/hooks/useReview";
 import Alert from "@/components/ui/Alert";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 interface ReviewFormModalProps {
   isOpen: boolean;
@@ -174,11 +175,12 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
           {/* Product Preview */}
           {productImage && (
             <div className="flex gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-white border border-slate-200">
-                <img
+              <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-white border border-slate-200">
+                <OptimizedImage
                   src={productImage}
                   alt={productName}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="64px"
                 />
               </div>
               <div className="flex-1">

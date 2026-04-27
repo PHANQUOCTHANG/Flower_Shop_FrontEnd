@@ -22,31 +22,22 @@ function OrdersPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Bộ lọc tạm thời (chưa được áp dụng)
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState<string | undefined>(
-    undefined,
-  );
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("newest");
+  // Unified filter state
+  const [filters, setFilters] = useState({
+    search: "",
+    status: undefined as string | undefined,
+    dateFrom: "",
+    dateTo: "",
+    paymentStatus: "all",
+    sort: "newest",
+  });
 
-  // Bộ lọc đã áp dụng (dùng để fetch dữ liệu từ API)
-  const [appliedSearchKeyword, setAppliedSearchKeyword] = useState("");
-  const [appliedStatus, setAppliedStatus] = useState<string | undefined>(
-    undefined,
-  );
-  const [appliedDateFrom, setAppliedDateFrom] = useState("");
-  const [appliedDateTo, setAppliedDateTo] = useState("");
-  const [appliedPaymentStatus, setAppliedPaymentStatus] = useState("all");
-  const [appliedSortBy, setAppliedSortBy] = useState("newest");
-
-  // Trạng thái phân trang và UI
+  // Applied filters (for API fetch)
+  const [appliedFilters, setAppliedFilters] = useState(filters);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
-  // Fetch danh sách đơn hàng từ API với các bộ lọc đã áp dụng
+  // Fetch orders
   const {
     orders,
     meta,
@@ -57,257 +48,98 @@ function OrdersPageContent() {
   } = useOrders({
     page: currentPage,
     limit: 10,
-    search: appliedSearchKeyword || undefined,
-    status:
-      appliedStatus === "all"
-        ? undefined
-        : (appliedStatus as GetOrdersParams["status"]),
-    paymentStatus:
-      appliedPaymentStatus === "all"
-        ? undefined
-        : (appliedPaymentStatus as GetOrdersParams["paymentStatus"]),
-    dateFrom: appliedDateFrom || undefined,
-    dateTo: appliedDateTo || undefined,
-    sort: appliedSortBy as GetOrdersParams["sort"],
+    search: appliedFilters.search || undefined,
+    status: appliedFilters.status === "all" ? undefined : (appliedFilters.status as GetOrdersParams["status"]),
+    paymentStatus: appliedFilters.paymentStatus === "all" ? undefined : (appliedFilters.paymentStatus as GetOrdersParams["paymentStatus"]),
+    dateFrom: appliedFilters.dateFrom || undefined,
+    dateTo: appliedFilters.dateTo || undefined,
+    sort: appliedFilters.sort as GetOrdersParams["sort"],
   });
 
   const { updateStatus } = useUpdateOrderStatus();
-  const totalOrders = pagination.total;
 
-  // Khởi tạo trạng thái từ URL query params
+  // Initialize from URL
   useEffect(() => {
-    const keyword = searchParams.get("search") || "";
-    const status = searchParams.get("status") || undefined;
+    const newFilters = {
+      search: searchParams.get("search") || "",
+      status: searchParams.get("status") || undefined,
+      dateFrom: searchParams.get("dateFrom") || "",
+      dateTo: searchParams.get("dateTo") || "",
+      paymentStatus: searchParams.get("paymentStatus") || "all",
+      sort: searchParams.get("sort") || "newest",
+    };
     const page = parseInt(searchParams.get("page") || "1");
-    const dateFromParam = searchParams.get("dateFrom") || "";
-    const dateToParam = searchParams.get("dateTo") || "";
-    const paymentStatus = searchParams.get("paymentStatus") || "all";
-    const sort = searchParams.get("sort") || "newest";
 
-    setSearchKeyword(keyword);
-    setSelectedStatus(status);
+    setFilters(newFilters);
+    setAppliedFilters(newFilters);
     setCurrentPage(page);
-    setDateFrom(dateFromParam);
-    setDateTo(dateToParam);
-    setPaymentStatusFilter(paymentStatus);
-    setSortBy(sort);
-
-    setAppliedSearchKeyword(keyword);
-    setAppliedStatus(status);
-    setAppliedDateFrom(dateFromParam);
-    setAppliedDateTo(dateToParam);
-    setAppliedPaymentStatus(paymentStatus);
-    setAppliedSortBy(sort);
   }, [searchParams]);
 
-  // Cập nhật URL query params khi bộ lọc thay đổi
-  const updateQueryParams = (
-    keyword?: string,
-    status?: string,
-    page?: number,
-    dateFromParam?: string,
-    dateToParam?: string,
-    paymentStatus?: string,
-    sort?: string,
-  ) => {
+  // Unified Query Param Update
+  const updateUrl = (newFilters: typeof filters, page: number) => {
     const params = new URLSearchParams();
-
-    if (keyword !== undefined) {
-      if (keyword) params.set("search", keyword);
-      setSearchKeyword(keyword);
-    } else if (searchKeyword) {
-      params.set("search", searchKeyword);
-    }
-
-    if (status !== undefined) {
-      if (status) params.set("status", status);
-      setSelectedStatus(status);
-    } else if (selectedStatus) {
-      params.set("status", selectedStatus);
-    }
-
-    const pageNum = page !== undefined ? page : currentPage;
-    if (pageNum > 1) params.set("page", pageNum.toString());
-    if (page !== undefined) setCurrentPage(pageNum);
-
-    if (dateFromParam !== undefined) {
-      if (dateFromParam) params.set("dateFrom", dateFromParam);
-      setDateFrom(dateFromParam);
-    } else if (dateFrom) {
-      params.set("dateFrom", dateFrom);
-    }
-
-    if (dateToParam !== undefined) {
-      if (dateToParam) params.set("dateTo", dateToParam);
-      setDateTo(dateToParam);
-    } else if (dateTo) {
-      params.set("dateTo", dateTo);
-    }
-
-    const paymentStatusValue =
-      paymentStatus !== undefined ? paymentStatus : paymentStatusFilter;
-    if (paymentStatusValue !== "all")
-      params.set("paymentStatus", paymentStatusValue);
-    if (paymentStatus !== undefined) setPaymentStatusFilter(paymentStatusValue);
-
-    const sortValue = sort !== undefined ? sort : sortBy;
-    if (sortValue !== "newest") params.set("sort", sortValue);
-    if (sort !== undefined) setSortBy(sortValue);
+    if (newFilters.search) params.set("search", newFilters.search);
+    if (newFilters.status && newFilters.status !== "all") params.set("status", newFilters.status);
+    if (newFilters.dateFrom) params.set("dateFrom", newFilters.dateFrom);
+    if (newFilters.dateTo) params.set("dateTo", newFilters.dateTo);
+    if (newFilters.paymentStatus !== "all") params.set("paymentStatus", newFilters.paymentStatus);
+    if (newFilters.sort !== "newest") params.set("sort", newFilters.sort);
+    if (page > 1) params.set("page", page.toString());
 
     const queryString = params.toString();
     router.push(queryString ? `?${queryString}` : "/admin/orders");
   };
 
-  // Xử lý thay đổi từ khóa tìm kiếm
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchKeyword(e.target.value);
-  };
-
-  // Xử lý thay đổi trạng thái đơn hàng
   const handleStatusChange = (newStatus: string) => {
-    const status = newStatus === "Tất cả" ? undefined : newStatus.toLowerCase();
-    setSelectedStatus(status);
-    setAppliedStatus(status);
+    const status = newStatus === "Tất cả" ? "all" : newStatus.toLowerCase();
+    const nextFilters = { ...filters, status };
+    setFilters(nextFilters);
+    setAppliedFilters(nextFilters);
     setCurrentPage(1);
-    updateQueryParams(
-      appliedSearchKeyword,
-      status,
-      1,
-      appliedDateFrom,
-      appliedDateTo,
-      appliedPaymentStatus,
-      appliedSortBy,
-    );
+    updateUrl(nextFilters, 1);
   };
 
-  // Xử lý thay đổi sắp xếp
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const sort = e.target.value;
-    setSortBy(sort);
-    setAppliedSortBy(sort);
-    setCurrentPage(1);
-    updateQueryParams(
-      appliedSearchKeyword,
-      appliedStatus,
-      1,
-      appliedDateFrom,
-      appliedDateTo,
-      appliedPaymentStatus,
-      sort,
-    );
-  };
-
-  // Xử lý thay đổi ngày bắt đầu
-  const handleDateFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDateFrom(e.target.value);
-  };
-
-  // Xử lý thay đổi ngày kết thúc
-  const handleDateToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDateTo(e.target.value);
-  };
-
-  // Xử lý thay đổi trạng thái thanh toán
-  const handlePaymentStatusChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    setPaymentStatusFilter(e.target.value);
-  };
-
-  // Xử lý thay đổi trang
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-    updateQueryParams(
-      appliedSearchKeyword,
-      appliedStatus,
-      newPage,
-      appliedDateFrom,
-      appliedDateTo,
-      appliedPaymentStatus,
-      appliedSortBy,
-    );
-  };
-
-  // Áp dụng bộ lọc và reset về trang 1
   const handleApplyFilter = () => {
-    setAppliedSearchKeyword(searchKeyword);
-    setAppliedStatus(selectedStatus);
-    setAppliedDateFrom(dateFrom);
-    setAppliedDateTo(dateTo);
-    setAppliedPaymentStatus(paymentStatusFilter);
-    setAppliedSortBy(sortBy);
+    setAppliedFilters(filters);
     setCurrentPage(1);
-    updateQueryParams(
-      searchKeyword,
-      selectedStatus,
-      1,
-      dateFrom,
-      dateTo,
-      paymentStatusFilter,
-      sortBy,
-    );
+    updateUrl(filters, 1);
   };
 
-  // Xóa tất cả bộ lọc
   const handleClearFilter = () => {
-    setSearchKeyword("");
-    setSelectedStatus(undefined);
-    setDateFrom("");
-    setDateTo("");
-    setPaymentStatusFilter("all");
-    setSortBy("newest");
-
-    setAppliedSearchKeyword("");
-    setAppliedStatus(undefined);
-    setAppliedDateFrom("");
-    setAppliedDateTo("");
-    setAppliedPaymentStatus("all");
-    setAppliedSortBy("newest");
-
+    const resetFilters = {
+      search: "",
+      status: undefined,
+      dateFrom: "",
+      dateTo: "",
+      paymentStatus: "all",
+      sort: "newest",
+    };
+    setFilters(resetFilters);
+    setAppliedFilters(resetFilters);
     setCurrentPage(1);
     router.push("/admin/orders");
   };
 
-  // Cập nhật trạng thái đơn hàng (optimistic update + refetch)
   const handleStatusUpdate = (orderId: string, status: string) => {
     updateStatus(
-      {
-        orderId,
-        status: status as "pending" | "processing" | "completed" | "cancelled",
-      },
-      { onSuccess: () => refetch() },
+      { orderId, status: status as any },
+      { onSuccess: () => refetch() }
     );
   };
 
-  // Danh sách các tab trạng thái với số lượng
-  const tabs = useMemo(
-    () => [
-      { name: "Tất cả", value: "all", count: totalOrders },
-      {
-        name: "Chờ xử lý",
-        value: "pending",
-        count: meta?.statusCounts?.pending | 0,
-      },
-      {
-        name: "Đang giao",
-        value: "processing",
-        count: meta?.statusCounts?.processing | 0,
-      },
-      {
-        name: "Đã giao",
-        value: "completed",
-        count: meta?.statusCounts?.completed | 0,
-      },
-      {
-        name: "Đã hủy",
-        value: "cancelled",
-        count: meta?.statusCounts?.cancel | 0,
-      },
-    ],
-    [totalOrders, orders],
-  );
+  const tabs = useMemo(() => {
+    const counts = meta?.statusCounts || { pending: 0, processing: 0, completed: 0, cancelled: 0 };
+    const total = counts.pending + counts.processing + counts.completed + counts.cancelled;
+    
+    return [
+      { name: "Tất cả", value: "all", count: total },
+      { name: "Chờ xử lý", value: "pending", count: counts.pending },
+      { name: "Đang giao", value: "processing", count: counts.processing },
+      { name: "Đã giao", value: "completed", count: counts.completed },
+      { name: "Đã hủy", value: "cancelled", count: counts.cancelled },
+    ];
+  }, [meta?.statusCounts]);
 
-  // Chỉ hiển thị loading khi lần đầu tải (isPending), không block khi refetch
   if (ordersLoading) return <Loading />;
 
   return (
@@ -318,22 +150,22 @@ function OrdersPageContent() {
         <div className="space-y-6">
           <OrderStatusTabs
             tabs={tabs}
-            selectedStatus={selectedStatus}
+            selectedStatus={filters.status}
             onStatusChange={handleStatusChange}
           />
 
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <OrderFilters
-              searchKeyword={searchKeyword}
-              dateFrom={dateFrom}
-              dateTo={dateTo}
-              paymentStatusFilter={paymentStatusFilter}
-              sortBy={sortBy}
-              onSearchChange={handleSearchChange}
-              onDateFromChange={handleDateFromChange}
-              onDateToChange={handleDateToChange}
-              onPaymentStatusChange={handlePaymentStatusChange}
-              onSortChange={handleSortChange}
+              searchKeyword={filters.search}
+              dateFrom={filters.dateFrom}
+              dateTo={filters.dateTo}
+              paymentStatusFilter={filters.paymentStatus}
+              sortBy={filters.sort}
+              onSearchChange={(e) => setFilters({ ...filters, search: e.target.value })}
+              onDateFromChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
+              onDateToChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
+              onPaymentStatusChange={(e) => setFilters({ ...filters, paymentStatus: e.target.value })}
+              onSortChange={(e) => setFilters({ ...filters, sort: e.target.value })}
               onApplyFilter={handleApplyFilter}
               onClearFilter={handleClearFilter}
             />
@@ -343,18 +175,20 @@ function OrdersPageContent() {
         <OrdersTable
           orders={orders}
           loading={fetching}
-          totalOrders={totalOrders}
+          totalOrders={pagination.total}
           totalPages={pagination.totalPages}
           currentPage={currentPage}
           onStatusUpdate={handleStatusUpdate}
           onViewDetails={setSelectedOrderId}
-          onPageChange={handlePageChange}
+          onPageChange={(page) => {
+            setCurrentPage(page);
+            updateUrl(appliedFilters, page);
+          }}
         />
 
         <OrderStatistics orders={orders} />
       </main>
 
-      {/* Modal lấy dữ liệu đơn hàng từ API qua orderId */}
       <OrderDetailModal
         orderId={selectedOrderId}
         onClose={() => setSelectedOrderId(null)}
@@ -363,6 +197,7 @@ function OrdersPageContent() {
     </div>
   );
 }
+
 
 export default function OrdersPage() {
   return (
