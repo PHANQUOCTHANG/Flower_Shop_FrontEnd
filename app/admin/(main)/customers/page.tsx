@@ -5,8 +5,7 @@ import { Users, Star } from "lucide-react";
 import { useCustomers } from "@/features/admin/customers/hooks/useCustomers";
 import {
   CustomersHeader,
-  CustomersFilter,
-  CustomersSearch,
+  CustomerFilters,
   CustomersTable,
   StatCard,
 } from "@/features/admin/customers/components";
@@ -55,7 +54,7 @@ export default function CustomersPage() {
       <main className="flex-1 overflow-y-auto">
         <div className="p-4 sm:p-6 md:p-8 max-w-[1440px] mx-auto w-full flex flex-col gap-6 sm:gap-8 animate-in fade-in duration-500">
           {/* Thẻ thống kê */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <StatCard
               icon={Users}
               iconBgColor="bg-[#13ec5b]/10"
@@ -86,16 +85,12 @@ export default function CustomersPage() {
             />
           </div>
 
-          {/* Bộ lọc */}
-          <CustomersFilter
-            selectedTier={selectedTier}
-            onTierChange={setSelectedTier}
-          />
-
-          {/* Thanh tìm kiếm */}
-          <CustomersSearch
+          {/* Bộ lọc và Tìm kiếm */}
+          <CustomerFilters
             searchKeyword={searchKeyword}
+            selectedTier={selectedTier}
             onSearchChange={setSearchKeyword}
+            onTierChange={setSelectedTier}
           />
 
           {/* Bảng khách hàng */}

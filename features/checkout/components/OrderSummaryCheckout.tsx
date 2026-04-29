@@ -20,43 +20,36 @@ export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
  isLoading = false,
 }) => {
  return (
- <div className="lg:sticky lg:top-10 space-y-6">
- <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl shadow-[#ee2b5b]/5 border border-[#ee2b5b]/10 relative overflow-hidden">
- {/* Background decoration */}
- <div className="absolute top-0 right-0 p-4 opacity-5">
- <ShoppingCart className="w-32 h-32 -rotate-12 translate-x-8 -translate-y-8" />
- </div>
-
+ <div className="lg:sticky lg:top-6 space-y-4">
+ <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-gray-100 relative overflow-hidden">
+ 
  {/* Header */}
- <h3 className="typo-heading-md mb-8 border-b border-gray-100 pb-5 flex justify-between items-center relative z-10">
- Đơn hàng của bạn
- <span className="bg-[#ee2b5b]/10 text-[#ee2b5b] typo-label-sm px-3 py-1 rounded-full">
- {cartItems.length} món
- </span>
+ <h3 className="text-base font-bold text-gray-900 mb-6 border-b border-gray-100 pb-4 flex justify-between items-center">
+ Đơn hàng của bạn ({cartItems.length})
  </h3>
 
  {/* Danh sách sản phẩm */}
- <div className="space-y-6 mb-10 relative z-10 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+ <div className="space-y-5 mb-8 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
  {cartItems.map((item) => (
- <div key={item.id} className="flex gap-5 group">
+ <div key={item.id} className="flex gap-4">
  {/* Hình ảnh sản phẩm */}
- <div className="size-20 rounded-2xl overflow-hidden border border-gray-100 flex-shrink-0 shadow-sm bg-gray-50">
+ <div className="w-16 h-16 rounded-xl overflow-hidden border border-gray-100 flex-shrink-0 bg-gray-50">
  <img
  src={item.product.thumbnailUrl}
  alt={item.product.name}
- className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+ className="w-full h-full object-cover"
  />
  </div>
 
  {/* Thông tin sản phẩm */}
- <div className="flex-1 min-w-0 py-1">
- <p className="typo-body leading-snug line-clamp-2 group-hover:text-[#ee2b5b] transition-colors">
+ <div className="flex-1 min-w-0">
+ <p className="text-[13px] font-bold text-gray-900 leading-snug line-clamp-2 mb-1">
  {item.product.name}
  </p>
- <p className="typo-label-sm text-gray-400 mt-2">
+ <p className="text-[11px] text-gray-500 mb-1">
  Số lượng: {item.quantity}
  </p>
- <p className="typo-heading-sm text-[#ee2b5b] mt-1">
+ <p className="text-[13px] font-black text-gray-900">
  {formatCurrency(item.product.price)}
  </p>
  </div>
@@ -65,33 +58,34 @@ export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
  </div>
 
  {/* Tính toán tổng tiền */}
- <div className="space-y-4 pt-8 border-t border-dashed border-gray-200 relative z-10">
+ <div className="space-y-3 pt-6 border-t border-dashed border-gray-200">
  {/* Tạm tính */}
- <div className="flex justify-between items-center typo-caption-xs">
- <span className="text-gray-400">Tạm tính</span>
- <span className="font-bold">{formatCurrency(subtotal)}</span>
+ <div className="flex justify-between items-center text-[13px]">
+ <span className="text-gray-500">Tạm tính</span>
+ <span className="font-bold text-gray-900">{formatCurrency(subtotal)}</span>
  </div>
 
  {/* Phí vận chuyển */}
- <div className="flex justify-between items-center typo-caption-xs">
- <span className="text-gray-400">Phí vận chuyển</span>
- <span className="text-green-500 font-bold">MIỄN PHÍ</span>
+ <div className="flex justify-between items-center text-[13px]">
+ <span className="text-gray-500">Phí vận chuyển</span>
+ <span className="font-bold text-gray-900">Miễn phí</span>
+ </div>
+
+ {/* Khuyến mãi */}
+ <div className="flex justify-between items-center text-[13px]">
+ <span className="text-gray-500">Khuyến mãi chuyển khoản (-5%)</span>
+ <span className="font-bold text-[#e91e63]">- {formatCurrency(subtotal * 0.05)}</span>
  </div>
 
  {/* Tổng cộng */}
- <div className="pt-8 mt-4 border-t-2 border-[#ee2b5b]/20">
- <div className="flex justify-between items-end">
- <span className="typo-heading-sm text-[#1b0d11] ">
- Tổng cộng
+ <div className="pt-6 mt-4 border-t border-gray-100">
+ <div className="flex justify-between items-center">
+ <span className="text-sm font-bold text-gray-900">
+ Tổng thanh toán
  </span>
- <div className="text-right">
- <p className="typo-heading-lg text-[#ee2b5b] leading-none drop-shadow-sm">
- {formatCurrency(total)}
+ <p className="text-2xl font-black text-[#e91e63]">
+ {formatCurrency(total - subtotal * 0.05)}
  </p>
- <p className="typo-caption-xs text-gray-400 mt-2">
- Đã bao gồm VAT 10%
- </p>
- </div>
  </div>
  </div>
  </div>
@@ -100,38 +94,38 @@ export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
  <button
  onClick={onConfirmOrder}
  disabled={isLoading}
- className={`w-full bg-[#ee2b5b] text-white py-6 rounded-2xl typo-button-lg mt-12 transition-all transform relative z-10 overflow-hidden group ${
- isLoading
- ? "opacity-60 cursor-not-allowed"
- : "hover:bg-[#d41f4d] hover:-translate-y-1 active:scale-[0.98] shadow-2xl shadow-[#ee2b5b]/30"
+ className={`w-full bg-[#e91e63] text-white py-4 rounded-xl text-sm font-bold mt-8 transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-[#e91e63]/20 ${
+ isLoading ? "opacity-60 cursor-not-allowed" : "hover:bg-[#db2777]"
  }`}
  >
- <div className="relative z-10 flex items-center justify-center gap-3">
  {isLoading ? (
  <>
- <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+ <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
  <span>Đang xử lý...</span>
  </>
  ) : (
- <span>Xác nhận đặt hàng</span>
- )}
- </div>
- {!isLoading && (
- <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+ <span>XÁC NHẬN ĐẶT HÀNG</span>
  )}
  </button>
 
  {/* Badges bảo mật */}
- <div className="mt-8 grid grid-cols-2 gap-4 relative z-10">
- <div className="flex flex-col items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100 ">
- <ShieldCheck className="w-5 h-5 text-green-500" />
- <span className="typo-caption-xs text-gray-400">Bảo mật 100%</span>
+ <div className="mt-6 flex flex-col items-center gap-3">
+ <div className="flex items-center gap-2 text-[#22c55e]">
+ <ShieldCheck className="w-4 h-4" />
+ <span className="text-[10px] font-bold text-gray-500 uppercase">Thanh toán an toàn 100%</span>
  </div>
- <div className="flex flex-col items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100 ">
- <Heart className="w-5 h-5 text-[#ee2b5b]" />
- <span className="typo-caption-xs text-gray-400">Hoa tươi nhất</span>
+ <div className="flex items-center gap-2 text-[#e91e63]">
+ <Heart className="w-4 h-4" />
+ <span className="text-[10px] font-bold text-gray-500 uppercase">Hoa tươi trong ngày 100%</span>
  </div>
  </div>
+ </div>
+
+ {/* Support Banner */}
+ <div className="bg-[#e91e63]/10 rounded-xl p-4 text-center">
+ <p className="text-[13px] text-[#e91e63]">
+ Cần hỗ trợ? Gọi ngay <span className="font-bold">1900 1234</span>
+ </p>
  </div>
  </div>
  );

@@ -1,17 +1,17 @@
 "use client";
 import { forwardRef } from "react";
+
 import RichEditor, { RichEditorRef } from "../RichEditor";
 
 interface BasicInfoSectionProps {
   name: string;
   onNameChange: (value: string) => void;
-  shortDesc: string;
-  onShortDescChange: (value: string) => void;
+  shortDescRef: React.RefObject<RichEditorRef>;
   descRef: React.RefObject<RichEditorRef>;
 }
 
 const BasicInfoSection = forwardRef<HTMLDivElement, BasicInfoSectionProps>(
-  ({ name, onNameChange, shortDesc, onShortDescChange, descRef }, ref) => {
+  ({ name, onNameChange, shortDescRef, descRef }, ref) => {
     return (
       <section
         ref={ref}
@@ -37,12 +37,10 @@ const BasicInfoSection = forwardRef<HTMLDivElement, BasicInfoSectionProps>(
             <label className="block text-sm font-semibold text-slate-700 mb-2">
               Mô tả ngắn
             </label>
-            <textarea
-              value={shortDesc}
-              onChange={(e) => onShortDescChange(e.target.value)}
-              placeholder="Tóm tắt cho thẻ sản phẩm (chỉ nhập văn bản thuần, không cần định dạng)..."
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#ee2b5b] focus:ring-1 focus:ring-[#ee2b5b] outline-none transition-colors"
-              rows={3}
+            <RichEditor
+              ref={shortDescRef}
+              placeholder="Tóm tắt cho thẻ sản phẩm..."
+              minHeight="120px"
             />
           </div>
 

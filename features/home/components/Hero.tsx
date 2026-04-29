@@ -3,68 +3,70 @@
 import React, { useState, useEffect } from "react";
 import { Bolt, ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import Link from "next/link";
-
-const SLIDES = [
-  {
-    image:
-      "https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1920",
-    badgeIcon: <Bolt className="size-4" fill="currentColor" />,
-    badgeText: "GIAO HỎA TỐC 2 GIỜ",
-    title: (
-      <>
-        Đặt hoa online – <br />
-        <span className="text-[#13ec5b]">Giao nhanh</span> trong 2 giờ
-      </>
-    ),
-    description:
-      "Tươi mới mỗi ngày, thiết kế sang trọng, giao hàng tận nơi chuyên nghiệp trong khu vực nội thành.",
-    primaryBtn: "ĐẶT HOA NGAY",
-    secondaryBtn: "Xem mẫu mới nhất",
-    primaryLink: "/products",
-    secondaryLink: "/products?sort=newest",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=80&w=1920",
-    badgeIcon: <Heart className="size-4" fill="currentColor" />,
-    badgeText: "BỘ SƯU TẬP TÌNH YÊU",
-    title: (
-      <>
-        Gửi trọn tình cảm – <br />
-        <span className="text-[#e91e63]">Hoa lãng mạn</span> nhất 2024
-      </>
-    ),
-    description:
-      "Khám phá ngay bộ sưu tập hoa tươi đặc biệt dành trọn cho người thương với vô vàn ưu đãi và thiết kế độc quyền.",
-    primaryBtn: "MUA NGAY",
-    secondaryBtn: "Tư vấn chọn hoa",
-    primaryLink: "/products?category=tinh-yeu",
-    secondaryLink: "/products",
-  },
-];
+import { useSettingStore } from "@/stores/setting.store";
 
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const settings = useSettingStore((state) => state.settings);
+  
+  const slides = settings?.homeBanners || [
+    {
+      image: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1920",
+      badgeText: "GIAO HỎA TỐC 2 GIỜ",
+      title: "Đặt hoa online – Giao nhanh trong 2 giờ",
+      titleHighlight: "Giao nhanh",
+      description: "Tươi mới mỗi ngày, thiết kế sang trọng, giao hàng tận nơi chuyên nghiệp trong khu vực nội thành.",
+      primaryBtn: "ĐẶT HOA NGAY",
+      secondaryBtn: "Xem mẫu mới nhất",
+      primaryLink: "/products",
+      secondaryLink: "/products?sort=newest",
+    },
+    {
+      image: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=80&w=1920",
+      badgeText: "BỘ SƯU TẬP TÌNH YÊU",
+      title: "Gửi trọn tình cảm – Hoa lãng mạn nhất 2024",
+      titleHighlight: "Hoa lãng mạn",
+      description: "Khám phá ngay bộ sưu tập hoa tươi đặc biệt dành trọn cho người thương với vô vàn ưu đãi và thiết kế độc quyền.",
+      primaryBtn: "MUA NGAY",
+      secondaryBtn: "Tư vấn chọn hoa",
+      primaryLink: "/products?category=tinh-yeu",
+      secondaryLink: "/products",
+    },
+  ];
 
   useEffect(() => {
+    if (slides.length <= 1) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % SLIDES.length);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   const handleNext = () => {
-    setCurrentSlide((prev) => (prev + 1) % SLIDES.length);
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
   const handlePrev = () => {
-    setCurrentSlide((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
+  const renderTitle = (title: string, highlight: string) => {
+    if (!title) return "";
+    if (!highlight) return title;
+    const parts = title.split(highlight);
+    return parts.reduce((acc: any[], part, i) => {
+      acc.push(part);
+      if (i < parts.length - 1) {
+        acc.push(<span key={i} className="text-[#13ec5b]">{highlight}</span>);
+      }
+      return acc;
+    }, []);
   };
 
   return (
-    <section className="relative h-[600px] w-full overflow-hidden group">
+    <section className="relative min-h-[520px] h-[65vh] max-h-[750px] w-full overflow-hidden group">
       {/* Slides */}
-      {SLIDES.map((slide, index) => (
+      {slides.map((slide, index) => (
         <div
           key={index}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
@@ -87,13 +89,13 @@ export default function Hero() {
             <div
               className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white typo-caption-xs mb-6 w-fit transition-all duration-700 delay-300 transform ${index === currentSlide ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
             >
-              {slide.badgeIcon}
+              {index % 2 === 0 ? <Bolt size={16} fill="currentColor" /> : <Heart size={16} fill="currentColor" />}
               {slide.badgeText}
             </div>
             <h2
-              className={`typo-display-lg mb-6 drop-shadow-lg transition-all duration-700 delay-500 transform ${index === currentSlide ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}
+              className={`text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight mb-5 drop-shadow-lg transition-all duration-700 delay-500 transform ${index === currentSlide ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}
             >
-              {slide.title}
+              {renderTitle(slide.title, slide.titleHighlight)}
             </h2>
             <p
               className={`typo-body-lg text-white/90 mb-8 max-w-xl drop-shadow-md transition-all duration-700 delay-700 transform ${index === currentSlide ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}
@@ -104,7 +106,7 @@ export default function Hero() {
               className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 delay-1000 transform ${index === currentSlide ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}
             >
               <Link href={slide.primaryLink}>
-                <button className="bg-[#e91e63] text-white px-12 py-5 rounded-xl typo-button-lg hover:scale-105 transition-transform shadow-2xl shadow-[#e91e63]/40 w-full sm:w-auto text-center">
+                <button className="bg-[#13ec5b] text-[#0d1b12] px-10 py-4 rounded-xl font-black text-sm tracking-wide uppercase hover:scale-105 hover:shadow-[0_8px_30px_rgba(19,236,91,0.4)] transition-all shadow-xl w-full sm:w-auto text-center">
                   {slide.primaryBtn}
                 </button>
               </Link>
@@ -119,34 +121,40 @@ export default function Hero() {
       ))}
 
       {/* Navigation Controls */}
-      <button
-        onClick={handlePrev}
-        className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm flex items-center justify-center hover:bg-white/30 hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
-      >
-        <ChevronLeft size={24} />
-      </button>
-      <button
-        onClick={handleNext}
-        className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm flex items-center justify-center hover:bg-white/30 hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
-      >
-        <ChevronRight size={24} />
-      </button>
+      {slides.length > 1 && (
+        <>
+          <button
+            onClick={handlePrev}
+            className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm flex items-center justify-center hover:bg-white/30 hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm flex items-center justify-center hover:bg-white/30 hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
+          >
+            <ChevronRight size={24} />
+          </button>
+        </>
+      )}
 
       {/* Slide Indicators (Dots) */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3">
-        {SLIDES.map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => setCurrentSlide(idx)}
-            className={`transition-all duration-500 rounded-full h-2 ${
-              idx === currentSlide
-                ? "w-8 bg-[#13ec5b]"
-                : "w-2 bg-white/50 hover:bg-white/80"
-            }`}
-            aria-label={`Go to slide ${idx + 1}`}
-          />
-        ))}
-      </div>
+      {slides.length > 1 && (
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentSlide(idx)}
+              className={`transition-all duration-500 rounded-full h-2 ${
+                idx === currentSlide
+                  ? "w-8 bg-[#13ec5b]"
+                  : "w-2 bg-white/50 hover:bg-white/80"
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

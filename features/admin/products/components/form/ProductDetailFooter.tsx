@@ -22,7 +22,7 @@ export function ProductDetailFooter({
   submitLabel = PRODUCT_MESSAGES.UPDATE_PRODUCT,
 }: ProductDetailFooterProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-slate-200 px-8 py-4 flex items-center justify-between z-20">
+    <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-slate-200 px-4 sm:px-6 md:px-8 py-4 flex items-center justify-between z-20">
       {/* Status indicator */}
       <div className="flex items-center gap-2 text-xs text-slate-500">
         <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />

@@ -10,11 +10,13 @@ const BADGES = [
 
 export const TrustBadges: React.FC = () => {
  return (
- <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6 border-t border-gray-100 mt-6">
+ <div className="grid grid-cols-4 gap-2 py-5 mt-2">
  {BADGES.map((badge, i) => (
- <div key={i} className="flex flex-col items-center gap-1.5 text-center">
- <badge.icon className="w-5 h-5 text-[#13ec5b]" />
- <span className="typo-label-sm text-gray-500 ">
+ <div key={i} className="flex flex-col items-center gap-2 text-center">
+ <div className="w-6 h-6 flex items-center justify-center">
+ <badge.icon className="w-5 h-5 text-[#13ec5b]" strokeWidth={2.5} />
+ </div>
+ <span className="text-[9px] sm:text-[10px] text-gray-400 font-medium leading-tight">
  {badge.label}
  </span>
  </div>

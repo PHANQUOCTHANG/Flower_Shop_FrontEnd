@@ -113,7 +113,7 @@ export default function Categories({ categories, loading }: CategoriesProps) {
        {!isAtStart && (
          <button 
            onClick={handlePrev} 
-           className="absolute left-0 top-[55%] -translate-y-1/2 -translate-x-4 z-10 bg-white/90 backdrop-blur-[2px] p-3 rounded-full shadow-lg border border-slate-100 text-slate-700 hover:text-[#ee2b5b] hover:scale-110 transition-all opacity-0 group-hover:opacity-100 hidden md:block"
+           className="absolute left-0 top-[55%] -translate-y-1/2 -translate-x-4 z-10 bg-white/90 backdrop-blur-[2px] p-3 rounded-full shadow-lg border border-slate-100 text-slate-700 hover:text-[#13ec5b] hover:scale-110 transition-all opacity-0 group-hover:opacity-100 hidden md:block"
            aria-label="Previous categories"
          >
            <ChevronLeft size={24} />
@@ -122,7 +122,7 @@ export default function Categories({ categories, loading }: CategoriesProps) {
        {!isAtEnd && (
          <button 
            onClick={handleNext} 
-           className="absolute right-0 top-[55%] -translate-y-1/2 translate-x-4 z-10 bg-white/90 backdrop-blur-[2px] p-3 rounded-full shadow-lg border border-slate-100 text-slate-700 hover:text-[#ee2b5b] hover:scale-110 transition-all opacity-0 group-hover:opacity-100 hidden md:block"
+           className="absolute right-0 top-[55%] -translate-y-1/2 translate-x-4 z-10 bg-white/90 backdrop-blur-[2px] p-3 rounded-full shadow-lg border border-slate-100 text-slate-700 hover:text-[#13ec5b] hover:scale-110 transition-all opacity-0 group-hover:opacity-100 hidden md:block"
            aria-label="Next categories"
          >
            <ChevronRight size={24} />

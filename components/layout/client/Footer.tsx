@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Instagram, Mail, Facebook, MapPin, Phone, ChevronRight } from "lucide-react";
+import { useSettingStore } from "@/stores/setting.store";
 
 // Tự định nghĩa SVG cho TikTok và Zalo (do lucide-react có thể không hỗ trợ)
 const TiktokIcon = () => (
@@ -17,6 +18,24 @@ const ZaloIcon = () => (
 );
 
 export default function Footer() {
+  const settings = useSettingStore((state) => state.settings);
+  
+  const shopConfig = settings?.shopConfig || {
+    shopName: "FlowerShop",
+    phone: "1900 6868",
+    email: "support@flowershop.vn",
+    address: "273 Đ. An Dương Vương, Phường 3, Quận 5, Hồ Chí Minh, Việt Nam",
+    slogan: "Trạm dừng chân của những tâm hồn yêu hoa. Hệ thống đặt hoa uy tín cung cấp hàng ngàn mẫu hoa đẹp nhất mỗi ngày.",
+    mapIframeUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.651037812557!2d106.67914751525983!3d10.757579192334065!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f1b7c3ed289%3A0xa06651894598e488!2s273%20An%20D.%20V%C6%B0%C6%A1ng%2C%20Ph%C6%B0%E1%BB%9Dng%203%2C%20Qu%E1%BA%ADn%205%2C%20H%E1%BB%93%20Ch%C3%AD%20Minh!5e0!3m2!1sen!2s!4v1680509614488!5m2!1sen!2s"
+  };
+
+  const socialLinks = settings?.socialLinks || {
+    facebook: "#",
+    instagram: "#",
+    tiktok: "#",
+    zalo: "#"
+  };
+
   return (
     <footer className="bg-white border-t border-[#e7f3eb] pt-20 pb-8">
       <div className="max-w-[1300px] mx-auto px-6 lg:px-12">
@@ -30,30 +49,30 @@ export default function Footer() {
                   <path clipRule="evenodd" d="M47.2426 24L24 47.2426L0.757355 24L24 0.757355L47.2426 24ZM12.2426 21H35.7574L24 9.24264L12.2426 21Z" fill="currentColor" fillRule="evenodd"/>
                 </svg>
               </div>
-              <h4 className="text-2xl font-black text-slate-800 tracking-tight">FlowerShop</h4>
+              <h4 className="text-2xl font-black text-slate-800 tracking-tight">{shopConfig.shopName}</h4>
             </div>
             
             <p className="text-sm font-medium text-slate-500 leading-relaxed max-w-sm">
-              Trạm dừng chân của những tâm hồn yêu hoa. Hệ thống đặt hoa uy tín cung cấp hàng ngàn mẫu hoa đẹp nhất mỗi ngày.
+              {shopConfig.slogan}
             </p>
 
             <div className="space-y-4 pt-2">
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-[#13ec5b] shrink-0 mt-0.5" />
                 <p className="text-sm font-medium text-slate-600 leading-relaxed">
-                  273 Đ. An Dương Vương, Phường 3, Quận 5, Hồ Chí Minh, Việt Nam
+                  {shopConfig.address}
                 </p>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-[#13ec5b] shrink-0" />
                 <p className="text-sm font-bold text-slate-800">
-                  1900 6868 <span className="text-xs font-normal text-slate-400 ml-1">(Hỗ trợ 24/7)</span>
+                  {shopConfig.phone} <span className="text-xs font-normal text-slate-400 ml-1">(Hỗ trợ 24/7)</span>
                 </p>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-[#13ec5b] shrink-0" />
                 <p className="text-sm font-medium text-slate-600">
-                  support@flowershop.vn
+                  {shopConfig.email}
                 </p>
               </div>
             </div>
@@ -82,16 +101,16 @@ export default function Footer() {
                 Kết nối với chúng tôi
               </h5>
               <div className="flex flex-wrap gap-3">
-                <a className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-600 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all shadow-sm" href="#" title="Facebook">
+                <a className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-600 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all shadow-sm" href={socialLinks.facebook} title="Facebook">
                   <Facebook size={18} />
                 </a>
-                <a className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-600 hover:bg-pink-500 hover:text-white hover:border-pink-500 transition-all shadow-sm" href="#" title="Instagram">
+                <a className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-600 hover:bg-pink-500 hover:text-white hover:border-pink-500 transition-all shadow-sm" href={socialLinks.instagram} title="Instagram">
                   <Instagram size={18} />
                 </a>
-                <a className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-600 hover:bg-black hover:text-white hover:border-black transition-all shadow-sm" href="#" title="TikTok">
+                <a className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-600 hover:bg-black hover:text-white hover:border-black transition-all shadow-sm" href={socialLinks.tiktok} title="TikTok">
                   <TiktokIcon />
                 </a>
-                <a className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-600 hover:bg-blue-400 hover:text-white hover:border-blue-400 transition-all shadow-sm" href="#" title="Zalo">
+                <a className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-600 hover:bg-blue-400 hover:text-white hover:border-blue-400 transition-all shadow-sm" href={socialLinks.zalo} title="Zalo">
                   <ZaloIcon />
                 </a>
               </div>
@@ -104,15 +123,21 @@ export default function Footer() {
               Vị trí cửa hàng
             </h5>
             <div className="flex-1 w-full flex-grow rounded-2xl overflow-hidden border-4 border-slate-50 shadow-md">
-              <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.651037812557!2d106.67914751525983!3d10.757579192334065!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f1b7c3ed289%3A0xa06651894598e488!2s273%20An%20D.%20V%C6%B0%C6%A1ng%2C%20Ph%C6%B0%E1%BB%9Dng%203%2C%20Qu%E1%BA%ADn%205%2C%20H%E1%BB%93%20Ch%C3%AD%20Minh!5e0!3m2!1sen!2s!4v1680509614488!5m2!1sen!2s" 
-                width="100%" 
-                height="100%" 
-                style={{ border: 0, minHeight: "250px" }} 
-                allowFullScreen={true} 
-                loading="lazy" 
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
+              {shopConfig.mapIframeUrl ? (
+                <iframe 
+                  src={shopConfig.mapIframeUrl} 
+                  width="100%" 
+                  height="100%" 
+                  style={{ border: 0, minHeight: "250px" }} 
+                  allowFullScreen={true} 
+                  loading="lazy" 
+                  referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
+              ) : (
+                <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-400 text-xs font-bold">
+                  Bản đồ chưa cấu hình
+                </div>
+              )}
             </div>
           </div>
 
@@ -121,7 +146,7 @@ export default function Footer() {
         {/* Bản Tin & Copyright Row */}
         <div className="pt-8 border-t border-slate-100 flex items-center justify-center text-center">  
             <p className="text-xs font-bold text-slate-400">
-              © 2024 FlowerShop. Thiết kế bởi UI Designer. Tích hợp bởi Antigravity.
+              © {new Date().getFullYear()} {shopConfig.shopName}. Thiết kế bởi UI Designer. Tích hợp bởi Antigravity.
             </p>
         </div>
       </div>

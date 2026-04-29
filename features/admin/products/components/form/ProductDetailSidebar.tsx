@@ -40,7 +40,7 @@ export function ProductDetailSidebar({
   isDeletingProduct,
 }: ProductDetailSidebarProps) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Trạng thái */}
       <StatusSection status={status} onStatusChange={onStatusChange} />
 

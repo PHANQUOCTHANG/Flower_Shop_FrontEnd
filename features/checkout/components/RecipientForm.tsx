@@ -32,20 +32,13 @@ export const RecipientForm: React.FC<RecipientFormProps> = ({
   onAddressSelect,
 }) => {
   return (
-    <section className="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-gray-200/60">
+    <section className="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-gray-100">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-10">
-        <div className="p-3 bg-[#ee2b5b]/10 rounded-2xl">
-          <Truck className="w-7 h-7 text-[#ee2b5b]" />
-        </div>
-        <div>
-          <h2 className="typo-heading-lg tracking-tight">
-            Thông tin giao hàng
-          </h2>
-          <p className="typo-body-sm text-gray-400">
-            Vui lòng điền chính xác thông tin để chúng tôi giao đúng hẹn
-          </p>
-        </div>
+      <div className="flex items-center gap-3 mb-8">
+        <Truck className="w-5 h-5 text-[#e91e63]" />
+        <h2 className="text-xl font-bold text-gray-900 tracking-tight">
+          Thông tin giao hàng
+        </h2>
       </div>
 
       <div className="space-y-8">
@@ -55,105 +48,90 @@ export const RecipientForm: React.FC<RecipientFormProps> = ({
           onAddressSelect={onAddressSelect}
         />
         {/* Tên & Số điện thoại */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2.5">
-            <label className="typo-label-sm text-gray-400 ml-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label className="text-[13px] font-bold text-gray-800 mb-2 block">
               Tên người nhận <span className="text-red-500">*</span>
             </label>
-            <div className="relative group">
-              <User
-                className={`absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${errors.name ? "text-red-400" : "text-gray-300 group-focus-within:text-[#ee2b5b]"}`}
-              />
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => onNameChange(e.target.value)}
-                placeholder="Nhập tên người nhận hàng"
-                className={`w-full h-14 pl-14 pr-5 rounded-2xl border-2 bg-transparent transition-all outline-none font-medium placeholder:text-gray-300 ${
-                  errors.name
-                    ? "border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 text-red-600"
-                    : "border-gray-100 focus:border-[#ee2b5b] focus:ring-4 focus:ring-[#ee2b5b]/5"
-                }`}
-              />
-            </div>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => onNameChange(e.target.value)}
+              placeholder="Họ và tên người nhận"
+              className={`w-full h-[46px] px-4 rounded-xl border bg-white transition-all outline-none text-[13px] placeholder:text-gray-400 ${
+                errors.name
+                  ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
+                  : "border-gray-200 focus:border-[#e91e63] focus:ring-2 focus:ring-[#e91e63]/10"
+              }`}
+            />
             {errors.name && (
-              <p className="text-sm text-red-500 ml-1 mt-1 font-medium">
-                {errors.name}
-              </p>
+              <p className="text-xs text-red-500 mt-1.5 font-medium">{errors.name}</p>
             )}
           </div>
-          <div className="space-y-2.5">
-            <label className="typo-label-sm text-gray-400 ml-1">
-              Số điện thoại <span className="text-red-500">*</span>
+          <div>
+            <label className="text-[13px] font-bold text-gray-800 mb-2 block">
+              Số điện thoại người nhận <span className="text-red-500">*</span>
             </label>
             <input
               type="tel"
               value={shippingPhone}
               onChange={(e) => onShippingPhoneChange(e.target.value)}
-              placeholder="Ví dụ: 0901 234 567"
-              className={`w-full h-14 px-5 rounded-2xl border-2 bg-transparent transition-all outline-none font-medium placeholder:text-gray-300 ${
+              placeholder="Ví dụ: 0901234567"
+              className={`w-full h-[46px] px-4 rounded-xl border bg-white transition-all outline-none text-[13px] placeholder:text-gray-400 ${
                 errors.shippingPhone
-                  ? "border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 text-red-600"
-                  : "border-gray-100 focus:border-[#ee2b5b] focus:ring-4 focus:ring-[#ee2b5b]/5"
+                  ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
+                  : "border-gray-200 focus:border-[#e91e63] focus:ring-2 focus:ring-[#e91e63]/10"
               }`}
             />
             {errors.shippingPhone && (
-              <p className="text-sm text-red-500 ml-1 mt-1 font-medium">
-                {errors.shippingPhone}
-              </p>
+              <p className="text-xs text-red-500 mt-1.5 font-medium">{errors.shippingPhone}</p>
             )}
           </div>
         </div>
 
         {/* Địa chỉ giao hàng */}
-        <div className="space-y-2.5">
-          <label className="typo-label-sm text-gray-400 ml-1">
-            Địa chỉ giao hàng <span className="text-red-500">*</span>
+        <div>
+          <label className="text-[13px] font-bold text-gray-800 mb-2 block">
+            Địa chỉ giao hoa <span className="text-red-500">*</span>
           </label>
-          <div className="relative group">
-            <MapPin
-              className={`absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${errors.shippingAddress ? "text-red-400" : "text-gray-300 group-focus-within:text-[#ee2b5b]"}`}
-            />
+          <div className="relative">
+            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#e91e63]" />
             <input
               type="text"
               value={shippingAddress}
               onChange={(e) => onShippingAddressChange(e.target.value)}
               placeholder="Số nhà, tên đường, phường, quận..."
-              className={`w-full h-14 pl-14 pr-5 rounded-2xl border-2 bg-transparent transition-all outline-none font-medium placeholder:text-gray-300 ${
+              className={`w-full h-[46px] pl-10 pr-4 rounded-xl border bg-white transition-all outline-none text-[13px] placeholder:text-gray-400 ${
                 errors.shippingAddress
-                  ? "border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 text-red-600"
-                  : "border-gray-100 focus:border-[#ee2b5b] focus:ring-4 focus:ring-[#ee2b5b]/5"
+                  ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
+                  : "border-gray-200 focus:border-[#e91e63] focus:ring-2 focus:ring-[#e91e63]/10"
               }`}
             />
           </div>
           {errors.shippingAddress && (
-            <p className="text-sm text-red-500 ml-1 mt-1 font-medium">
-              {errors.shippingAddress}
-            </p>
+            <p className="text-xs text-red-500 mt-1.5 font-medium">{errors.shippingAddress}</p>
           )}
         </div>
 
         {/* Ghi chú đơn hàng */}
-        <div className="space-y-2.5">
-          <label className="typo-label-sm text-gray-400 ml-1 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-[#ee2b5b]" />
-            Ghi chú đơn hàng (tùy chọn)
+        <div>
+          <label className="text-[13px] font-bold text-gray-800 mb-2 flex items-center gap-2">
+            <FileText className="w-4 h-4 text-[#e91e63]" />
+            Lời chúc trên thiệp / Ghi chú
           </label>
           <textarea
             rows={3}
             value={note}
             onChange={(e) => onNoteChange(e.target.value)}
-            placeholder="Ví dụ: Giao vào buổi tối, để tại cổng..."
-            className={`w-full p-5 rounded-2xl border-2 bg-gray-50/50 transition-all outline-none font-medium resize-none placeholder:text-gray-300 ${
+            placeholder="Nhập lời nhắn yêu thương gửi đến người nhận tại đây..."
+            className={`w-full p-4 rounded-xl border bg-[#fbfbfb] transition-all outline-none text-[13px] resize-none placeholder:text-gray-400 ${
               errors.note
-                ? "border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 text-red-600"
-                : "border-gray-100 focus:border-[#ee2b5b] focus:ring-4 focus:ring-[#ee2b5b]/5"
+                ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
+                : "border-gray-200 focus:border-[#e91e63] focus:ring-2 focus:ring-[#e91e63]/10"
             }`}
           />
           {errors.note && (
-            <p className="text-sm text-red-500 ml-1 mt-1 font-medium">
-              {errors.note}
-            </p>
+            <p className="text-xs text-red-500 mt-1.5 font-medium">{errors.note}</p>
           )}
         </div>
       </div>

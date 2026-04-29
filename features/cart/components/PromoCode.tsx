@@ -12,23 +12,23 @@ export const PromoCode: React.FC<PromoCodeProps> = ({
  onApply,
 }) => {
  return (
- <div className=" bg-[#ee2b5b]/5 rounded-xl border border-[#ee2b5b]/20 p-3 sm:p-4">
- <p className="typo-caption-xs text-[#9a4c5f] mb-2 text-center">
- Có mã giảm giá?
+ <div className="bg-[#fce4ec]/50 rounded-xl p-5 mb-6">
+ <p className="text-[11px] text-gray-500 mb-3 text-center font-medium">
+ Bạn có mã giảm giá?
  </p>
- <div className="flex flex-col sm:flex-row gap-1.5">
+ <div className="flex gap-2">
  <input
  type="text"
  value={promoCode}
  onChange={(e) => onPromoCodeChange(e.target.value)}
- placeholder="MÃ"
- className="flex-1 bg-white border border-[#ee2b5b]/20 rounded-lg px-3 py-2 text-xs uppercase focus:ring-1 focus:ring-[#ee2b5b] outline-none transition-all"
+ placeholder="Mã KM"
+ className="flex-1 bg-white border border-gray-200 rounded-lg px-4 py-3 text-xs uppercase focus:border-[#e91e63] outline-none transition-all placeholder:text-gray-400"
  />
  <button
  onClick={onApply}
- className="bg-[#ee2b5b] text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-[#ee2b5b]/80 transition-colors whitespace-nowrap"
+ className="bg-[#e91e63] text-white px-5 py-3 rounded-lg text-xs font-bold hover:bg-[#db2777] transition-colors whitespace-nowrap active:scale-95"
  >
- ÁP DỤNG
+ Áp dụng
  </button>
  </div>
  </div>

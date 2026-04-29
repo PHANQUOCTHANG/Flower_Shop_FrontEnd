@@ -86,15 +86,20 @@ function HomeProductCard({ product }: { product: Product }) {
 
  {/* Info */}
  <div className="p-4 flex flex-col flex-1">
- <h4 className="typo-body text-[#0d1b12] line-clamp-1 mb-1 group-hover:text-[#13ec5b] transition-colors">
+ <h4 className="text-sm font-bold text-gray-800 line-clamp-1 mb-1 group-hover:text-[#e91e63] transition-colors">
  {product.name}
  </h4>
- <div className="flex items-center gap-2 mb-3">
- <span className="text-[#e91e63] typo-heading-sm">
+ {product.sku && (
+ <p className="text-[10px] text-gray-400 font-mono mb-1">
+ SKU: {product.sku}
+ </p>
+ )}
+ <div className="flex items-center gap-2 mb-3 mt-1">
+ <span className="text-[#1b0d11] font-black text-base">
  {parseInt(String(product.price)).toLocaleString("vi-VN")}đ
  </span>
  {product.comparePrice && (
- <span className="text-gray-400 typo-caption line-through">
+ <span className="text-gray-400 text-xs line-through">
  {parseInt(String(product.comparePrice)).toLocaleString("vi-VN")}đ
  </span>
  )}
@@ -103,14 +108,14 @@ function HomeProductCard({ product }: { product: Product }) {
  {/* Nút hành động */}
  <div className="mt-auto flex flex-col gap-2">
  {/* MUA NGAY */}
- <button
- disabled={isOutOfStock}
- onClick={(e) => { e.stopPropagation(); router.push(`/products/${product.slug}`); }}
- className="w-full bg-[#e91e63] hover:bg-[#db2777] disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-xs font-bold py-2.5 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1.5"
- >
- <Bolt size={14} fill="currentColor" />
- {isOutOfStock ? "HẾT HÀNG" : "MUA NGAY"}
- </button>
+  <button
+  disabled={isOutOfStock}
+  onClick={(e) => { e.stopPropagation(); router.push(`/products/${product.slug}`); }}
+  className="w-full bg-[#e91e63] hover:bg-[#db2777] disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-xs font-bold py-2.5 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1.5"
+  >
+  <Bolt size={14} fill="currentColor" />
+  {isOutOfStock ? "HẾT HÀNG" : "MUA NGAY"}
+  </button>
 
  {/* Thêm vào giỏ / picker */}
  {cartState === "added" ? (

@@ -11,11 +11,11 @@ import { UploadedImage } from "../../utils/formDataBuilder";
 
 interface ProductDetailFormContentProps {
   basicInfoRef: React.RefObject<HTMLDivElement | null>;
+  shortDescEditorRef: React.RefObject<any>;
   descEditorRef: React.RefObject<any>;
   name: string;
   onNameChange: (value: string) => void;
-  shortDesc: string;
-  onShortDescChange: (value: string) => void;
+
   price: string;
   onPriceChange: (value: string) => void;
   comparePrice: string;
@@ -34,11 +34,11 @@ interface ProductDetailFormContentProps {
 // Cột trái: Tất cả form sections
 export function ProductDetailFormContent({
   basicInfoRef,
+  shortDescEditorRef,
   descEditorRef,
   name,
   onNameChange,
-  shortDesc,
-  onShortDescChange,
+
   price,
   onPriceChange,
   comparePrice,
@@ -54,14 +54,13 @@ export function ProductDetailFormContent({
   errors,
 }: ProductDetailFormContentProps) {
   return (
-    <div className="lg:col-span-2 space-y-8">
+    <div className="lg:col-span-2 space-y-6 sm:space-y-8">
       {/* Thông tin cơ bản */}
       <BasicInfoSection
         ref={basicInfoRef}
         name={name}
         onNameChange={onNameChange}
-        shortDesc={shortDesc}
-        onShortDescChange={onShortDescChange}
+        shortDescRef={shortDescEditorRef}
         descRef={descEditorRef}
       />
 

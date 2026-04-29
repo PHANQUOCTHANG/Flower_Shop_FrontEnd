@@ -11,22 +11,20 @@ export function CartHeader({ itemCount }: CartHeaderProps) {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
       {/* Tiêu đề với số lượng */}
-      <h1 className="typo-heading-lg">
-        Giỏ hàng{" "}
-        <span style={{ color: CART_COLORS.ACCENT }}>({itemCount})</span>
+      <h1 className="text-xl font-bold text-gray-900">
+        Giỏ hàng của bạn ({itemCount} sản phẩm)
       </h1>
 
       {/* Nút quay lại mua sắm */}
       <button
         onClick={() => router.push(CART_CONFIG.PRODUCTS_ROUTE)}
-        className="transition-all self-start sm:self-center group"
-        style={{ color: CART_COLORS.ACCENT }}
+        className="transition-all self-start sm:self-center text-[#e91e63] hover:opacity-80"
       >
-        <div className="typo-button-sm flex items-center gap-2 hover:opacity-80">
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          Tiếp tục mua sắm
+        <div className="text-sm font-bold flex items-center gap-1">
+          <ArrowLeft className="w-4 h-4" />
+          Mua thêm sản phẩm khác
         </div>
       </button>
     </div>

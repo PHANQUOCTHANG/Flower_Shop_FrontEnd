@@ -16,47 +16,44 @@ export const CartTable: React.FC<CartTableProps> = ({
  onRemoveItem,
 }) => {
  return (
- <div className="hidden md:flex flex-col rounded-2xl border border-[#e7cfd5] bg-white shadow-sm overflow-hidden">
+ <div className="hidden md:flex flex-col rounded-xl border border-gray-200 bg-white overflow-hidden mb-6">
  <div className="overflow-y-auto max-h-[800px]">
  <table className="w-full text-left border-collapse">
- <thead className="bg-[#fcf8f9] border-b border-[#e7cfd5] sticky top-0">
+ <thead className="bg-white border-b border-gray-200 sticky top-0">
  <tr>
- <th className="px-6 py-4 typo-caption-xs text-[#9a4c5f] ">Sản phẩm</th>
- <th className="px-6 py-4 typo-caption-xs text-[#9a4c5f] ">Đơn giá</th>
- <th className="px-6 py-4 typo-caption-xs text-[#9a4c5f] text-center">Số lượng</th>
- <th className="px-6 py-4 typo-caption-xs text-[#9a4c5f] ">Thành tiền</th>
+ <th className="px-6 py-4 text-sm font-bold text-gray-900 w-[40%]">Sản phẩm</th>
+ <th className="px-6 py-4 text-sm font-bold text-gray-900 text-center">Đơn giá</th>
+ <th className="px-6 py-4 text-sm font-bold text-gray-900 text-center">Số lượng</th>
+ <th className="px-6 py-4 text-sm font-bold text-gray-900 text-center">Thành tiền</th>
  <th className="px-6 py-4" />
  </tr>
  </thead>
- <tbody className="divide-y divide-[#e7cfd5] ">
+ <tbody className="divide-y divide-gray-100">
  {items.map((item) => (
  <tr
  key={item.id}
- className="group hover:bg-[#ee2b5b]/[0.02] transition-colors"
+ className="group transition-colors"
  >
  {/* Sản phẩm */}
  <td className="px-6 py-6">
  <div className="flex items-center gap-4">
- <div className="relative size-20 rounded-xl overflow-hidden border border-[#e7cfd5] bg-gray-100 shrink-0">
+ <div className="w-[72px] h-[72px] rounded-lg overflow-hidden border border-gray-100 bg-gray-50 shrink-0">
  <img
  src={item.product.thumbnailUrl}
  alt={item.product.name}
- className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+ className="w-full h-full object-cover"
  />
  </div>
  <div>
- <p className="typo-label text-[#1b0d11] leading-tight mb-1">
+ <p className="text-sm font-bold text-gray-900 leading-snug mb-1">
  {item.product.name}
- </p>
- <p className="typo-caption-xs text-[#9a4c5f] ">
- {item.product.id}
  </p>
  </div>
  </div>
  </td>
 
  {/* Đơn giá */}
- <td className="px-6 py-6 typo-body-sm whitespace-nowrap">
+ <td className="px-6 py-6 text-[13px] font-bold text-gray-900 text-center whitespace-nowrap">
  {formatCurrency(item.product.price)}
  </td>
 
@@ -72,9 +69,9 @@ export const CartTable: React.FC<CartTableProps> = ({
  </div>
  </td>
 
- {/* Thành tiền — hiển thị theo localQuantity của QuantityControl */}
- <td className="px-6 py-6">
- <span className="font-black text-[#ee2b5b] whitespace-nowrap">
+ {/* Thành tiền */}
+ <td className="px-6 py-6 text-center">
+ <span className="font-bold text-[#e91e63] text-[13px] whitespace-nowrap">
  {formatCurrency(item.product.price * item.quantity)}
  </span>
  </td>
@@ -84,9 +81,9 @@ export const CartTable: React.FC<CartTableProps> = ({
  <button
  onClick={() => onRemoveItem(item.product.id)}
  aria-label="Xóa sản phẩm"
- className="text-[#9a4c5f] hover:text-red-500 p-2 transition-colors"
+ className="text-white bg-[#e91e63] rounded p-1.5 hover:bg-[#db2777] transition-colors inline-flex"
  >
- <Trash2 className="w-5 h-5" />
+ <Trash2 className="w-4 h-4" />
  </button>
  </td>
  </tr>

@@ -1,4 +1,4 @@
-import { Filter, CheckCircle } from "lucide-react";
+import { Filter, CheckCircle, X } from "lucide-react";
 import { FilterSection } from "./FilterSection";
 import { PRICE_RANGES } from "../constants/priceRanges";
 
@@ -9,6 +9,8 @@ interface FilterSidebarProps {
   categories: Array<{ id: string; name: string; slug: string }>;
   onPriceChange: (min: number | null, max: number | null) => void;
   onCategoryChange: (slug: string, isChecked: boolean) => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 const MAX_VISIBLE_CATEGORIES = 10;
@@ -21,12 +23,30 @@ export function FilterSidebar({
   categories,
   onPriceChange,
   onCategoryChange,
+  isOpen = false,
+  onClose,
 }: FilterSidebarProps) {
   return (
-    <aside className="w-full md:w-72 lg:w-72 shrink-0 hidden md:block">
-      <div className="sticky top-28 space-y-2">
-        {/* Header */}
-        <div className="mb-8">
+    <>
+      {/* Mobile Backdrop */}
+      <div 
+        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity md:hidden ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
+        onClick={onClose}
+      />
+
+      {/* Sidebar / Drawer */}
+      <aside className={`fixed md:sticky top-0 right-0 md:top-28 h-full md:h-auto w-[280px] md:w-72 lg:w-72 bg-white md:bg-transparent z-50 md:z-0 shrink-0 transform transition-transform duration-300 md:transform-none shadow-2xl md:shadow-none overflow-y-auto md:overflow-visible ${isOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}`}>
+        <div className="p-6 md:p-0 space-y-2">
+          {/* Mobile Header */}
+          <div className="flex items-center justify-between md:hidden mb-6 pb-4 border-b border-slate-100">
+            <h3 className="typo-heading-md text-[#0d1b12]">Bộ lọc</h3>
+            <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 text-slate-500">
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Desktop Header */}
+          <div className="mb-8 hidden md:block">
           <div className="flex items-center gap-2 mb-2">
             <Filter size={20} className="text-[#13ec5b]" />
             <h3 className="typo-heading-md text-[#0d1b12]">Bộ lọc</h3>
@@ -100,7 +120,8 @@ export function FilterSidebar({
             ))}
           </div>
         </FilterSection>
-      </div>
-    </aside>
+        </div>
+      </aside>
+    </>
   );
 }

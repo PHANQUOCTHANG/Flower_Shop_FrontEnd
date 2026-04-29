@@ -20,30 +20,31 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
  };
 
  return (
+ <>
  <div className="mt-auto space-y-4">
  {/* Số lượng và nút thêm giỏ */}
  <div className="flex flex-col sm:flex-row items-stretch gap-4">
  {/* Input số lượng */}
- <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden h-14 bg-white ">
+ <div className="flex items-center justify-between border border-gray-200 rounded-full overflow-hidden h-[46px] bg-white w-full sm:w-28 px-1">
  <button
  onClick={() => onQuantityChange("dec")}
- className="px-5 hover:bg-gray-100 transition-colors h-full disabled:opacity-50"
+ className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors disabled:opacity-50 text-gray-500"
  disabled={isLoading}
  >
- <Minus className="w-4 h-4" />
+ <Minus className="w-3.5 h-3.5" />
  </button>
  <input
  type="number"
  value={quantity}
  readOnly
- className="w-12 text-center border-none bg-transparent focus:ring-0 typo-body font-bold"
+ className="w-8 text-center border-none bg-transparent focus:ring-0 text-sm font-bold p-0 text-gray-800"
  />
  <button
  onClick={() => onQuantityChange("inc")}
- className="px-5 hover:bg-gray-100 transition-colors h-full disabled:opacity-50"
+ className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors disabled:opacity-50 text-gray-500"
  disabled={isLoading}
  >
- <Plus className="w-4 h-4" />
+ <Plus className="w-3.5 h-3.5" />
  </button>
  </div>
 
@@ -51,18 +52,18 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
  <button
  onClick={handleAddToCart}
  disabled={isLoading}
- className="flex-1 h-14 border-2 border-[#13ec5b] text-[#13ec5b] typo-button rounded-xl hover:bg-[#13ec5b] hover:text-[#0d1b12] transition-all transform active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
+ className="flex-1 h-[46px] border-2 border-[#13ec5b] text-[#13ec5b] text-[13px] font-bold rounded-full hover:bg-[#13ec5b] hover:text-[#0d1b12] transition-all transform active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
  >
  {isLoading ? "Đang thêm..." : "THÊM VÀO GIỎ"}
  </button>
  </div>
 
- {/* Nút đặt hoa ngay */}
+ {/* Nút đặt hoa ngay (Desktop) */}
  <button
  disabled={isLoading}
- className="w-full bg-[#13ec5b] hover:bg-[#13ec5b]/90 text-[#0d1b12] typo-button-lg py-5 rounded-xl transition-all shadow-xl shadow-[#13ec5b]/20 flex items-center justify-center gap-3 transform active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+ className="hidden sm:flex w-full bg-[#13ec5b] hover:bg-[#0ecf50] text-[#0d1b12] text-sm py-[14px] rounded-full transition-all hover:shadow-lg items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed font-black"
  >
- <Zap className="w-6 h-6 fill-[#0d1b12]" />
+ <Zap className="w-4 h-4 fill-current" />
  ĐẶT HOA NGAY
  </button>
 
@@ -90,6 +91,18 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
  </a>
  </div>
  </div>
+
+ {/* Mobile Sticky Button */}
+ <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-slate-100 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] sm:hidden z-50 animate-slide-in-up">
+ <button
+ disabled={isLoading}
+ className="w-full bg-[#13ec5b] text-[#0d1b12] text-sm py-[14px] rounded-full shadow-lg shadow-[#13ec5b]/30 flex items-center justify-center gap-2 transform active:scale-95 disabled:opacity-60 transition-all font-black"
+ >
+ <Zap className="w-4 h-4 fill-current" />
+ ĐẶT HOA NGAY
+ </button>
+ </div>
+ </>
  );
 };
 

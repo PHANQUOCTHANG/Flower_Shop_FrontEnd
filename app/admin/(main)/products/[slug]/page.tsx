@@ -61,7 +61,7 @@ export default function ProductDetailPage() {
   const { refs, state, actions } = useProductForm();
 
   // Destructure refs
-  const { basicInfoRef, descEditorRef } = refs;
+  const { basicInfoRef, shortDescEditorRef, descEditorRef } = refs;
 
   // Destructure state
   const {
@@ -129,7 +129,8 @@ export default function ProductDetailPage() {
 
     startTransition(async () => {
       try {
-        // Lấy HTML content từ rich editor
+        // Lấy HTML content từ các editor
+        const shortDesc = shortDescEditorRef.current?.getHTML() ?? "";
         const desc = descEditorRef.current?.getHTML() ?? "";
 
         // Tạo FormData chứa files thực tế
@@ -137,10 +138,10 @@ export default function ProductDetailPage() {
 
         // Thêm text fields
         formDataToSend.append("name", name.trim());
-        if (state.shortDescription.trim())
+        if (shortDesc.trim())
           formDataToSend.append(
             "shortDescription",
-            state.shortDescription.trim(),
+            shortDesc.trim(),
           );
         if (desc.trim()) formDataToSend.append("description", desc.trim());
         formDataToSend.append("price", String(parseFloat(price) || 0));
@@ -286,7 +287,7 @@ export default function ProductDetailPage() {
       <ProductDetailHeader isEdit={true} />
 
       {/* Form container */}
-      <div className="px-8 py-8 pb-28">
+      <div className="px-4 sm:px-6 md:px-8 py-6 md:py-8 pb-28 max-w-[1400px] mx-auto">
         <form
           id="product-form"
           className="grid grid-cols-1 lg:grid-cols-3 gap-8"
@@ -295,11 +296,10 @@ export default function ProductDetailPage() {
           {/* Cột trái: Form sections */}
           <ProductDetailFormContent
             basicInfoRef={basicInfoRef}
+            shortDescEditorRef={shortDescEditorRef}
             descEditorRef={descEditorRef}
             name={name}
             onNameChange={setName}
-            shortDesc={state.shortDescription}
-            onShortDescChange={actions.setShortDescription}
             price={price}
             onPriceChange={setPrice}
             comparePrice={comparePrice}

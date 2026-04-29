@@ -300,7 +300,7 @@ export const AddressForm: FC<AddressFormProps> = ({
                 className={`w-full px-4 py-2.5 rounded-lg border-2 transition-colors text-sm ${
                   errors.name
                     ? "border-red-500 bg-red-50"
-                    : "border-slate-200 bg-white hover:border-slate-300 focus:border-[#ee2b5b]"
+                    : "border-gray-200 bg-white hover:border-gray-300 focus:border-[#13ec5b] focus:ring-1 focus:ring-[#13ec5b]"
                 } text-slate-900 placeholder:text-slate-400 focus:outline-none`}
               />
               {errors.name && (
@@ -322,7 +322,7 @@ export const AddressForm: FC<AddressFormProps> = ({
                 className={`w-full px-4 py-2.5 rounded-lg border-2 transition-colors text-sm ${
                   errors.phone
                     ? "border-red-500 bg-red-50"
-                    : "border-slate-200 bg-white hover:border-slate-300 focus:border-[#ee2b5b]"
+                    : "border-gray-200 bg-white hover:border-gray-300 focus:border-[#13ec5b] focus:ring-1 focus:ring-[#13ec5b]"
                 } text-slate-900 placeholder:text-slate-400 focus:outline-none`}
               />
               {errors.phone && (
@@ -400,7 +400,7 @@ export const AddressForm: FC<AddressFormProps> = ({
                 className={`w-full px-4 py-2.5 rounded-lg border-2 transition-colors text-sm resize-none ${
                   errors.streetDetail
                     ? "border-red-500 bg-red-50"
-                    : "border-slate-200 bg-white hover:border-slate-300 focus:border-[#ee2b5b]"
+                    : "border-gray-200 bg-white hover:border-gray-300 focus:border-[#13ec5b] focus:ring-1 focus:ring-[#13ec5b]"
                 } text-slate-900 placeholder:text-slate-400 focus:outline-none`}
               />
               {errors.streetDetail && (
@@ -419,7 +419,7 @@ export const AddressForm: FC<AddressFormProps> = ({
                 checked={formData.isDefault}
                 onChange={handleChange}
                 disabled={isSubmitting || isLoading}
-                className="w-4 h-4 rounded border-slate-300 text-[#ee2b5b] cursor-pointer"
+                className="w-4 h-4 rounded border-gray-300 text-[#13ec5b] focus:ring-[#13ec5b] cursor-pointer"
               />
               <label
                 htmlFor="isDefault"
@@ -444,7 +444,7 @@ export const AddressForm: FC<AddressFormProps> = ({
           <button
             onClick={handleSubmit}
             disabled={isSubmitting || isLoading}
-            className="flex-1 px-4 py-2.5 bg-[#ee2b5b] text-white rounded-lg font-semibold text-sm hover:bg-[#d61e47] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2.5 bg-[#13ec5b] text-[#0d1b12] rounded-lg font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting || isLoading
               ? "Đang lưu..."

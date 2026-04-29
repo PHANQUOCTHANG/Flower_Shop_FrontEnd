@@ -23,7 +23,7 @@ interface ProfileInfoProps {
 // Component chính
 export const ProfileInfo: FC<ProfileInfoProps> = ({ fields, onEdit }) => {
   return (
-    <section className="bg-white rounded-2xl sm:rounded-[1.75rem] md:rounded-2xl lg:rounded-[2.5rem] p-6 sm:p-8 md:p-10 border border-slate-100 shadow-sm animate-in slide-in-from-right-10 duration-500">
+    <section className="bg-white rounded-2xl p-6 sm:p-8 md:p-10 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] animate-in slide-in-from-right-10 duration-500">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 sm:mb-10 gap-4 sm:gap-0">
         <h2 className="text-xl sm:text-2xl font-black text-slate-900 uppercase tracking-tight">
@@ -31,7 +31,7 @@ export const ProfileInfo: FC<ProfileInfoProps> = ({ fields, onEdit }) => {
         </h2>
         <button
           onClick={onEdit}
-          className="flex items-center justify-center sm:justify-start gap-2 px-4 sm:px-6 py-2.5 bg-[#ee2b5b]/10 text-[#ee2b5b] rounded-lg sm:rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#ee2b5b] hover:text-white transition-all w-full sm:w-auto"
+          className="flex items-center justify-center sm:justify-start gap-2 px-4 sm:px-6 py-2.5 bg-[#13ec5b]/10 text-[#0d9e3e] rounded-lg sm:rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#13ec5b] hover:text-[#0d1b12] transition-all w-full sm:w-auto"
           type="button"
         >
           <Edit3 size={14} />
@@ -49,12 +49,12 @@ export const ProfileInfo: FC<ProfileInfoProps> = ({ fields, onEdit }) => {
             </p>
 
             {/* Giá trị */}
-            <p className="text-sm sm:text-base font-bold text-slate-800 group-hover:text-[#ee2b5b] transition-colors break-words">
+            <p className="text-sm sm:text-base font-bold text-slate-800 group-hover:text-[#13ec5b] transition-colors break-words">
               {field.value}
             </p>
 
             {/* Underline hiệu ứng */}
-            <div className="h-0.5 w-12 bg-slate-100 group-hover:w-full group-hover:bg-[#ee2b5b]/20 transition-all duration-500" />
+            <div className="h-0.5 w-12 bg-slate-100 group-hover:w-full group-hover:bg-[#13ec5b]/50 transition-all duration-500" />
           </div>
         ))}
       </div>

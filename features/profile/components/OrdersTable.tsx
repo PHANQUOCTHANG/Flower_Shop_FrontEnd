@@ -51,7 +51,7 @@ const OrderRow: FC<OrderRowProps> = ({ order, onViewOrder }) => {
   return (
     <tr className="group hover:bg-slate-50/50 transition-colors">
       {/* Mã đơn hàng */}
-      <td className="py-4 sm:py-6 text-xs sm:text-sm font-black text-[#ee2b5b] truncate max-w-[100px]">
+      <td className="py-4 sm:py-6 text-xs sm:text-sm font-black text-[#0d1b12] truncate max-w-[100px]">
         {order.id}
       </td>
 
@@ -74,7 +74,7 @@ const OrderRow: FC<OrderRowProps> = ({ order, onViewOrder }) => {
       <td className="py-4 sm:py-6 pl-3 sm:pl-6 text-center">
         <button
           onClick={() => onViewOrder(order.id)}
-          className="inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 bg-[#ee2b5b]/10 text-[#ee2b5b] rounded-lg text-xs font-black uppercase tracking-widest hover:bg-[#ee2b5b] hover:text-white transition-all"
+          className="inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 bg-[#13ec5b]/10 text-[#0d9e3e] rounded-lg text-xs font-black uppercase tracking-widest hover:bg-[#13ec5b] hover:text-[#0d1b12] transition-all"
           type="button"
         >
           <Eye size={12} />

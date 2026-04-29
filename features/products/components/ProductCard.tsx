@@ -196,7 +196,7 @@ export const ProductCard = ({
         <div className="relative w-36 h-44 shrink-0 overflow-hidden rounded-2xl bg-gray-50">
           {/* Badge: % giảm giá */}
           {discount > 0 && (
-            <div className="absolute top-3 left-3 z-10 text-white typo-caption-xs px-3 py-1.5 rounded-full shadow-lg bg-[#e91e63]">
+            <div className="absolute top-3 left-3 z-10 text-white typo-caption-xs px-3 py-1.5 rounded-full shadow-lg bg-[#ef4444]">
               -{discount}%
             </div>
           )}
@@ -251,7 +251,7 @@ export const ProductCard = ({
               </p>
             )}
             <div className="flex items-center gap-3">
-              <p className="typo-heading-md text-[#e91e63]">
+              <p className="typo-heading-md text-[#0d1b12]">
                 {parseInt(String(product.price)).toLocaleString("vi-VN")}đ
               </p>
               {product.comparePrice && (
@@ -274,7 +274,7 @@ export const ProductCard = ({
                 e.stopPropagation();
                 router.push(`/products/${product.slug}`);
               }}
-              className="bg-[#e91e63] hover:bg-[#db2777] disabled:bg-gray-400 disabled:cursor-not-allowed text-white typo-button-sm py-3 px-5 rounded-2xl transition-all transform active:scale-95 flex items-center justify-center gap-2"
+              className="bg-[#e91e63] hover:bg-[#db2777] disabled:bg-gray-400 disabled:cursor-not-allowed text-white typo-button-sm py-3 px-5 rounded-xl transition-all transform active:scale-95 flex items-center justify-center gap-2"
             >
               <Bolt size={16} fill="currentColor" />
               {isOutOfStock ? "HẾT HÀNG" : "MUA NGAY"}
@@ -296,13 +296,13 @@ export const ProductCard = ({
   return (
     <div
       onClick={() => router.push(`/products/${product.slug}`)}
-      className="group flex flex-col bg-white rounded-4xl overflow-hidden border border-transparent hover:border-[#13ec5b]/20 hover:shadow-2xl transition-all duration-500 cursor-pointer"
+      className="group flex flex-col bg-white rounded-3xl overflow-hidden border border-gray-100 hover:border-gray-200 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 cursor-pointer"
     >
       {/* Phần hình ảnh – aspect-[4/5] = tỷ lệ 4:5 chuẩn cho card hoa */}
       <div className="relative aspect-[4/5] overflow-hidden bg-gray-50">
         {/* Badge: % giảm giá */}
         {discount > 0 && (
-          <div className="absolute top-4 left-4 z-10 text-white typo-caption-xs px-3 py-1.5 rounded-full shadow-lg bg-[#e91e63]">
+          <div className="absolute top-4 left-4 z-10 text-white typo-caption-xs px-3 py-1.5 rounded-full shadow-lg bg-[#ef4444]">
             -{discount}%
           </div>
         )}
@@ -341,24 +341,19 @@ export const ProductCard = ({
       </div>
 
       {/* Phần thông tin */}
-      <div className="p-6 flex flex-col flex-1">
+      <div className="p-4 sm:p-5 flex flex-col flex-1">
         {/* Tiêu đề & giá */}
-        <div className="flex flex-col gap-2 mb-6">
-          <h3 className="typo-body text-[#0d1b12] group-hover:text-[#13ec5b] transition-colors line-clamp-2">
+        <div className="flex flex-col gap-1.5 mb-4">
+          <h3 className="text-sm font-bold text-gray-800 group-hover:text-[#e91e63] transition-colors line-clamp-1">
             {product.name}
           </h3>
           {product.sku && (
-            <p className="typo-caption-xs text-[#4c9a66] font-mono">
+            <p className="text-[10px] text-gray-400 font-mono">
               SKU: {product.sku}
             </p>
           )}
-          {product.shortDescription && (
-            <p className="typo-caption-sm text-[#4c9a66] line-clamp-2">
-              {product.shortDescription}
-            </p>
-          )}
-          <div className="flex items-center gap-2 pt-2">
-            <p className="typo-heading-md text-[#e91e63]">
+          <div className="flex items-center gap-2 mt-1">
+            <p className="text-base font-black text-[#1b0d11]">
               {parseInt(String(product.price)).toLocaleString("vi-VN")}đ
             </p>
             {product.comparePrice && (
@@ -379,9 +374,9 @@ export const ProductCard = ({
               e.stopPropagation();
               router.push(`/products/${product.slug}`);
             }}
-            className="w-full bg-[#e91e63] hover:bg-[#db2777] disabled:bg-gray-400 disabled:cursor-not-allowed text-white typo-button-sm py-4 rounded-2xl transition-all transform active:scale-95 flex items-center justify-center gap-2"
+            className="w-full bg-[#e91e63] hover:bg-[#db2777] disabled:bg-gray-400 disabled:cursor-not-allowed text-white typo-button-sm py-3.5 rounded-[14px] transition-all transform active:scale-95 flex items-center justify-center gap-2 font-bold"
           >
-            <Bolt size={18} fill="currentColor" />
+            <Bolt size={16} fill="currentColor" />
             {isOutOfStock ? "HẾT HÀNG" : "MUA NGAY"}
           </button>
 

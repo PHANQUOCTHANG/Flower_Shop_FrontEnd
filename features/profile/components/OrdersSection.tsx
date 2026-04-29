@@ -62,7 +62,7 @@ export const OrdersSection: FC<OrdersSectionProps> = ({
   };
 
   return (
-    <section className="bg-white rounded-2xl sm:rounded-[1.75rem] md:rounded-2xl lg:rounded-[2.5rem] p-6 sm:p-8 md:p-10 border border-slate-100 shadow-sm animate-in slide-in-from-right-10 duration-500">
+    <section className="bg-white rounded-2xl p-6 sm:p-8 md:p-10 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] animate-in slide-in-from-right-10 duration-500">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-10">
         {/* Títl và nút làm mới */}
@@ -73,7 +73,7 @@ export const OrdersSection: FC<OrdersSectionProps> = ({
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#ee2b5b]/10 text-[#ee2b5b] rounded-lg text-[11px] font-semibold uppercase tracking-wide hover:bg-[#ee2b5b] hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#13ec5b]/10 text-[#0d9e3e] rounded-lg text-[11px] font-bold uppercase tracking-wide hover:bg-[#13ec5b] hover:text-[#0d1b12] transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
             type="button"
           >
             <RefreshCw
@@ -103,7 +103,7 @@ export const OrdersSection: FC<OrdersSectionProps> = ({
       {isLoading && (
         <div className="flex justify-center items-center py-10">
           <div className="animate-spin">
-            <Package className="text-[#ee2b5b]" size={32} />
+            <Package className="text-[#13ec5b]" size={32} />
           </div>
         </div>
       )}

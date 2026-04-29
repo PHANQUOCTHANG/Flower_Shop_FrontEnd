@@ -6,6 +6,7 @@ import Footer from "@/components/layout/client/Footer";
 import FloatingActions from "@/components/layout/client/FloatingActions";
 import { useAuthStore } from "@/stores/auth.store";
 import { useFetchCart } from "@/features/cart/hooks/useCart";
+import { useSettingStore } from "@/stores/setting.store";
 
 export default function MainLayout({
   children,
@@ -23,6 +24,12 @@ export default function MainLayout({
     }
     setPrevLoggedIn(isLoggedIn);
   }, [isLoggedIn, prevLoggedIn]);
+
+  // Fetch settings globally
+  const fetchSettings = useSettingStore((state) => state.fetchSettings);
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
 
   // Fetch cart chỉ khi logged in + hydrated
   // Hook này sẽ tự handle caching + refetchQueries

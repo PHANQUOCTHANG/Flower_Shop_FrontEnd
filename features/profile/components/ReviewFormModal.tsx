@@ -143,7 +143,7 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 shadow-2xl">
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-[#13ec5b]/5 to-[#ee2b5b]/5 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+        <div className="sticky top-0 bg-[#f8f9fa] border-b border-slate-200 px-6 py-4 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-black text-slate-950">Đánh giá sản phẩm</h2>
             <p className="text-sm text-slate-500 mt-1">{productName}</p>

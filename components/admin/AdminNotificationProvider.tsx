@@ -11,6 +11,7 @@ import React, {
 import { useQueryClient } from "@tanstack/react-query";
 import { getSocket } from "@/lib/socket";
 import { useAuthStore } from "@/stores/auth.store";
+import { useSocket } from "@/providers/socket-provider";
 import { logKeys } from "@/features/admin/activity-log/hooks/useActivityLog";
 
 import { formatCurrency } from "@/utils/format";
@@ -65,20 +66,24 @@ export function AdminNotificationProvider({
 
   const playSound = useCallback((type: "new" | "cancelled") => {
     try {
+      console.log(`[AdminNotificationProvider] Playing sound for type: ${type}`);
       const soundUrl = type === "new" 
-        ? "https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"
-        : "https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3";
+        ? "https://cdnjs.cloudflare.com/ajax/libs/ion-sound/3.0.2/sounds/bell_ring.mp3"
+        : "https://cdnjs.cloudflare.com/ajax/libs/ion-sound/3.0.2/sounds/button_tiny.mp3";
       
       const audio = new Audio(soundUrl);
-      audio.volume = 0.3; // Slightly quieter
-      audio.play().catch(e => console.warn("Audio play blocked by browser:", e));
+      audio.volume = 1.0; // Slightly quieter
+      audio.play()
+        .then(() => console.log("[AdminNotificationProvider] Audio played successfully"))
+        .catch(e => console.warn("[AdminNotificationProvider] Audio play blocked by browser:", e));
     } catch (error) {
-      console.error("Failed to play notification sound:", error);
+      console.error("[AdminNotificationProvider] Failed to play notification sound:", error);
     }
   }, []);
 
   const addNotification = useCallback(
     (payload: Omit<OrderNotification, "id">) => {
+      console.log("[AdminNotificationProvider] addNotification called with payload:", payload);
       const id = `notif-${Date.now()}-${Math.random()}`;
       const notification: OrderNotification = { ...payload, id };
 
@@ -91,13 +96,20 @@ export function AdminNotificationProvider({
     [dismissNotification, playSound],
   );
 
+  const { isConnected } = useSocket();
+
   useEffect(() => {
     const role = user?.role?.toUpperCase();
     const isAdmin = role === "ADMIN" || role === "STAFF";
-    if (!isAdmin) return;
+    if (!isAdmin || !isConnected) return;
 
     const socket = getSocket();
-    if (!socket) return;
+    if (!socket) {
+      console.log("[AdminNotificationProvider] No socket instance found.");
+      return;
+    }
+
+    console.log("[AdminNotificationProvider] Registering socket events for role:", role);
 
     const handleNewOrder = (payload: {
       orderId: string;
@@ -131,7 +143,7 @@ export function AdminNotificationProvider({
       socket.off("order:new", handleNewOrder);
       socket.off("order:cancelled", handleCancelledOrder);
     };
-  }, [user?.role, addNotification, queryClient]);
+  }, [user?.role, addNotification, queryClient, isConnected]);
 
   useEffect(() => {
     return () => {

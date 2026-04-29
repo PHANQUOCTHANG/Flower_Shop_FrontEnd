@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
 import { useChat } from "@/features/auth/chat/hooks/useChat";
 import { useAuthStore } from "@/stores/auth.store";
+import { useSettingStore } from "@/stores/setting.store";
 
 // Zalo Icon Component
 const ZaloIcon = () => (
@@ -33,6 +34,13 @@ export default function FloatingActions() {
 
   // Auth store
   const { isAuthenticated } = useAuthStore();
+
+  const settings = useSettingStore((state) => state.settings);
+  const chatSettings = settings?.chatSettings || {
+    welcomeMessage: "Xin chào! 👋 Tôi có thể giúp gì cho bạn?",
+    waitMessage: "Chúng tôi thường trả lời trong vài phút"
+  };
+  const socialLinks = settings?.socialLinks || { zalo: "https://zalo.me/0931838465" };
 
   const {
     messages,
@@ -193,7 +201,7 @@ export default function FloatingActions() {
             <div>
               <h3 className="font-semibold">FlowerShop Chat</h3>
               <p className="text-xs opacity-90">
-                Chúng tôi thường trả lời trong vài phút
+                {chatSettings.waitMessage}
               </p>
             </div>
             <button
@@ -242,7 +250,7 @@ export default function FloatingActions() {
                 {messages.length === 0 ? (
                   <div className="flex justify-start">
                     <div className="max-w-xs px-4 py-2 rounded-lg text-sm bg-white text-[#0d1b12] border border-gray-200 rounded-bl-none">
-                      Xin chào! 👋 Tôi có thể giúp gì cho bạn?
+                      {chatSettings.welcomeMessage}
                     </div>
                   </div>
                 ) : (
@@ -310,7 +318,7 @@ export default function FloatingActions() {
 
         {/* Zalo Button */}
         <a
-          href="https://zalo.me/0931838465"
+          href={socialLinks.zalo}
           target="_blank"
           rel="noopener noreferrer"
           className="size-14 rounded-full bg-[#13ec5b] text-[#0d1b12] flex items-center justify-center shadow-lg hover:scale-110 transition-transform floating-pulse"

@@ -147,29 +147,29 @@ function OrdersPageContent() {
       <OrdersHeader />
 
       <main className="p-4 sm:p-6 md:p-8 max-w-[1440px] mx-auto w-full flex flex-col gap-6 sm:gap-8 animate-in fade-in duration-500">
-        <div className="space-y-6">
-          <OrderStatusTabs
-            tabs={tabs}
-            selectedStatus={filters.status}
-            onStatusChange={handleStatusChange}
-          />
-
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <OrderFilters
-              searchKeyword={filters.search}
-              dateFrom={filters.dateFrom}
-              dateTo={filters.dateTo}
-              paymentStatusFilter={filters.paymentStatus}
-              sortBy={filters.sort}
-              onSearchChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              onDateFromChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
-              onDateToChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
-              onPaymentStatusChange={(e) => setFilters({ ...filters, paymentStatus: e.target.value })}
-              onSortChange={(e) => setFilters({ ...filters, sort: e.target.value })}
-              onApplyFilter={handleApplyFilter}
-              onClearFilter={handleClearFilter}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="border-b border-slate-100">
+            <OrderStatusTabs
+              tabs={tabs}
+              selectedStatus={filters.status}
+              onStatusChange={handleStatusChange}
             />
           </div>
+          
+          <OrderFilters
+            searchKeyword={filters.search}
+            dateFrom={filters.dateFrom}
+            dateTo={filters.dateTo}
+            paymentStatusFilter={filters.paymentStatus}
+            sortBy={filters.sort}
+            onSearchChange={(e) => setFilters({ ...filters, search: e.target.value })}
+            onDateFromChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
+            onDateToChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
+            onPaymentStatusChange={(e) => setFilters({ ...filters, paymentStatus: e.target.value })}
+            onSortChange={(e) => setFilters({ ...filters, sort: e.target.value })}
+            onApplyFilter={handleApplyFilter}
+            onClearFilter={handleClearFilter}
+          />
         </div>
 
         <OrdersTable

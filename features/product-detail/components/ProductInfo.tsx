@@ -16,37 +16,33 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
  return (
  <div className="flex flex-col">
  {/* Tiêu đề */}
- <div className="mb-6">
- <h2 className="typo-heading-xl mb-3">{product.name}</h2>
+ <div className="mb-4">
+ <h2 className="text-3xl font-black text-gray-900 mb-2">{product.name}</h2>
+ <p className="text-sm text-gray-500">
+ {product.shortDescription || product.description || "Hoa ly trắng kết hợp cùng hơi thở của em bé cho vẻ đẹp cổ điển."}
+ </p>
  </div>
 
  {/* Giá */}
- <div className="mb-8 p-6 bg-[#13ec5b]/10 rounded-2xl inline-block self-start border border-[#13ec5b]/20">
- <div className="flex items-center gap-3">
- <p className="typo-display-md text-[#13ec5b]">
+ <div className="mb-8">
+ <div className="inline-flex items-center px-4 py-2 bg-[#13ec5b]/10 rounded-xl">
+ <p className="text-2xl font-black text-[#13ec5b]">
  {formatCurrency(product.price)}
  </p>
  {product.comparePrice && (
- <>
- <p className="typo-body-sm text-gray-400 line-through">
+ <span className="text-sm text-gray-400 line-through font-medium ml-3">
  {formatCurrency(product.comparePrice)}
- </p>
- {discount > 0 && (
- <span className="typo-caption-xs px-3 py-1 bg-[#e91e63] text-white rounded-full">
- -{discount}%
  </span>
- )}
- </>
  )}
  </div>
  </div>
 
  {/* Mô tả */}
- <div className="mb-6">
+ {/* <div className="mb-6">
  <p className="typo-subtitle">
- {product.shortDescription || product.description}
+ {product.shortDescription}
  </p>
- </div>
+ </div> */}
  </div>
  );
 };

@@ -125,7 +125,7 @@ export const AddressSection: FC = () => {
     setDefaultMutation.isPending;
 
   return (
-    <section className="bg-white rounded-2xl sm:rounded-[1.75rem] md:rounded-2xl lg:rounded-[2.5rem] p-6 sm:p-8 md:p-10 border border-slate-200 shadow-sm">
+    <section className="bg-white rounded-2xl p-6 sm:p-8 md:p-10 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 sm:mb-8 md:mb-10">
         <div className="min-w-0 flex-1">
@@ -139,7 +139,7 @@ export const AddressSection: FC = () => {
         <button
           onClick={handleOpenAddForm}
           disabled={isLoading || isAnyMutationLoading}
-          className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 bg-[#ee2b5b] text-white rounded-lg font-semibold text-sm hover:bg-[#d61e47] transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shrink-0"
+          className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 bg-[#13ec5b] text-[#0d1b12] rounded-lg font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shrink-0"
           type="button"
         >
           <Plus size={18} />
@@ -163,7 +163,7 @@ export const AddressSection: FC = () => {
         <div className="flex items-center justify-center py-12 sm:py-16 md:py-20">
           <div className="text-center">
             <Loader
-              className="animate-spin text-[#ee2b5b] mx-auto mb-3 sm:mb-4"
+              className="animate-spin text-[#13ec5b] mx-auto mb-3 sm:mb-4"
               size={32}
             />
             <p className="text-slate-600 text-sm font-medium">
@@ -185,7 +185,7 @@ export const AddressSection: FC = () => {
           </p>
           <button
             onClick={handleOpenAddForm}
-            className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 bg-[#ee2b5b]/10 text-[#ee2b5b] rounded-lg sm:rounded-lg font-semibold hover:bg-[#ee2b5b]/20 transition-colors"
+            className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 bg-[#13ec5b]/10 text-[#0d9e3e] rounded-lg sm:rounded-lg font-bold hover:bg-[#13ec5b] hover:text-[#0d1b12] transition-colors"
             type="button"
           >
             <Plus size={18} />

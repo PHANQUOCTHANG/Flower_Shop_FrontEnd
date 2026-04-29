@@ -15,28 +15,20 @@ export const GiftCard: React.FC<GiftCardProps> = ({
  onCardMessageChange,
 }) => {
  return (
- <div className="bg-white rounded-2xl border border-[#e7cfd5] p-4 sm:p-6 space-y-4">
- <div className="flex items-center justify-between gap-2">
- <div className="flex items-center gap-2 sm:gap-3">
- <div className="size-8 sm:size-10 rounded-full bg-[#ee2b5b]/10 flex items-center justify-center shrink-0">
- <MessageSquareQuote className="w-4 h-4 sm:w-5 h-5 text-[#ee2b5b]" />
- </div>
- <label className="flex items-center gap-2 sm:gap-3 cursor-pointer group">
- <div className="relative">
+ <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4 mb-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+ <div className="flex items-center gap-2">
+ <label className="flex items-center gap-3 cursor-pointer group">
+ <div className="relative flex items-center justify-center">
  <input
  type="checkbox"
  checked={includeCard}
  onChange={(e) => onIncludeCardChange(e.target.checked)}
- className="peer sr-only"
+ className="peer appearance-none w-4 h-4 border border-gray-300 rounded hover:border-[#e91e63] checked:bg-[#e91e63] checked:border-[#e91e63] transition-all"
  />
- <div className="w-8 sm:w-10 h-5 sm:h-6 bg-gray-200 rounded-full peer-checked:bg-[#ee2b5b] transition-all after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-3 after:w-3 sm:after:h-4 sm:after:w-4 after:transition-all peer-checked:after:translate-x-3 sm:peer-checked:after:translate-x-4"></div>
+ <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.6666 3.5L5.24992 9.91667L2.33325 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
  </div>
- <span className="typo-button">Thiệp lời nhắn miễn phí</span>
+ <span className="text-sm font-bold text-gray-900">Thêm thiệp/Lời nhắn miễn phí</span>
  </label>
- </div>
- <span className="text-[10px] font-black uppercase text-green-500 tracking-widest bg-green-500/10 px-2 py-1 rounded">
- FREE
- </span>
  </div>
 
  {includeCard && (
@@ -45,8 +37,8 @@ export const GiftCard: React.FC<GiftCardProps> = ({
  value={cardMessage}
  onChange={(e) => onCardMessageChange(e.target.value)}
  rows={3}
- placeholder="Hãy viết những lời chúc yêu thương của bạn tại đây..."
- className="w-full bg-[#fcf8f9] border border-[#e7cfd5] rounded-xl p-3 sm:p-4 text-sm focus:ring-2 focus:ring-[#ee2b5b]/50 focus:border-[#ee2b5b] outline-none transition-all"
+ placeholder="Viết lời nhắn gửi đến người nhận..."
+ className="w-full bg-[#fff] border border-[#e91e63]/20 rounded-xl p-4 text-[13px] focus:border-[#e91e63] outline-none transition-all resize-none placeholder:text-gray-300"
  />
  </div>
  )}

@@ -43,6 +43,7 @@ function FlowerCollectionContent() {
   const [viewMode, setViewMode] = useState<ViewMode>(
     PRODUCTS_CONFIG.DEFAULT_VIEW,
   );
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   // Lấy dữ liệu
   const {
@@ -60,7 +61,7 @@ function FlowerCollectionContent() {
     sort,
   });
 
-  const { categories, loading: categoriesLoading } = useCategories() ;
+  const { categories, loading: categoriesLoading } = useCategories();
 
   // Trạng thái dẫn xuất
   const hasActiveFilters = useMemo(
@@ -138,14 +139,26 @@ function FlowerCollectionContent() {
   // Trạng thái tải
   if (productsLoading || categoriesLoading) return <Loading />;
 
-  // Hiển thị
   return (
     <div className="min-h-screen bg-[#fcfbf9] text-[#1b0d11] transition-colors duration-300 font-sans antialiased">
-      <main className="max-w-360 mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-6 sm:py-8 md:py-10 lg:py-10">
+      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-6 sm:py-8 lg:py-10">
         {/* Điều hướng breadcrumb */}
-        <Breadcrumbs
-          items={[{ label: "Trang chủ", href: "/" }, { label: "Sản phẩm" }]}
-        />
+        <div className="mb-4 sm:mb-6">
+          <Breadcrumbs
+            items={[{ label: "Trang chủ", href: "/" }, { label: "Sản phẩm" }]}
+          />
+        </div>
+
+        {/* Page Header */}
+        <div className="mb-8 sm:mb-10 lg:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0d1b12] tracking-tight mb-3">
+            Tất cả sản phẩm
+          </h1>
+          <p className="text-[#4c9a66] text-sm sm:text-base max-w-2xl">
+            Khám phá bộ sưu tập hoa tươi và quà tặng độc đáo. Mỗi sản phẩm đều
+            được chăm chút tỉ mỉ để mang đến những khoảnh khắc tuyệt vời nhất.
+          </p>
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 md:gap-10 lg:gap-12">
           {/* Sidebar lọc */}
@@ -156,6 +169,8 @@ function FlowerCollectionContent() {
             categories={categories}
             onPriceChange={handlePriceChange}
             onCategoryChange={handleCategoryChange}
+            isOpen={isMobileFilterOpen}
+            onClose={() => setIsMobileFilterOpen(false)}
           />
 
           {/* Nội dung chính */}
@@ -171,6 +186,7 @@ function FlowerCollectionContent() {
               onSearch={handleSearch}
               onSortChange={handleSort}
               onClearFilters={handleClearFilters}
+              onOpenFilter={() => setIsMobileFilterOpen(true)}
             />
 
             {/* Lưới sản phẩm */}

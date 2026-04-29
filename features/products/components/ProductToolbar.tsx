@@ -12,6 +12,7 @@ interface ProductToolbarProps {
   onSearch: (e: React.FormEvent<HTMLFormElement>) => void;
   onSortChange: (sort: string) => void;
   onClearFilters: () => void;
+  onOpenFilter?: () => void;
 }
 
 // Toolbar với search, sort, view mode, clear filters
@@ -25,10 +26,11 @@ export function ProductToolbar({
   onSearch,
   onSortChange,
   onClearFilters,
+  onOpenFilter,
 }: ProductToolbarProps) {
   return (
     <div className="mb-12 space-y-3">
-      <div className="flex items-center gap-2 w-full">
+      <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full">
         {/* Toggle view mode: Grid/List */}
         <div className="flex items-center gap-1 bg-[#e7f3eb] p-1 rounded-xl shrink-0">
           <button
@@ -66,7 +68,19 @@ export function ProductToolbar({
           </button>
         </form>
 
-        {/* Sort dropdown */}
+        <div className="flex items-center gap-3 w-full sm:w-auto overflow-x-auto scrollbar-hide">
+          {/* Nút lọc Mobile */}
+          <button
+            onClick={onOpenFilter}
+            className="shrink-0 flex sm:hidden items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-[#e7f3eb] text-[#0d1b12] hover:bg-slate-50 transition-all font-semibold text-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#4c9a66]">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            Lọc
+          </button>
+
+          {/* Sort dropdown */}
         <div className="shrink-0 bg-white p-2 px-4 rounded-xl border border-[#e7f3eb] flex items-center gap-3">
           <span className="typo-caption-xs text-[#4c9a66] whitespace-nowrap hidden sm:inline">
             Sắp xếp:
@@ -87,12 +101,13 @@ export function ProductToolbar({
         {hasActiveFilters && (
           <button
             onClick={onClearFilters}
-            className="shrink-0 flex items-center gap-2 px-4 py-2 bg-white border border-[#e7f3eb] rounded-xl text-[#0d1b12] hover:bg-slate-50 transition-all typo-body-sm font-bold"
+            className="shrink-0 flex items-center gap-2 px-4 py-2.5 bg-white border border-[#e7f3eb] rounded-xl text-[#0d1b12] hover:bg-slate-50 transition-all typo-body-sm font-bold"
           >
-            <X size={16} />
-            <span className="hidden sm:inline">Xóa lọc</span>
+            <X size={16} className="text-[#e91e63]" />
+            <span className="hidden sm:inline text-[#e91e63]">Xóa lọc</span>
           </button>
         )}
+        </div>
       </div>
     </div>
   );

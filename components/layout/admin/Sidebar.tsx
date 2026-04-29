@@ -31,6 +31,8 @@ interface SidebarLinkProps {
 interface SidebarProps {
   currentPath: string;
   onNavigate?: (path: string) => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 // --- Component con: Nút điều hướng ---
@@ -63,7 +65,7 @@ const SidebarLink: FC<SidebarLinkProps> = ({
 );
 
 // --- Component chính: Sidebar ---
-export const Sidebar: FC<SidebarProps> = ({ currentPath, onNavigate }) => {
+export const Sidebar: FC<SidebarProps> = ({ currentPath, onNavigate, isOpen, onClose }) => {
   const router = useRouter();
 
   const user = useAuthStore((state) => state.user);
@@ -85,9 +87,23 @@ export const Sidebar: FC<SidebarProps> = ({ currentPath, onNavigate }) => {
   };
 
   return (
-    <aside className="w-72 shrink-0 border-r border-slate-200 bg-white flex flex-col h-full transition-colors duration-300">
-      {/* Phần Logo thương hiệu */}
-      <div className="p-8">
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden transition-opacity"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside 
+        className={`fixed md:static inset-y-0 left-0 z-50 w-72 shrink-0 border-r border-slate-200 bg-white flex flex-col h-full transition-transform duration-300 ease-in-out md:translate-x-0 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {/* Phần Logo thương hiệu */}
+        <div className="p-6 md:p-8">
         <div className="flex items-center gap-3">
           <div className="bg-[#13ec5b]/20 p-2.5 rounded-xl text-[#13ec5b]">
             <Flower2 size={28} />
@@ -184,5 +200,6 @@ export const Sidebar: FC<SidebarProps> = ({ currentPath, onNavigate }) => {
         </div>
       </div>
     </aside>
+    </>
   );
 };

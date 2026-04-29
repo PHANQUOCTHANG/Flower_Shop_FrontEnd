@@ -74,7 +74,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
           className={`w-full px-3 sm:px-5 py-2.5 sm:py-3.5 rounded-lg sm:rounded-xl border-2 transition-all outline-none font-medium text-sm ${
             error
               ? "border-rose-300 bg-rose-50/50 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-              : "border-slate-200 bg-slate-50 focus:border-[#ee2b5b] focus:ring-2 focus:ring-[#ee2b5b]/20"
+              : "border-slate-200 bg-slate-50 focus:border-[#13ec5b] focus:ring-2 focus:ring-[#13ec5b]/20"
           }`}
         />
 
@@ -188,10 +188,10 @@ export const ChangePasswordForm: React.FC = () => {
   };
 
   return (
-    <section className="bg-white rounded-2xl sm:rounded-[1.75rem] md:rounded-2xl lg:rounded-[2.5rem] p-6 sm:p-8 md:p-10 border border-slate-100 shadow-sm animate-in slide-in-from-right-10 duration-500">
+    <section className="bg-white rounded-2xl p-6 sm:p-8 md:p-10 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] animate-in slide-in-from-right-10 duration-500">
       {/* Header */}
       <div className="flex items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8 md:mb-10">
-        <div className="size-12 sm:size-14 bg-slate-50 rounded-lg sm:rounded-2xl flex items-center justify-center text-[#ee2b5b] shrink-0">
+        <div className="size-12 sm:size-14 bg-[#13ec5b]/10 rounded-lg sm:rounded-2xl flex items-center justify-center text-[#0d9e3e] shrink-0">
           <Lock size={28} />
         </div>
         <div className="min-w-0 flex-1">
@@ -267,11 +267,11 @@ export const ChangePasswordForm: React.FC = () => {
         />
 
         {/* Password Tips */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg sm:rounded-xl p-3 sm:p-4">
-          <p className="text-[11px] sm:text-xs font-bold text-blue-900 mb-2 uppercase tracking-wide">
+        <div className="bg-[#f0fdf4] border border-[#13ec5b]/20 rounded-lg sm:rounded-xl p-3 sm:p-4">
+          <p className="text-[11px] sm:text-xs font-bold text-[#0d9e3e] mb-2 uppercase tracking-wide">
             💡 Gợi ý mật khẩu mạnh
           </p>
-          <ul className="text-[11px] sm:text-xs text-blue-800 space-y-1 font-medium">
+          <ul className="text-[11px] sm:text-xs text-[#0d1b12] space-y-1 font-medium">
             {PASSWORD_TIPS.map((tip, i) => (
               <li key={i}>✓ {tip}</li>
             ))}
@@ -302,7 +302,7 @@ export const ChangePasswordForm: React.FC = () => {
           <button
             type="submit"
             disabled={isPending}
-            className="flex-1 px-4 sm:px-8 py-2.5 sm:py-4 bg-[#ee2b5b] text-white font-black text-xs sm:text-sm uppercase tracking-wider rounded-lg sm:rounded-xl shadow-lg shadow-[#ee2b5b]/20 hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+            className="flex-1 px-4 sm:px-8 py-2.5 sm:py-4 bg-[#13ec5b] text-[#0d1b12] font-black text-xs sm:text-sm uppercase tracking-wider rounded-lg sm:rounded-xl shadow-lg shadow-[#13ec5b]/20 hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
           >
             {isPending ? (
               <span className="flex items-center justify-center gap-2">
