@@ -8,7 +8,7 @@ import {
   type Chat,
   type Message,
 } from "../services/adminChatService";
-import * as socketChatService from "@/features/auth/chat/services/socketChatService";
+import * as socketChatService from "@/features/chat/services/socketChatService";
 import { useAuthStore } from "@/stores/auth.store";
 import { getSocket, initializeSocket } from "@/lib/socket";
 
