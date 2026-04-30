@@ -34,7 +34,7 @@ interface RefreshTokenResponse {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
 const REFRESH_ENDPOINT = "/auth/refresh-token";
 

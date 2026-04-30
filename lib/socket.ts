@@ -8,8 +8,9 @@ export const initializeSocket = (token: string): Socket => {
     return socket;
   }
 
-  // Socket.io cần kết nối đến base URL (không có /api)
+  // Socket.io cần kết nối TRỰC TIẾP đến Render backend (không qua proxy Vercel)
   const baseUrl =
+    process.env.NEXT_PUBLIC_SOCKET_URL ||
     process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ||
     "http://localhost:5000";
 

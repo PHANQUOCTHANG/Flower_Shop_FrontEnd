@@ -9,6 +9,18 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "ui-avatars.com" },
     ],
   },
+  // Proxy API qua Vercel để tránh lỗi Third-party cookies (Bị chặn bởi Safari/Chrome)
+  async rewrites() {
+    // URL Backend thực tế (Render) được lấy từ env
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:5000/api";
+    
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${backendUrl}/:path*`, // Forward toàn bộ request /api/... sang backend
+      },
+    ];
+  },
 };
 
 export default nextConfig;
