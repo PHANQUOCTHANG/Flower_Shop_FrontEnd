@@ -49,8 +49,14 @@ function OrdersPageContent() {
     page: currentPage,
     limit: 10,
     search: appliedFilters.search || undefined,
-    status: appliedFilters.status === "all" ? undefined : (appliedFilters.status as GetOrdersParams["status"]),
-    paymentStatus: appliedFilters.paymentStatus === "all" ? undefined : (appliedFilters.paymentStatus as GetOrdersParams["paymentStatus"]),
+    status:
+      appliedFilters.status === "all"
+        ? undefined
+        : (appliedFilters.status as GetOrdersParams["status"]),
+    paymentStatus:
+      appliedFilters.paymentStatus === "all"
+        ? undefined
+        : (appliedFilters.paymentStatus as GetOrdersParams["paymentStatus"]),
     dateFrom: appliedFilters.dateFrom || undefined,
     dateTo: appliedFilters.dateTo || undefined,
     sort: appliedFilters.sort as GetOrdersParams["sort"],
@@ -79,10 +85,12 @@ function OrdersPageContent() {
   const updateUrl = (newFilters: typeof filters, page: number) => {
     const params = new URLSearchParams();
     if (newFilters.search) params.set("search", newFilters.search);
-    if (newFilters.status && newFilters.status !== "all") params.set("status", newFilters.status);
+    if (newFilters.status && newFilters.status !== "all")
+      params.set("status", newFilters.status);
     if (newFilters.dateFrom) params.set("dateFrom", newFilters.dateFrom);
     if (newFilters.dateTo) params.set("dateTo", newFilters.dateTo);
-    if (newFilters.paymentStatus !== "all") params.set("paymentStatus", newFilters.paymentStatus);
+    if (newFilters.paymentStatus !== "all")
+      params.set("paymentStatus", newFilters.paymentStatus);
     if (newFilters.sort !== "newest") params.set("sort", newFilters.sort);
     if (page > 1) params.set("page", page.toString());
 
@@ -123,14 +131,20 @@ function OrdersPageContent() {
   const handleStatusUpdate = (orderId: string, status: string) => {
     updateStatus(
       { orderId, status: status as any },
-      { onSuccess: () => refetch() }
+      { onSuccess: () => refetch() },
     );
   };
 
   const tabs = useMemo(() => {
-    const counts = meta?.statusCounts || { pending: 0, processing: 0, completed: 0, cancelled: 0 };
-    const total = counts.pending + counts.processing + counts.completed + counts.cancelled;
-    
+    const counts = meta?.statusCounts || {
+      pending: 0,
+      processing: 0,
+      completed: 0,
+      cancelled: 0,
+    };
+    const total =
+      counts.pending + counts.processing + counts.completed + counts.cancelled;
+
     return [
       { name: "Tất cả", value: "all", count: total },
       { name: "Chờ xử lý", value: "pending", count: counts.pending },
@@ -155,18 +169,28 @@ function OrdersPageContent() {
               onStatusChange={handleStatusChange}
             />
           </div>
-          
+
           <OrderFilters
             searchKeyword={filters.search}
             dateFrom={filters.dateFrom}
             dateTo={filters.dateTo}
             paymentStatusFilter={filters.paymentStatus}
             sortBy={filters.sort}
-            onSearchChange={(e) => setFilters({ ...filters, search: e.target.value })}
-            onDateFromChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
-            onDateToChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
-            onPaymentStatusChange={(e) => setFilters({ ...filters, paymentStatus: e.target.value })}
-            onSortChange={(e) => setFilters({ ...filters, sort: e.target.value })}
+            onSearchChange={(e) =>
+              setFilters({ ...filters, search: e.target.value })
+            }
+            onDateFromChange={(e) =>
+              setFilters({ ...filters, dateFrom: e.target.value })
+            }
+            onDateToChange={(e) =>
+              setFilters({ ...filters, dateTo: e.target.value })
+            }
+            onPaymentStatusChange={(e) =>
+              setFilters({ ...filters, paymentStatus: e.target.value })
+            }
+            onSortChange={(e) =>
+              setFilters({ ...filters, sort: e.target.value })
+            }
             onApplyFilter={handleApplyFilter}
             onClearFilter={handleClearFilter}
           />
@@ -197,7 +221,6 @@ function OrdersPageContent() {
     </div>
   );
 }
-
 
 export default function OrdersPage() {
   return (

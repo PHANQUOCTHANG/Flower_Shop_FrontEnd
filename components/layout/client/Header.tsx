@@ -318,7 +318,7 @@ export default function Header() {
                 {isLoggedIn ? (
                   <>
                     <AvatarEl size="sm" />
-                    <span className="text-sm font-semibold text-[#0d1b12] max-w-[90px] truncate">
+                    <span className="text-sm font-semibold text-[#0d1b12] truncate">
                       {userName}
                     </span>
                   </>

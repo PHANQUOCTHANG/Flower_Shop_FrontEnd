@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
-import { useChat } from "@/features/auth/chat/hooks/useChat";
+import { useChat } from "@/features/chat/hooks/useChat";
 import { useAuthStore } from "@/stores/auth.store";
 import { useSettingStore } from "@/stores/setting.store";
 
@@ -24,6 +24,7 @@ export default function FloatingActions() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isInitializing, setIsInitializing] = useState(false);
+  const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
 
   // Ref để scroll to bottom
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -38,9 +39,11 @@ export default function FloatingActions() {
   const settings = useSettingStore((state) => state.settings);
   const chatSettings = settings?.chatSettings || {
     welcomeMessage: "Xin chào! 👋 Tôi có thể giúp gì cho bạn?",
-    waitMessage: "Chúng tôi thường trả lời trong vài phút"
+    waitMessage: "Chúng tôi thường trả lời trong vài phút",
   };
-  const socialLinks = settings?.socialLinks || { zalo: "https://zalo.me/0931838465" };
+  const socialLinks = settings?.socialLinks || {
+    zalo: "https://zalo.me/0931838465",
+  };
 
   const {
     messages,
@@ -52,6 +55,29 @@ export default function FloatingActions() {
     clearError,
     loadMoreMessages,
   } = useChat();
+
+  const getDateLabel = (date: Date) => {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    if (date.toDateString() === today.toDateString()) return "Hôm nay";
+    if (date.toDateString() === yesterday.toDateString()) return "Hôm qua";
+    const days = [
+      "Chủ nhật",
+      "Thứ 2",
+      "Thứ 3",
+      "Thứ 4",
+      "Thứ 5",
+      "Thứ 6",
+      "Thứ 7",
+    ];
+    const dateStr = new Intl.DateTimeFormat("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(date);
+    return `${days[date.getDay()]}, ${dateStr}`;
+  };
 
   // Reset chat và đóng hộp thoại khi đăng xuất
   useEffect(() => {
@@ -200,9 +226,7 @@ export default function FloatingActions() {
           <div className="bg-linear-to-r from-[#13ec5b] to-[#0d9a3d] text-white p-4 rounded-t-2xl flex items-center justify-between">
             <div>
               <h3 className="font-semibold">FlowerShop Chat</h3>
-              <p className="text-xs opacity-90">
-                {chatSettings.waitMessage}
-              </p>
+              <p className="text-xs opacity-90">{chatSettings.waitMessage}</p>
             </div>
             <button
               onClick={toggleChat}
@@ -254,25 +278,64 @@ export default function FloatingActions() {
                     </div>
                   </div>
                 ) : (
-                  messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`flex ${msg.senderRole === "user" ? "justify-end" : "justify-start"}`}
-                    >
-                      <div
-                        className={`max-w-xs px-4 py-2 rounded-lg text-sm ${
-                          msg.senderRole === "user"
-                            ? "bg-[#13ec5b] text-[#0d1b12] rounded-br-none font-medium"
-                            : "bg-white text-[#0d1b12] border border-gray-200 rounded-bl-none"
-                        }`}
-                      >
-                        {msg.content}
-                        <div className="text-xs opacity-60 mt-1">
-                          {new Date(msg.createdAt).toLocaleTimeString("vi-VN")}
+                  messages.map((msg, index) => {
+                    const currentDate = new Date(msg.createdAt);
+                    const prevDate =
+                      index > 0
+                        ? new Date(messages[index - 1].createdAt)
+                        : null;
+                    const showDivider =
+                      !prevDate ||
+                      currentDate.toDateString() !== prevDate.toDateString();
+                    const isUser = msg.senderRole === "user";
+
+                    return (
+                      <React.Fragment key={msg.id}>
+                        {showDivider && (
+                          <div className="flex justify-center my-4">
+                            <span className="px-3 py-1 bg-gray-200 text-[10px] font-bold text-gray-500 rounded-full">
+                              {getDateLabel(currentDate)}
+                            </span>
+                          </div>
+                        )}
+
+                        <div
+                          className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}
+                        >
+                          <div
+                            onClick={() =>
+                              setActiveMessageId((prev) =>
+                                prev === msg.id ? null : msg.id,
+                              )
+                            }
+                            className={`max-w-[80%] px-4 py-2 text-sm cursor-pointer select-none transition-all ${
+                              isUser
+                                ? "bg-[#13ec5b] text-[#0d1b12] rounded-2xl rounded-br-sm font-medium"
+                                : "bg-white text-[#0d1b12] rounded-2xl rounded-bl-sm border border-gray-200 shadow-sm"
+                            } hover:opacity-90 active:scale-[0.98]`}
+                          >
+                            {msg.content}
+                          </div>
+
+                          {/* Thời gian (show khi click) */}
+                          <div
+                            className={`flex items-center gap-1 px-1 overflow-hidden transition-all duration-200 ${
+                              activeMessageId === msg.id
+                                ? "max-h-8 opacity-100 mt-1"
+                                : "max-h-0 opacity-0"
+                            }`}
+                          >
+                            <span className="text-[10px] text-gray-400 font-medium whitespace-nowrap">
+                              {new Intl.DateTimeFormat("vi-VN", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }).format(currentDate)}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  ))
+                      </React.Fragment>
+                    );
+                  })
                 )}
                 {/* Ref để auto scroll */}
                 <div ref={messagesEndRef} />

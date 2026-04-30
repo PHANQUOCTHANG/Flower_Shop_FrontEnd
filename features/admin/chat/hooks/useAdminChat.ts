@@ -23,8 +23,18 @@ interface AdminChatState {
   isLoadingMore: boolean;
   error: string | null;
   searchKeyword: string;
-  chatPagination: { total: number; page: number; limit: number; totalPages: number };
-  messagePagination: { total: number; page: number; limit: number; totalPages: number };
+  chatPagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+  messagePagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
   hasMoreMessages: boolean;
 }
 
@@ -65,8 +75,11 @@ export const useAdminChat = () => {
     if (!accessToken) return;
     const socket = getSocket();
     if (!socket) {
-      try { initializeSocket(accessToken); }
-      catch (err) { console.error("[useAdminChat] Lỗi khởi tạo socket:", err); }
+      try {
+        initializeSocket(accessToken);
+      } catch (err) {
+        console.error("[useAdminChat] Lỗi khởi tạo socket:", err);
+      }
     }
   }, [accessToken]);
 
@@ -75,16 +88,21 @@ export const useAdminChat = () => {
   const loadChats = useCallback(async (page = 1, search?: string) => {
     const keyword = search !== undefined ? search : searchKeywordRef.current;
     try {
-      setState(prev => ({ ...prev, isChatLoading: true, error: null }));
+      setState((prev) => ({ ...prev, isChatLoading: true, error: null }));
       const result = await adminChatService.getChatList({
         page,
         search: keyword.trim() ? keyword : undefined,
       });
       chatPaginationRef.current = result.pagination;
-      setState(prev => ({ ...prev, chats: result.data, chatPagination: result.pagination, isChatLoading: false }));
+      setState((prev) => ({
+        ...prev,
+        chats: result.data,
+        chatPagination: result.pagination,
+        isChatLoading: false,
+      }));
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Lỗi khi tải danh sách";
-      setState(prev => ({ ...prev, isChatLoading: false, error: msg }));
+      setState((prev) => ({ ...prev, isChatLoading: false, error: msg }));
     }
   }, []); // stable - không deps vào state
 
@@ -92,7 +110,11 @@ export const useAdminChat = () => {
   useEffect(() => {
     const searchFromUrl = searchParams.get("search") || "";
     searchKeywordRef.current = searchFromUrl;
-    setState(prev => prev.searchKeyword === searchFromUrl ? prev : { ...prev, searchKeyword: searchFromUrl });
+    setState((prev) =>
+      prev.searchKeyword === searchFromUrl
+        ? prev
+        : { ...prev, searchKeyword: searchFromUrl },
+    );
     loadChats(1, searchFromUrl);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]); // intentionally stable - loadChats không thay đổi
@@ -104,14 +126,14 @@ export const useAdminChat = () => {
     const nextPage = pagination.page + 1;
     if (nextPage > pagination.totalPages) return;
 
-    setState(prev => ({ ...prev, isLoadingMore: true }));
+    setState((prev) => ({ ...prev, isLoadingMore: true }));
     try {
       const result = await adminChatService.getChatList({
         page: nextPage,
         search: searchKeywordRef.current || undefined,
       });
       chatPaginationRef.current = result.pagination;
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         chats: [...prev.chats, ...result.data],
         chatPagination: result.pagination,
@@ -119,52 +141,65 @@ export const useAdminChat = () => {
       }));
     } catch (err) {
       console.error("[useAdminChat] Lỗi tải thêm chats:", err);
-      setState(prev => ({ ...prev, isLoadingMore: false }));
+      setState((prev) => ({ ...prev, isLoadingMore: false }));
     }
   }, []);
 
   // ============ Tìm kiếm ============
 
-  const searchChats = useCallback(async (keyword: string) => {
-    searchKeywordRef.current = keyword;
-    try {
-      setState(prev => ({
-        ...prev,
-        isChatLoading: true,
-        error: null,
-        searchKeyword: keyword,
-        chats: [],
-        chatPagination: INIT_PAGINATION,
-      }));
+  const searchChats = useCallback(
+    async (keyword: string) => {
+      searchKeywordRef.current = keyword;
+      try {
+        setState((prev) => ({
+          ...prev,
+          isChatLoading: true,
+          error: null,
+          searchKeyword: keyword,
+          chats: [],
+          chatPagination: INIT_PAGINATION,
+        }));
 
-      const result = await adminChatService.getChatList({
-        page: 1,
-        search: keyword.trim() ? keyword : undefined,
-      });
-      chatPaginationRef.current = result.pagination;
-      setState(prev => ({ ...prev, chats: result.data, chatPagination: result.pagination, isChatLoading: false }));
+        const result = await adminChatService.getChatList({
+          page: 1,
+          search: keyword.trim() ? keyword : undefined,
+        });
+        chatPaginationRef.current = result.pagination;
+        setState((prev) => ({
+          ...prev,
+          chats: result.data,
+          chatPagination: result.pagination,
+          isChatLoading: false,
+        }));
 
-      if (keyword.trim()) {
-        router.push(`?search=${encodeURIComponent(keyword)}`);
-      } else {
-        router.push("/admin/chat");
+        if (keyword.trim()) {
+          router.push(`?search=${encodeURIComponent(keyword)}`);
+        } else {
+          router.push("/admin/chat");
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Lỗi khi tìm kiếm";
+        setState((prev) => ({ ...prev, isChatLoading: false, error: msg }));
       }
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Lỗi khi tìm kiếm";
-      setState(prev => ({ ...prev, isChatLoading: false, error: msg }));
-    }
-  }, [router]);
+    },
+    [router],
+  );
 
   // ============ Lọc theo trạng thái ============
 
   const filterByStatus = useCallback(async (status: "ACTIVE" | "CLOSED") => {
     try {
-      setState(prev => ({ ...prev, isChatLoading: true, error: null }));
+      setState((prev) => ({ ...prev, isChatLoading: true, error: null }));
       const result = await adminChatService.filterChatsByStatus(status);
-      setState(prev => ({ ...prev, chats: result.data, chatPagination: result.pagination, isChatLoading: false }));
+      setState((prev) => ({
+        ...prev,
+        chats: result.data,
+        chatPagination: result.pagination,
+        isChatLoading: false,
+      }));
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Lỗi khi lọc";
-      setState(prev => ({ ...prev, isChatLoading: false, error: msg }));
+      setState((prev) => ({ ...prev, isChatLoading: false, error: msg }));
     }
   }, []);
 
@@ -172,26 +207,34 @@ export const useAdminChat = () => {
 
   const selectChat = useCallback(async (chatId: string) => {
     try {
-      setState(prev => ({ ...prev, isMessageLoading: true, error: null, messages: [] }));
+      setState((prev) => ({
+        ...prev,
+        isMessageLoading: true,
+        error: null,
+        messages: [],
+      }));
       socketChatService.joinChatRoom(chatId);
-      adminChatService.markAsRead(chatId).catch(err => console.error("Lỗi markAsRead:", err));
+      adminChatService
+        .markAsRead(chatId)
+        .catch((err) => console.error("Lỗi markAsRead:", err));
 
       // Optimistic: đánh dấu đã đọc trong danh sách
-      setState(prev => {
-        const chats = prev.chats.map(c =>
+      setState((prev) => {
+        const chats = prev.chats.map((c) =>
           c.id === chatId && c.lastMessage
             ? { ...c, lastMessage: { ...c.lastMessage, isRead: true } }
-            : c
+            : c,
         );
         return { ...prev, chats };
       });
 
       const result = await adminChatService.getChatMessages(chatId);
       messagePaginationRef.current = result.pagination;
-      hasMoreMessagesRef.current = result.pagination.page < result.pagination.totalPages;
+      hasMoreMessagesRef.current =
+        result.pagination.page < result.pagination.totalPages;
 
-      setState(prev => {
-        const chatInfo = prev.chats.find(c => c.id === chatId);
+      setState((prev) => {
+        const chatInfo = prev.chats.find((c) => c.id === chatId);
         const selectedChat = (chatInfo as Chat) || result.chat;
         selectedChatRef.current = selectedChat;
         return {
@@ -199,13 +242,14 @@ export const useAdminChat = () => {
           selectedChat,
           messages: result.data,
           messagePagination: result.pagination,
-          hasMoreMessages: result.pagination.page < result.pagination.totalPages,
+          hasMoreMessages:
+            result.pagination.page < result.pagination.totalPages,
           isMessageLoading: false,
         };
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Lỗi khi tải tin nhắn";
-      setState(prev => ({ ...prev, isMessageLoading: false, error: msg }));
+      setState((prev) => ({ ...prev, isMessageLoading: false, error: msg }));
     }
   }, []);
 
@@ -216,7 +260,7 @@ export const useAdminChat = () => {
     selectedChatRef.current = null;
     hasMoreMessagesRef.current = false;
     messagePaginationRef.current = INIT_PAGINATION;
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       selectedChat: null,
       messages: [],
@@ -228,41 +272,51 @@ export const useAdminChat = () => {
   // ============ Tin nhắn ============
 
   const addMessageFromSocket = useCallback((message: Message) => {
-    setState(prev => {
+    setState((prev) => {
       // Tránh duplicate
-      if (prev.messages.some(m => m.id === message.id)) return prev;
+      if (prev.messages.some((m) => m.id === message.id)) return prev;
       // Xóa optimistic message tương ứng (nếu có)
-      const filtered = prev.messages.filter(m => !m.id.startsWith("optimistic-"));
+      const filtered = prev.messages.filter(
+        (m) => !m.id.startsWith("optimistic-"),
+      );
       return { ...prev, messages: [...filtered, message] };
     });
   }, []);
 
-  const updateChatLastMessage = useCallback((chatId: string, message: Message & { isRead?: boolean }) => {
-    setState(prev => ({
-      ...prev,
-      chats: prev.chats.map(chat =>
-        chat.id === chatId
-          ? {
-              ...chat,
-              lastMessage: {
-                content: message.content,
-                createdAt: message.createdAt,
-                senderRole: message.senderRole,
-                isRead: message.isRead ?? false,
-              },
-              lastMessageAt: message.createdAt,
-            }
-          : chat
-      ),
-    }));
-  }, []);
+  const updateChatLastMessage = useCallback(
+    (chatId: string, message: Message & { isRead?: boolean }) => {
+      setState((prev) => ({
+        ...prev,
+        chats: prev.chats.map((chat) =>
+          chat.id === chatId
+            ? {
+                ...chat,
+                lastMessage: {
+                  content: message.content,
+                  createdAt: message.createdAt,
+                  senderRole: message.senderRole,
+                  isRead: message.isRead ?? false,
+                },
+                lastMessageAt: message.createdAt,
+              }
+            : chat,
+        ),
+      }));
+    },
+    [],
+  );
 
   // Tải thêm tin nhắn cũ - stable via refs
   const loadMoreMessages = useCallback(async () => {
-    if (!selectedChatRef.current || !hasMoreMessagesRef.current || isLoadingMoreRef.current) return;
+    if (
+      !selectedChatRef.current ||
+      !hasMoreMessagesRef.current ||
+      isLoadingMoreRef.current
+    )
+      return;
 
     isLoadingMoreRef.current = true;
-    setState(prev => ({ ...prev, isLoadingMore: true }));
+    setState((prev) => ({ ...prev, isLoadingMore: true }));
 
     const nextPage = messagePaginationRef.current.page + 1;
     const chatId = selectedChatRef.current.id;
@@ -272,9 +326,9 @@ export const useAdminChat = () => {
       messagePaginationRef.current = result.pagination;
       hasMoreMessagesRef.current = nextPage < result.pagination.totalPages;
 
-      setState(prev => {
-        const existingIds = new Set(prev.messages.map(m => m.id));
-        const newMsgs = result.data.filter(m => !existingIds.has(m.id));
+      setState((prev) => {
+        const existingIds = new Set(prev.messages.map((m) => m.id));
+        const newMsgs = result.data.filter((m) => !existingIds.has(m.id));
         return {
           ...prev,
           messages: [...newMsgs, ...prev.messages],
@@ -285,7 +339,7 @@ export const useAdminChat = () => {
       });
     } catch (err) {
       console.error("[useAdminChat] ❌ Lỗi tải thêm tin nhắn:", err);
-      setState(prev => ({ ...prev, isLoadingMore: false }));
+      setState((prev) => ({ ...prev, isLoadingMore: false }));
     } finally {
       isLoadingMoreRef.current = false;
     }
@@ -299,7 +353,7 @@ export const useAdminChat = () => {
     const optimisticId = `optimistic-${Date.now()}`;
 
     // Thêm tin nhắn optimistic ngay lập tức
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       messages: [
         ...prev.messages,
@@ -320,16 +374,16 @@ export const useAdminChat = () => {
       // Socket listener sẽ thêm tin thật và xóa optimistic
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Lỗi khi gửi tin nhắn";
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        messages: prev.messages.filter(m => m.id !== optimisticId),
+        messages: prev.messages.filter((m) => m.id !== optimisticId),
         error: msg,
       }));
     }
   }, []);
 
   const clearError = useCallback(() => {
-    setState(prev => ({ ...prev, error: null }));
+    setState((prev) => ({ ...prev, error: null }));
   }, []);
 
   // ============ Lắng nghe Socket ============
@@ -343,7 +397,9 @@ export const useAdminChat = () => {
       addMessageFromSocket(message);
       const isRead = message.senderRole !== "admin";
       if (isRead) {
-        adminChatService.markAsRead(chatId).catch(err => console.error("Lỗi tự động markAsRead:", err));
+        adminChatService
+          .markAsRead(chatId)
+          .catch((err) => console.error("Lỗi tự động markAsRead:", err));
       }
       updateChatLastMessage(chatId, { ...message, isRead: true });
     };
@@ -363,8 +419,8 @@ export const useAdminChat = () => {
       lastMessage: { content: string; createdAt: string };
       fromUserId: string;
     }) => {
-      setState(prev => {
-        const idx = prev.chats.findIndex(c => c.id === data.chatId);
+      setState((prev) => {
+        const idx = prev.chats.findIndex((c) => c.id === data.chatId);
         if (idx !== -1) {
           const chats = [...prev.chats];
           const chat = chats[idx];
@@ -381,14 +437,19 @@ export const useAdminChat = () => {
           });
           return { ...prev, chats };
         } else {
-          setTimeout(() => loadChats(1, searchKeywordRef.current || undefined), 500);
+          setTimeout(
+            () => loadChats(1, searchKeywordRef.current || undefined),
+            500,
+          );
           return prev;
         }
       });
     };
 
     socketChatService.listenForInboxUpdate(handleInboxUpdate);
-    return () => { socketChatService.removeInboxUpdateListener(); };
+    return () => {
+      socketChatService.removeInboxUpdateListener();
+    };
   }, [accessToken, loadChats]);
 
   // ============ Return ============
