@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/auth.store";
 import { useRouter } from "next/navigation";
 import {
@@ -9,6 +9,7 @@ import {
   loginWithFacebookService,
 } from "../services/loginService";
 import { LoginPayload, LoginResponse } from "@/types/auth";
+import { CART_QUERY_KEY } from "@/features/cart/hooks/useCart";
 
 interface UseLoginReturn {
   login: (loginRequest: LoginPayload) => Promise<LoginResponse>;
@@ -28,20 +29,22 @@ interface UseLoginReturn {
 export const useLogin = (): UseLoginReturn => {
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
+  const queryClient = useQueryClient();
+
+  const handleLoginSuccess = (data: LoginResponse) => {
+    setAuth(data.accessToken, {
+      ...data.user,
+      name: data.user.name || data.user.fullName || "",
+    });
+    // Xóa cache cũ của cart để buộc refetch ngay khi MainLayout mount
+    queryClient.removeQueries({ queryKey: CART_QUERY_KEY });
+  };
 
   const loginMutation = useMutation({
     mutationFn: loginService,
     onSuccess: (data: LoginResponse) => {
-      // Lưu token + user vào store
-      setAuth(data.accessToken, {
-        ...data.user,
-        name: data.user.name || data.user.fullName || "",
-      });
-
-
+      handleLoginSuccess(data);
       if (data.user.role === "ADMIN") return router.push("/admin/dashboard");
-
-      // Redirect đến trang home
       router.push("/");
     },
     onError: (error: Error) => {
@@ -52,10 +55,7 @@ export const useLogin = (): UseLoginReturn => {
   const loginWithGoogleMutation = useMutation({
     mutationFn: loginWithGoogleService,
     onSuccess: (data: LoginResponse) => {
-      setAuth(data.accessToken, {
-        ...data.user,
-        name: data.user.name || data.user.fullName || "",
-      });
+      handleLoginSuccess(data);
       router.push("/");
     },
     onError: (error: Error) => {
@@ -66,10 +66,7 @@ export const useLogin = (): UseLoginReturn => {
   const loginWithFacebookMutation = useMutation({
     mutationFn: loginWithFacebookService,
     onSuccess: (data: LoginResponse) => {
-      setAuth(data.accessToken, {
-        ...data.user,
-        name: data.user.name || data.user.fullName || "",
-      });
+      handleLoginSuccess(data);
       router.push("/");
     },
     onError: (error: Error) => {

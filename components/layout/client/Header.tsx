@@ -61,7 +61,7 @@ export default function Header() {
   });
 
   const cartCount = useCartStore((s) => s.getItemCount());
-  const isHydrated = useAuthStore((s) => s.isHydrated);
+  const isSessionReady = useAuthStore((s) => s.isSessionReady);
   const isLoggedIn = useAuthStore((s) => s.isAuthenticated);
   const userName = useAuthStore((s) => s.user?.name || "");
   const userAvatar = useAuthStore((s) => s.user?.avatar || "");
@@ -304,7 +304,12 @@ export default function Header() {
             </button>
 
             {/* Desktop User */}
-            {isHydrated && (
+            {!isSessionReady ? (
+              <div className="hidden md:flex items-center gap-2 pl-1.5 pr-3 py-1">
+                <div className="size-8 rounded-full bg-slate-100 animate-pulse shrink-0"></div>
+                <div className="h-4 w-16 bg-slate-100 rounded animate-pulse"></div>
+              </div>
+            ) : (
               <button
                 onClick={handleAccount}
                 className="hidden md:flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-xl hover:bg-[#f0fdf4] transition-colors"
@@ -448,36 +453,46 @@ export default function Header() {
         </div>
 
         {/* User Card */}
-        <button
-          onClick={handleAccount}
-          className="flex items-center gap-3 px-5 py-4 bg-[#f0fdf4] border-b border-[#e8fdf0] hover:bg-[#e8fdf0] transition-colors w-full text-left"
-        >
-          {isHydrated && isLoggedIn ? (
-            <>
-              <AvatarEl size="lg" />
-              <div>
-                <p className="font-bold text-[#0d1b12] truncate max-w-[190px]">
-                  {userName}
-                </p>
-                <p className="text-xs text-[#13ec5b] font-semibold mt-0.5">
-                  Xem hồ sơ →
-                </p>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="size-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 shrink-0">
-                <User size={22} />
-              </div>
-              <div>
-                <p className="font-bold text-slate-700">Chưa đăng nhập</p>
-                <p className="text-xs text-[#13ec5b] font-semibold mt-0.5">
-                  Đăng nhập ngay →
-                </p>
-              </div>
-            </>
-          )}
-        </button>
+        {!isSessionReady ? (
+          <div className="flex items-center gap-3 px-5 py-4 bg-[#f0fdf4] border-b border-[#e8fdf0] w-full text-left">
+            <div className="size-12 rounded-full bg-slate-200 animate-pulse shrink-0"></div>
+            <div className="space-y-2 flex-1">
+              <div className="h-4 w-32 bg-slate-200 rounded animate-pulse"></div>
+              <div className="h-3 w-20 bg-slate-200 rounded animate-pulse"></div>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={handleAccount}
+            className="flex items-center gap-3 px-5 py-4 bg-[#f0fdf4] border-b border-[#e8fdf0] hover:bg-[#e8fdf0] transition-colors w-full text-left"
+          >
+            {isLoggedIn ? (
+              <>
+                <AvatarEl size="lg" />
+                <div>
+                  <p className="font-bold text-[#0d1b12] truncate max-w-[190px]">
+                    {userName}
+                  </p>
+                  <p className="text-xs text-[#13ec5b] font-semibold mt-0.5">
+                    Xem hồ sơ →
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="size-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 shrink-0">
+                  <User size={22} />
+                </div>
+                <div>
+                  <p className="font-bold text-slate-700">Chưa đăng nhập</p>
+                  <p className="text-xs text-[#13ec5b] font-semibold mt-0.5">
+                    Đăng nhập ngay →
+                  </p>
+                </div>
+              </>
+            )}
+          </button>
+        )}
 
         {/* Nav Links */}
         <nav className="flex-1 overflow-y-auto p-4">

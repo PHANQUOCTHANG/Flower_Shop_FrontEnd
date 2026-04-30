@@ -2,27 +2,32 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export interface User {
-  id: string; // ID người dùng
-  email: string; // Email đăng nhập
-  name: string; // Tên hiển thị
-  fullName?: string; // Tên đầy đủ (phụ trợ cho một số API)
-  role?: string; // Vai trò (admin, user, ...)
+  id: string;
+  email: string;
+  name: string;
+  fullName?: string;
+  role?: string;
   avatar?: string | null;
   phone?: string | null;
   gender?: string | null;
 }
 
 interface AuthState {
-  accessToken: string | null; // JWT access token dùng cho API requests
-  user: User | null; // Thông tin user (lưu ở localStorage)
-  isAuthenticated: boolean; // Trạng thái đăng nhập hiện tại
-  isHydrated: boolean; // Zustand tải xong từ localStorage chưa?
-  hasLoggedIn: boolean; // Từng login lần nào? (dùng để persist login state)
+  accessToken: string | null;
+  user: User | null;
+  isAuthenticated: boolean;
+  isHydrated: boolean;
+  // isSessionReady = true khi:
+  //   (A) user đã có token trong localStorage (set ngay trong onRehydrateStorage - đồng bộ)
+  //   (B) SessionProvider đã chạy xong refresh-token (có hoặc không có token)
+  // Dùng để gate các fetch data cần auth (cart, profile, ...)
+  isSessionReady: boolean;
+  hasLoggedIn: boolean;
 
-  setAuth: (token: string, user: User) => void; // Lưu token + user khi login/refresh thành công
-  setAccessToken: (token: string) => void; // Cập nhật token mới khi refresh (giữ user info)
-  logout: () => void; // Xóa tất cả auth data
-  setHydrated: (hydrated: boolean) => void; // Đánh dấu hydration xong
+  setAuth: (token: string, user: User) => void;
+  setAccessToken: (token: string) => void;
+  logout: () => void;
+  setSessionReady: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -32,57 +37,54 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isAuthenticated: false,
       isHydrated: false,
+      isSessionReady: false,
       hasLoggedIn: false,
 
-      setAuth: (
-        token,
-        user, // Login thành công: lưu token + user info
-      ) =>
+      setAuth: (token, user) =>
         set({
           accessToken: token,
           user,
           isAuthenticated: true,
+          isSessionReady: true, // Login xong → session sẵn sàng ngay
           hasLoggedIn: true,
         }),
 
-      setAccessToken: (
-        token, // Token refresh: cập nhật token, giữ user cũ
-      ) =>
+      setAccessToken: (token) =>
         set({
           accessToken: token,
           isAuthenticated: true,
+          isSessionReady: true,
         }),
 
       logout: () =>
-        // Logout: xóa sạch auth data
         set({
           accessToken: null,
           user: null,
           isAuthenticated: false,
+          isSessionReady: true, // Phiên đã được chốt là "Chưa đăng nhập", nên ready = true để UI ngưng render Skeleton
           hasLoggedIn: false,
         }),
 
-      setHydrated: (
-        hydrated, // Zustand hydrate xong: set flag này
-      ) =>
-        set({
-          isHydrated: hydrated,
-        }),
+      setSessionReady: () =>
+        set({ isSessionReady: true }),
     }),
     {
       name: "auth-storage",
       partialize: (state) => ({
-        // Lưu vào localStorage: token, user, login history
+        // Chỉ lưu những gì cần thiết vào localStorage
         accessToken: state.accessToken,
         user: state.user,
         hasLoggedIn: state.hasLoggedIn,
       }),
       onRehydrateStorage: () => (state) => {
-        // Tải từ localStorage xong: tính toán isAuthenticated
-        if (state) {
-          state.isAuthenticated = !!state.accessToken && !!state.user;
-          state.isHydrated = true;
-        }
+        if (!state) return;
+        const hasSession = !!state.accessToken && !!state.user;
+        state.isAuthenticated = hasSession;
+        state.isHydrated = true;
+        // ✅ KEY FIX: set ngay đồng bộ, trước lần render đầu tiên
+        // Nếu user đã có token → isSessionReady = true ngay từ đầu
+        // → useFetchCart chạy ngay, KHÔNG cần chờ useEffect của SessionProvider
+        state.isSessionReady = hasSession;
       },
     },
   ),

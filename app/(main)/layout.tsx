@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import Header from "@/components/layout/client/Header";
 import Footer from "@/components/layout/client/Footer";
 import FloatingActions from "@/components/layout/client/FloatingActions";
 import { useAuthStore } from "@/stores/auth.store";
-import { useFetchCart } from "@/features/cart/hooks/useCart";
+import { useFetchCart, CART_QUERY_KEY } from "@/features/cart/hooks/useCart";
 import { useSettingStore } from "@/stores/setting.store";
 
 export default function MainLayout({
@@ -13,27 +14,32 @@ export default function MainLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isHydrated = useAuthStore((state) => state.isHydrated);
   const isLoggedIn = useAuthStore((state) => state.isAuthenticated);
-  const [prevLoggedIn, setPrevLoggedIn] = useState(false);
+  const isSessionReady = useAuthStore((state) => state.isSessionReady);
+  const queryClient = useQueryClient();
 
-  // Reset log state tracker khi logout
-  useEffect(() => {
-    if (prevLoggedIn && !isLoggedIn) {
-      // User vừa logout
-    }
-    setPrevLoggedIn(isLoggedIn);
-  }, [isLoggedIn, prevLoggedIn]);
-
-  // Fetch settings globally
+  // Fetch settings (chỉ khi chưa có data)
+  const settings = useSettingStore((state) => state.settings);
   const fetchSettings = useSettingStore((state) => state.fetchSettings);
   useEffect(() => {
-    fetchSettings();
-  }, [fetchSettings]);
+    if (!settings) fetchSettings();
+  }, [settings, fetchSettings]);
 
-  // Fetch cart chỉ khi logged in + hydrated
-  // Hook này sẽ tự handle caching + refetchQueries
-  useFetchCart(isHydrated && isLoggedIn);
+  // Fetch cart khi session đã sẵn sàng + đã đăng nhập
+  useFetchCart(isSessionReady && isLoggedIn);
+
+  // Safety net: khi isLoggedIn thay đổi từ false → true (sau login/refresh),
+  // force refetch cart để đảm bảo data luôn cập nhật dù cache có stale hay không
+  const prevLoggedIn = useRef(false);
+  useEffect(() => {
+    const wasLoggedIn = prevLoggedIn.current;
+    prevLoggedIn.current = isLoggedIn;
+
+    // Chỉ trigger khi transition false → true (vừa login)
+    if (!wasLoggedIn && isLoggedIn && isSessionReady) {
+      queryClient.invalidateQueries({ queryKey: CART_QUERY_KEY });
+    }
+  }, [isLoggedIn, isSessionReady, queryClient]);
 
   return (
     <>
