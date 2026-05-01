@@ -7,7 +7,7 @@ import type { GetOrdersParams } from "../services/orderService";
 
 // Query keys factory
 const orderKeys = {
-  all: ["admin" , "orders"] as const,
+  all: ["admin", "orders"] as const,
   lists: () => [...orderKeys.all, "list"] as const,
   list: (params?: GetOrdersParams) => [...orderKeys.lists(), params] as const,
   details: () => [...orderKeys.all, "detail"] as const,
@@ -24,6 +24,8 @@ export const useOrders = (params?: GetOrdersParams) => {
       return await orderService.getOrders(params);
     },
     placeholderData: (previousData) => previousData,
+    staleTime: 0, // Luôn coi data là stale để refetch ngay khi invalidate
+    refetchOnWindowFocus: true, // Refetch khi user quay lại tab
   });
 
   const orders = data?.orders ?? [];
@@ -64,7 +66,6 @@ export const useOrderById = (orderId: string | null) => {
     refetchOnMount: "always",
     // ❌ bỏ placeholderData — nó giữ data cũ, che mất loading state
   });
-
 
   return {
     order: data,

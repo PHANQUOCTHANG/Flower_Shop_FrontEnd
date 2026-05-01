@@ -53,7 +53,9 @@ export function AdminNotificationProvider({
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [notifications, setNotifications] = useState<OrderNotification[]>([]);
-  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(
+    new Map(),
+  );
 
   const dismissNotification = useCallback((id: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
@@ -66,31 +68,51 @@ export function AdminNotificationProvider({
 
   const playSound = useCallback((type: "new" | "cancelled") => {
     try {
-      console.log(`[AdminNotificationProvider] Playing sound for type: ${type}`);
-      const soundUrl = type === "new" 
-        ? "https://cdnjs.cloudflare.com/ajax/libs/ion-sound/3.0.2/sounds/bell_ring.mp3"
-        : "https://cdnjs.cloudflare.com/ajax/libs/ion-sound/3.0.2/sounds/button_tiny.mp3";
-      
+      console.log(
+        `[AdminNotificationProvider] Playing sound for type: ${type}`,
+      );
+      const soundUrl =
+        type === "new"
+          ? "https://cdnjs.cloudflare.com/ajax/libs/ion-sound/3.0.2/sounds/bell_ring.mp3"
+          : "https://cdnjs.cloudflare.com/ajax/libs/ion-sound/3.0.2/sounds/button_tiny.mp3";
+
       const audio = new Audio(soundUrl);
       audio.volume = 1.0; // Slightly quieter
-      audio.play()
-        .then(() => console.log("[AdminNotificationProvider] Audio played successfully"))
-        .catch(e => console.warn("[AdminNotificationProvider] Audio play blocked by browser:", e));
+      audio
+        .play()
+        .then(() =>
+          console.log("[AdminNotificationProvider] Audio played successfully"),
+        )
+        .catch((e) =>
+          console.warn(
+            "[AdminNotificationProvider] Audio play blocked by browser:",
+            e,
+          ),
+        );
     } catch (error) {
-      console.error("[AdminNotificationProvider] Failed to play notification sound:", error);
+      console.error(
+        "[AdminNotificationProvider] Failed to play notification sound:",
+        error,
+      );
     }
   }, []);
 
   const addNotification = useCallback(
     (payload: Omit<OrderNotification, "id">) => {
-      console.log("[AdminNotificationProvider] addNotification called with payload:", payload);
+      console.log(
+        "[AdminNotificationProvider] addNotification called with payload:",
+        payload,
+      );
       const id = `notif-${Date.now()}-${Math.random()}`;
       const notification: OrderNotification = { ...payload, id };
 
       setNotifications((prev) => [notification, ...prev]);
       playSound(payload.type);
 
-      const timer = setTimeout(() => dismissNotification(id), TOAST_DURATION_MS);
+      const timer = setTimeout(
+        () => dismissNotification(id),
+        TOAST_DURATION_MS,
+      );
       timersRef.current.set(id, timer);
     },
     [dismissNotification, playSound],
@@ -109,7 +131,10 @@ export function AdminNotificationProvider({
       return;
     }
 
-    console.log("[AdminNotificationProvider] Registering socket events for role:", role);
+    console.log(
+      "[AdminNotificationProvider] Registering socket events for role:",
+      role,
+    );
 
     const handleNewOrder = (payload: {
       orderId: string;
@@ -117,8 +142,20 @@ export function AdminNotificationProvider({
       message: string;
       createdAt: string;
     }) => {
+      console.log(
+        "[AdminNotificationProvider] New order received:",
+        payload.orderId,
+      );
       addNotification({ ...payload, type: "new" });
-      queryClient.invalidateQueries({ queryKey: ["admin", "orders", "list"] });
+
+      // Refetch tất cả active order list queries ngay lập tức (refetch trang order)
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "orders", "list"],
+        exact: false,
+        refetchType: "active",
+      });
+
+      // Invalidate activity log
       queryClient.invalidateQueries({ queryKey: logKeys.unread() });
       queryClient.invalidateQueries({ queryKey: logKeys.lists() });
     };
@@ -129,9 +166,25 @@ export function AdminNotificationProvider({
       message: string;
       createdAt: string;
     }) => {
+      console.log(
+        "[AdminNotificationProvider] Order cancelled:",
+        payload.orderId,
+      );
       addNotification({ ...payload, type: "cancelled" });
-      queryClient.invalidateQueries({ queryKey: ["admin", "orders", "list"] });
-      queryClient.invalidateQueries({ queryKey: ["admin", "orders", "detail", payload.orderId] });
+
+      // Refetch order list
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "orders", "list"],
+        exact: false,
+        refetchType: "active",
+      });
+
+      // Refetch order detail nếu đang xem chi tiết order đó
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "orders", "detail", payload.orderId],
+      });
+
+      // Invalidate activity log
       queryClient.invalidateQueries({ queryKey: logKeys.unread() });
       queryClient.invalidateQueries({ queryKey: logKeys.lists() });
     };
@@ -152,7 +205,9 @@ export function AdminNotificationProvider({
   }, []);
 
   return (
-    <NotificationContext.Provider value={{ notifications, dismissNotification }}>
+    <NotificationContext.Provider
+      value={{ notifications, dismissNotification }}
+    >
       {children}
       <NotificationToastStack
         notifications={notifications}
@@ -215,24 +270,26 @@ function OrderToast({
   };
 
   const isCancelled = notification.type === "cancelled";
-  
-  const colors = isCancelled ? {
-    border: "rgba(238, 43, 91, 0.2)",
-    shadow: "rgba(238, 43, 91, 0.1)",
-    iconBg: "var(--danger)",
-    labelBg: "rgba(238, 43, 91, 0.05)",
-    labelBorder: "rgba(238, 43, 91, 0.15)",
-    labelTitle: "#be123c",
-    labelValue: "#9f1239",
-  } : {
-    border: "rgba(19, 236, 91, 0.2)",
-    shadow: "rgba(19, 236, 91, 0.1)",
-    iconBg: "var(--primary)",
-    labelBg: "rgba(19, 236, 91, 0.05)",
-    labelBorder: "rgba(19, 236, 91, 0.15)",
-    labelTitle: "#059669",
-    labelValue: "#047857",
-  };
+
+  const colors = isCancelled
+    ? {
+        border: "rgba(238, 43, 91, 0.2)",
+        shadow: "rgba(238, 43, 91, 0.1)",
+        iconBg: "var(--danger)",
+        labelBg: "rgba(238, 43, 91, 0.05)",
+        labelBorder: "rgba(238, 43, 91, 0.15)",
+        labelTitle: "#be123c",
+        labelValue: "#9f1239",
+      }
+    : {
+        border: "rgba(19, 236, 91, 0.2)",
+        shadow: "rgba(19, 236, 91, 0.1)",
+        iconBg: "var(--primary)",
+        labelBg: "rgba(19, 236, 91, 0.05)",
+        labelBorder: "rgba(19, 236, 91, 0.15)",
+        labelTitle: "#059669",
+        labelValue: "#047857",
+      };
 
   return (
     <div
@@ -250,7 +307,8 @@ function OrderToast({
         boxShadow: `0 12px 40px -12px ${colors.shadow}, 0 0 0 1px rgba(0,0,0,0.02)`,
         transform: visible ? "translateX(0)" : "translateX(110%)",
         opacity: visible ? 1 : 0,
-        transition: "transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease",
+        transition:
+          "transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease",
         display: "flex",
         gap: "14px",
         alignItems: "flex-start",
@@ -310,10 +368,22 @@ function OrderToast({
             padding: "3px 8px",
           }}
         >
-          <span style={{ color: colors.labelTitle, fontSize: "11px", fontWeight: 600 }}>
+          <span
+            style={{
+              color: colors.labelTitle,
+              fontSize: "11px",
+              fontWeight: 600,
+            }}
+          >
             Giá trị
           </span>
-          <span style={{ color: colors.labelValue, fontSize: "13px", fontWeight: 800 }}>
+          <span
+            style={{
+              color: colors.labelValue,
+              fontSize: "13px",
+              fontWeight: 800,
+            }}
+          >
             {formatCurrency(notification.totalPrice)}
           </span>
         </div>
@@ -360,7 +430,13 @@ function OrderToast({
 
 // ─── Progress bar ─────────────────────────────────────────────────────────────
 
-function ProgressBar({ durationMs, isCancelled }: { durationMs: number; isCancelled: boolean }) {
+function ProgressBar({
+  durationMs,
+  isCancelled,
+}: {
+  durationMs: number;
+  isCancelled: boolean;
+}) {
   const [active, setActive] = useState(false);
 
   useEffect(() => {
@@ -392,4 +468,3 @@ function ProgressBar({ durationMs, isCancelled }: { durationMs: number; isCancel
     </div>
   );
 }
-
