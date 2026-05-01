@@ -107,7 +107,7 @@ export const ProductTable = ({
                       </span>
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className="text-[10px] font-black uppercase text-slate-400">
-                          SKU: {product.sku || "N/A"}
+                          Mã sản phẩm: {product.sku || "N/A"}
                         </span>
                         <span className="size-1 rounded-full bg-slate-300" />
                         <span className="text-[10px] font-black uppercase text-[#13ec5b]">

@@ -68,15 +68,16 @@ export const OrderStatusTabs: React.FC<OrderStatusTabsProps> = ({
             }`}
           >
             {tab.name}
-            <span
-              className={`text-[10px] px-1.5 py-0.5 rounded-full font-black leading-none ${
-                isActive
-                  ? "bg-[#13ec5b] text-[#102216]"
-                  : "bg-slate-100 text-slate-500"
-              }`}
+            {tab.count > 0 && (
+              <span
+                className={`text-[10px] px-1.5 py-0.5 rounded-full font-black leading-none ${
+                  isActive
+                    ? "bg-[#13ec5b] text-[#102216]"
+                    : "bg-slate-100 text-slate-500"
+                }`}
             >
               {tab.count}
-            </span>
+            </span>)}
           </button>
         );
       })}

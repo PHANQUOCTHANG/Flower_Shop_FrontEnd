@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { registerUser } from "../services/registerService";
 import { RegisterPayload } from "@/types/auth";
+import { useAuthStore } from "@/stores/auth.store";
 
 export interface RegisterFormData {
   fullName: string;
@@ -30,6 +31,7 @@ export interface UseRegisterReturn {
  */
 export const useRegister = (): UseRegisterReturn => {
   const router = useRouter();
+  const setAuth = useAuthStore((state) => state.setAuth);
   const [form, setForm] = useState<RegisterFormData>({
     fullName: "",
     phone: "",
@@ -163,12 +165,13 @@ export const useRegister = (): UseRegisterReturn => {
       };
 
       // Gọi API đăng ký
-      await registerUser(payload);
+      const response = await registerUser(payload);
 
-      // Redirect to login page sau 1 giây để người dùng thấy thông báo
-      setTimeout(() => {
-        router.push("/login?registered=true");
-      }, 1000);
+      // Lưu trạng thái đăng nhập
+      setAuth(response.accessToken, response.user);
+
+      // Redirect to home page ngay lập tức
+      router.push("/");
     } catch (err) {
       const errorMessage =
         err instanceof Error

@@ -121,7 +121,7 @@ export const ProductCard = ({
       </button>
 
       {/* Hiển thị số lượng */}
-      <span className="w-8 text-center typo-button-sm text-[#0d1b12] font-bold select-none">
+      <span className="w-6 sm:w-8 text-center text-xs sm:text-sm text-[#0d1b12] font-bold select-none">
         {quantity}
       </span>
 
@@ -138,10 +138,10 @@ export const ProductCard = ({
       <button
         onClick={handleConfirmAdd}
         disabled={isPending}
-        className="flex-1 h-8 px-3 rounded-xl bg-[#13ec5b] hover:bg-[#0ecf50] disabled:opacity-50 text-[#0d1b12] typo-button-sm font-bold transition-colors flex items-center justify-center gap-1 whitespace-nowrap"
+        className="flex-1 h-8 px-2 sm:px-3 rounded-xl bg-[#13ec5b] hover:bg-[#0ecf50] disabled:opacity-50 text-[#0d1b12] text-xs sm:text-sm font-bold transition-colors flex items-center justify-center gap-1 whitespace-nowrap"
       >
         {isPending ? (
-          <span className="animate-spin text-sm">⏳</span>
+          <span className="animate-spin text-xs sm:text-sm">⏳</span>
         ) : (
           <Check size={DROPDOWN_SIZE_COMPACT} />
         )}
@@ -164,9 +164,9 @@ export const ProductCard = ({
     if (cartState === "added") {
       return (
         <div
-          className={`${fullWidth ? "w-full" : ""} py-3 rounded-2xl bg-[#13ec5b]/10 border-2 border-[#13ec5b] text-[#0d9e3e] typo-button-sm flex items-center justify-center gap-2`}
+          className={`${fullWidth ? "w-full" : ""} py-2 sm:py-3 px-3 sm:px-4 rounded-xl sm:rounded-2xl bg-[#13ec5b]/10 border-2 border-[#13ec5b] text-[#0d9e3e] text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap`}
         >
-          <Check size={16} />
+          <Check size={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           Đã thêm {quantity} vào giỏ!
         </div>
       );
@@ -177,10 +177,10 @@ export const ProductCard = ({
       <button
         disabled={isOutOfStock}
         onClick={handleOpenPicker}
-        className={`${fullWidth ? "w-full" : ""} p-3.5 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2 border-2 border-[#13ec5b]/40 bg-white text-[#0d1b12] hover:border-[#13ec5b] hover:bg-[#13ec5b]/10 typo-button-sm disabled:opacity-40 disabled:cursor-not-allowed`}
+        className={`${fullWidth ? "w-full" : ""} p-2 sm:p-3.5 px-3 sm:px-4 rounded-xl sm:rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 border-2 border-[#13ec5b]/40 bg-white text-[#0d1b12] hover:border-[#13ec5b] hover:bg-[#13ec5b]/10 text-xs sm:text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap`}
       >
-        <ShoppingCart size={16} />
-        Thêm vào giỏ hàng
+        <ShoppingCart size={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        Thêm vào giỏ
       </button>
     );
   };
@@ -190,10 +190,10 @@ export const ProductCard = ({
     return (
       <div
         onClick={() => router.push(`/products/${product.slug}`)}
-        className="flex gap-6 bg-white rounded-4xl overflow-hidden border border-transparent hover:border-[#13ec5b]/20 hover:shadow-2xl transition-all duration-500 p-6 cursor-pointer"
+        className="flex flex-row gap-3 sm:gap-6 bg-white rounded-2xl sm:rounded-4xl overflow-hidden border border-gray-100 hover:border-[#13ec5b]/30 hover:shadow-xl transition-all duration-300 p-3 sm:p-6 cursor-pointer"
       >
         {/* Hình ảnh sản phẩm */}
-        <div className="relative w-36 h-44 shrink-0 overflow-hidden rounded-2xl bg-gray-50">
+        <div className="relative w-28 h-32 sm:w-36 sm:h-44 md:w-48 md:h-56 shrink-0 overflow-hidden rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-100/50">
           {/* Badge: % giảm giá */}
           {discount > 0 && (
             <div className="absolute top-3 left-3 z-10 text-white typo-caption-xs px-3 py-1.5 rounded-full shadow-lg bg-[#ef4444]">
@@ -235,27 +235,23 @@ export const ProductCard = ({
         </div>
 
         {/* Thông tin sản phẩm */}
-        <div className="flex-1 flex flex-col justify-between">
+        <div className="flex-1 flex flex-col justify-between min-w-0">
           <div>
-            <h3 className="typo-body text-[#0d1b12] mb-2 hover:text-[#13ec5b] transition-colors line-clamp-2">
+            <h3 className="text-sm sm:text-base md:text-lg font-bold text-[#0d1b12] mb-1 sm:mb-2 hover:text-[#13ec5b] transition-colors line-clamp-2">
               {product.name}
             </h3>
             {product.sku && (
-              <p className="typo-caption-xs text-[#4c9a66] mb-2 font-mono">
-                SKU: {product.sku}
+              <p className="text-[10px] sm:text-xs text-gray-500 mb-2 font-mono bg-gray-100/50 w-fit px-1.5 py-0.5 rounded">
+               SKU: {product.sku}
               </p>
             )}
-            {product.shortDescription && (
-              <p className="typo-caption-sm text-[#4c9a66] mb-3 line-clamp-2">
-                {product.shortDescription}
-              </p>
-            )}
-            <div className="flex items-center gap-3">
-              <p className="typo-heading-md text-[#0d1b12]">
+           
+            <div className="flex flex-wrap items-baseline gap-2 sm:gap-3 mb-1">
+              <p className="text-base sm:text-lg md:text-xl font-black text-[#e91e63]">
                 {parseInt(String(product.price)).toLocaleString("vi-VN")}đ
               </p>
               {product.comparePrice && (
-                <p className="typo-caption-sm text-[#ccc] line-through">
+                <p className="text-[10px] sm:text-sm text-gray-400 line-through font-medium">
                   {parseInt(String(product.comparePrice)).toLocaleString(
                     "vi-VN",
                   )}
@@ -266,7 +262,7 @@ export const ProductCard = ({
           </div>
 
           {/* Khu vực hành động */}
-          <div className="flex flex-wrap gap-3 mt-3 items-center">
+          <div className="flex flex-wrap gap-2 sm:gap-3 mt-2 sm:mt-3 items-center">
             {/* Nút MUA NGAY */}
             <button
               disabled={isOutOfStock}
@@ -274,17 +270,21 @@ export const ProductCard = ({
                 e.stopPropagation();
                 router.push(`/products/${product.slug}`);
               }}
-              className="bg-[#e91e63] hover:bg-[#db2777] disabled:bg-gray-400 disabled:cursor-not-allowed text-white typo-button-sm py-3 px-5 rounded-xl transition-all transform active:scale-95 flex items-center justify-center gap-2"
+              className="bg-[#e91e63] hover:bg-[#db2777] disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-bold py-2 sm:py-2.5 px-3 sm:px-5 rounded-lg sm:rounded-xl transition-all transform active:scale-95 flex items-center justify-center gap-1.5 flex-1 sm:flex-none shadow-sm hover:shadow-md"
             >
-              <Bolt size={16} fill="currentColor" />
-              {isOutOfStock ? "HẾT HÀNG" : "MUA NGAY"}
+              <Bolt size={14} className="sm:w-4 sm:h-4" fill="currentColor" />
+              <span className="whitespace-nowrap">{isOutOfStock ? "HẾT HÀNG" : "MUA NGAY"}</span>
             </button>
 
             {/* Giỏ hàng: Bộ chọn hoặc Nút thêm */}
             {cartState === "picking" ? (
-              <QuantityPicker compact />
+              <div className="w-full sm:w-auto mt-2 sm:mt-0">
+                <QuantityPicker compact />
+              </div>
             ) : (
-              <CartButton />
+              <div className="flex-none">
+                <CartButton />
+              </div>
             )}
           </div>
         </div>
@@ -349,7 +349,7 @@ export const ProductCard = ({
           </h3>
           {product.sku && (
             <p className="text-[10px] text-gray-400 font-mono">
-              SKU: {product.sku}
+              Mã sản phẩm: {product.sku}
             </p>
           )}
           <div className="flex items-center gap-2 mt-1">

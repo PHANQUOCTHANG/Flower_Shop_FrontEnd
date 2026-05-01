@@ -26,12 +26,9 @@ export interface RegisterPayload {
 }
 
 export interface RegisterResponse {
-  id: string;
-  email: string;
-  fullName: string;
-  phone?: string;
-  role: string;
-  createdAt: string;
+  accessToken: string;
+  refreshToken?: string;
+  user: User;
 }
 
 // ─── SESSION & LOGOUT ──────────────────────────────────────────────

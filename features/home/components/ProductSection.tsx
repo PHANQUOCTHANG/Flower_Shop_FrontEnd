@@ -91,7 +91,7 @@ function HomeProductCard({ product }: { product: Product }) {
  </h4>
  {product.sku && (
  <p className="text-[10px] text-gray-400 font-mono mb-1">
- SKU: {product.sku}
+ Mã sản phẩm: {product.sku}
  </p>
  )}
  <div className="flex items-center gap-2 mb-3 mt-1">

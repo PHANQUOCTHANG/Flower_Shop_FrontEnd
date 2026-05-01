@@ -5,20 +5,7 @@ import { MessageCircle, X, Send } from "lucide-react";
 import { useChat } from "@/features/chat/hooks/useChat";
 import { useAuthStore } from "@/stores/auth.store";
 import { useSettingStore } from "@/stores/setting.store";
-
-// Zalo Icon Component
-const ZaloIcon = () => (
-  <svg
-    width="32"
-    height="32"
-    viewBox="0 0 48 48"
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path d="M24 2C11.85 2 2 11.85 2 24c0 6.27 2.7 11.91 7 15.81v6.19h6.19c3.9 4.3 9.54 7 15.81 7 12.15 0 22-9.85 22-22S36.15 2 24 2zm0 4c9.94 0 18 8.06 18 18s-8.06 18-18 18-18-8.06-18-18 8.06-18 18-18z" />
-    <path d="M20 18h8v2h-8v-2zm0 5h8v2h-8v-2zm0 5h5v2h-5v-2z" />
-  </svg>
-);
+import Image from "next/image";
 
 export default function FloatingActions() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -384,9 +371,16 @@ export default function FloatingActions() {
           href={socialLinks.zalo}
           target="_blank"
           rel="noopener noreferrer"
-          className="size-14 rounded-full bg-[#13ec5b] text-[#0d1b12] flex items-center justify-center shadow-lg hover:scale-110 transition-transform floating-pulse"
+          className="size-14 rounded-full text-[#0d1b12] flex items-center justify-center shadow-lg hover:scale-110 transition-transform floating-pulse"
         >
-          <ZaloIcon />
+          <Image 
+            src="https://freepnglogo.com/images/all_img/zalo-icon-4635.png"
+            alt="Zalo Contact"
+            width={40}
+            height={40}
+            priority={false}
+            className="object-contain"
+          />
         </a>
       </div>
     </>
