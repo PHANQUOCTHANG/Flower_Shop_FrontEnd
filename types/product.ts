@@ -11,6 +11,7 @@ export interface ProductCategory {
   name: string;
   slug: string;
   thumbnailUrl?: string | null;
+  parentId?: string | null;
 }
 
 export interface CategoryItem {
