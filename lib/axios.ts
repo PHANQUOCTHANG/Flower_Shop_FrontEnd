@@ -147,6 +147,11 @@ api.interceptors.response.use(
   (response) => response,
 
   async (error: AxiosError) => {
+    // Extract backend error message globally so err.message always has the exact reason
+    if (error.response?.data && (error.response.data as any).message) {
+      error.message = (error.response.data as any).message;
+    }
+
     const originalRequest = error.config as CustomConfig | undefined;
 
     // Guard: không có response hoặc request config
@@ -204,6 +209,19 @@ api.interceptors.response.use(
       if (isRetryableStatus(refreshStatus) || isTimeout) {
         console.debug("[Axios] Refresh failed - logging out user");
         logout();
+
+        if (typeof window !== "undefined") {
+          // Gọi API logout để xóa HttpOnly cookies
+          fetch(BASE_URL + "/auth/logout", {
+            method: "POST",
+            credentials: "include",
+          }).finally(() => {
+            const isAdmin = window.location.pathname.startsWith("/admin");
+            window.location.href = isAdmin
+              ? "/admin/login?session_expired=true"
+              : "/login?session_expired=true";
+          });
+        }
       }
 
       // Retornar erro sem logar no console para 401s esperados (cookies expirados)

@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { registerUser } from "../services/registerService";
 import { RegisterPayload } from "@/types/auth";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/auth.store";
+import { CART_QUERY_KEY } from "@/features/cart/hooks/useCart";
 
 export interface RegisterFormData {
   fullName: string;
@@ -32,6 +34,7 @@ export interface UseRegisterReturn {
 export const useRegister = (): UseRegisterReturn => {
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
+  const queryClient = useQueryClient();
   const [form, setForm] = useState<RegisterFormData>({
     fullName: "",
     phone: "",
@@ -168,7 +171,13 @@ export const useRegister = (): UseRegisterReturn => {
       const response = await registerUser(payload);
 
       // Lưu trạng thái đăng nhập
-      setAuth(response.accessToken, response.user);
+      setAuth(response.accessToken, {
+        ...response.user,
+        name: response.user.name || response.user.fullName || "",
+      });
+
+      // Xóa cache cũ của cart để buộc refetch ngay khi MainLayout mount
+      queryClient.removeQueries({ queryKey: CART_QUERY_KEY });
 
       // Redirect to home page ngay lập tức
       router.push("/");
