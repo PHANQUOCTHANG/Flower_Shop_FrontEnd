@@ -70,6 +70,7 @@ export function useProductForm() {
           id: String(cat.id),
           name: cat.name,
           slug: cat.slug || "",
+          parentId: cat.parentId || null,
         }));
         setCategories(categoryList);
       });
@@ -128,15 +129,18 @@ export function useProductForm() {
   };
 
   // Gửi API để tạo 1 danh mục mới và ngay lập tức thêm vào mảng categories đang được nhắm tới
-  const handleAddCategory = async (categoryName: string, thumbFile: File | null = null) => {
+  const handleAddCategory = async (categoryName: string, thumbFile: File | null = null, parentId: string | null = null) => {
     const trimmed = categoryName.trim();
     if (!trimmed) return;
 
     try {
       let payload: any = { name: trimmed };
+      if (parentId) payload.parentId = parentId;
+      
       if (thumbFile) {
         payload = new FormData();
         payload.append("name", trimmed);
+        if (parentId) payload.append("parentId", parentId);
         payload.append("thumbnail", thumbFile);
       }
       const newCategory = await createCategoryHook(payload);
@@ -148,7 +152,8 @@ export function useProductForm() {
           { 
             id: categoryId, 
             name: newCategory.name,
-            slug: newCategory.slug || ""
+            slug: newCategory.slug || "",
+            parentId: newCategory.parentId || null,
           },
         ]);
         setSelectedCategoryIds((prev) => [...prev, categoryId]);

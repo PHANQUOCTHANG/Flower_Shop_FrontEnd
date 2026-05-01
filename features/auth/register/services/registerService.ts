@@ -1,5 +1,6 @@
 import api from "@/lib/axios";
 import { ApiResponse } from "@/types/response";
+import { isAxiosError } from "axios";
 
 import { RegisterPayload, RegisterResponse } from "@/types/auth";
 
@@ -9,14 +10,21 @@ import { RegisterPayload, RegisterResponse } from "@/types/auth";
 export const registerUser = async (
   payload: RegisterPayload,
 ): Promise<RegisterResponse> => {
-  const response = await api.post<ApiResponse<RegisterResponse>>(
-    "/auth/register",
-    payload,
-  );
+  try {
+    const response = await api.post<ApiResponse<RegisterResponse>>(
+      "/auth/register",
+      payload,
+    );
 
-  if (response.data.status === "error") {
-    throw new Error(response.data.message || "Đăng ký thất bại");
+    if (response.data.status === "error") {
+      throw new Error(response.data.message || "Đăng ký thất bại");
+    }
+
+    return response.data.data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw error;
   }
-
-  return response.data.data;
 };

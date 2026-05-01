@@ -5,13 +5,14 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
+  parentId?: string | null;
 }
 
 interface CategorySectionProps {
   categories: Category[];
   selectedCategoryIds: string[];
   onSelectCategory: (categoryId: string) => void;
-  onAddCategory: (categoryName: string, thumbFile: File | null) => Promise<void>;
+  onAddCategory: (categoryName: string, thumbFile: File | null, parentId: string | null) => Promise<void>;
   isLoadingCategories?: boolean;
 }
 
@@ -28,6 +29,7 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
   ) => {
     const [newCategoryName, setNewCategoryName] = useState("");
     const [thumbFile, setThumbFile] = useState<File | null>(null);
+    const [newCategoryParentId, setNewCategoryParentId] = useState<string>("");
     const [isAddingCategory, setIsAddingCategory] = useState(false);
     const [showAddForm, setShowAddForm] = useState(false);
 
@@ -36,13 +38,62 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
 
       try {
         setIsAddingCategory(true);
-        await onAddCategory(newCategoryName, thumbFile);
+        await onAddCategory(newCategoryName, thumbFile, newCategoryParentId || null);
         setNewCategoryName("");
         setThumbFile(null); // Reset
+        setNewCategoryParentId("");
         setShowAddForm(false); // Hide form after success
       } finally {
         setIsAddingCategory(false);
       }
+    };
+
+    const rootCategories = categories.filter((c) => !c.parentId);
+    const getChildren = (parentId: string) => categories.filter((c) => c.parentId === parentId);
+
+    const renderCategoryTree = (cats: Category[], level = 0) => {
+      return cats.map((cat) => {
+        const children = getChildren(cat.id);
+        return (
+          <div key={cat.id} className="flex flex-col">
+            <label
+              className={`flex items-center cursor-pointer hover:bg-slate-50 p-2 rounded transition-colors ${
+                level > 0 ? "ml-6" : ""
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={selectedCategoryIds.includes(cat.id)}
+                onChange={() => onSelectCategory(cat.id)}
+                className="w-4 h-4 accent-[#ee2b5b] cursor-pointer"
+              />
+              <span className="ml-3 text-sm text-slate-700">
+                {level > 0 && <span className="text-slate-400 mr-1">↳</span>}
+                {cat.name}
+              </span>
+            </label>
+            {children.length > 0 && renderCategoryTree(children, level + 1)}
+          </div>
+        );
+      });
+    };
+
+    const renderOptions = (cats: Category[], level = 0): React.ReactNode[] => {
+      let options: React.ReactNode[] = [];
+      cats.forEach((cat) => {
+        const prefix = "— ".repeat(level);
+        options.push(
+          <option key={cat.id} value={cat.id}>
+            {prefix}
+            {cat.name}
+          </option>,
+        );
+        const children = getChildren(cat.id);
+        if (children.length > 0) {
+          options = options.concat(renderOptions(children, level + 1));
+        }
+      });
+      return options;
     };
 
     return (
@@ -60,23 +111,8 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
           {isLoadingCategories ? (
             <div className="text-sm text-slate-500">Đang tải danh mục...</div>
           ) : categories.length > 0 ? (
-            <div className="space-y-2 max-h-48 overflow-y-auto">
-              {categories.map((cat) => (
-                <label
-                  key={cat.id}
-                  className="flex items-center cursor-pointer hover:bg-slate-50 p-2 rounded transition-colors"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedCategoryIds.includes(cat.id)}
-                    onChange={() => onSelectCategory(cat.id)}
-                    className="w-4 h-4 accent-[#ee2b5b] cursor-pointer"
-                  />
-                  <span className="ml-3 text-sm text-slate-700">
-                    {cat.name}
-                  </span>
-                </label>
-              ))}
+            <div className="space-y-1 max-h-60 overflow-y-auto">
+              {renderCategoryTree(rootCategories)}
             </div>
           ) : (
             <div className="text-sm text-slate-500">Không có danh mục nào</div>
@@ -106,6 +142,7 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
                     setShowAddForm(false);
                     setNewCategoryName("");
                     setThumbFile(null);
+                    setNewCategoryParentId("");
                   }}
                   className="text-xs font-semibold text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1"
                 >
@@ -136,6 +173,20 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
               >
                 {isAddingCategory ? "Thêm..." : "Thêm"}
               </button>
+            </div>
+            
+            {/* Input Parent Category */}
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-semibold text-slate-600">Danh mục cha (Tùy chọn)</label>
+              <select
+                value={newCategoryParentId}
+                onChange={(e) => setNewCategoryParentId(e.target.value)}
+                disabled={isAddingCategory}
+                className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#ee2b5b] focus:ring-1 focus:ring-[#ee2b5b] outline-none transition-colors disabled:bg-slate-100"
+              >
+                <option value="">-- Không có (Danh mục gốc) --</option>
+                {renderOptions(rootCategories)}
+              </select>
             </div>
             
             {/* Box Upload Thumbnail (Style giống ThumbnailSection) */}

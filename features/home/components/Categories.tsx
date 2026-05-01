@@ -93,7 +93,7 @@ export default function Categories({ categories, loading }: CategoriesProps) {
   );
  }
 
- return (
+ return categories && categories.length > 0 ? (
   <section className="mb-16 relative group">
    <ScrollReveal variant="slide-up" delay={0}>
     <div className="flex items-center justify-between mb-8 px-2">
@@ -164,5 +164,5 @@ export default function Categories({ categories, loading }: CategoriesProps) {
      </div>
    </div>
   </section>
- );
+ ) : null;
 }
