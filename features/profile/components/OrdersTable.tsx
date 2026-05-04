@@ -50,7 +50,7 @@ interface OrderRowProps {
 const OrderRow: FC<OrderRowProps> = ({ order, onViewOrder }) => {
   return (
     <tr 
-      className="group hover:bg-[#13ec5b]/5 transition-colors duration-300 cursor-pointer" 
+      className="group hover:bg-[#EE2B5B]/5 transition-colors duration-300 cursor-pointer" 
       onClick={() => onViewOrder(order.id)}
     >
       {/* Mã đơn hàng */}
@@ -80,7 +80,7 @@ const OrderRow: FC<OrderRowProps> = ({ order, onViewOrder }) => {
             e.stopPropagation();
             onViewOrder(order.id);
           }}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest group-hover:border-[#13ec5b] group-hover:bg-[#13ec5b] group-hover:text-[#0d1b12] shadow-sm transition-all duration-300"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest group-hover:border-[#EE2B5B] group-hover:bg-[#EE2B5B] group-hover:text-white shadow-sm transition-all duration-300"
           type="button"
         >
           <Eye size={12} />

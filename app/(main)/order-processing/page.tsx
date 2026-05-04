@@ -71,14 +71,14 @@ function OrderProcessingContent() {
               <div className="mt-6 grid sm:grid-cols-2 gap-3">
                 <button
                   onClick={handleRetry}
-                  className="w-full border-2 border-[#13ec5b] text-[#13ec5b] hover:bg-[#13ec5b] hover:text-white font-bold py-3.5 px-6 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 group"
+                  className="w-full border-2 border-[#EE2B5B] text-[#EE2B5B] hover:bg-[#EE2B5B] hover:text-white font-bold py-3.5 px-6 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 group"
                 >
                   <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                   Quay lại thanh toán
                 </button>
                 <button
                   onClick={() => router.push("/")}
-                  className="w-full border-2 border-dashed border-[#cce7d4] text-[#4c9a66] hover:border-[#4c9a66] hover:bg-[#4c9a66]/5 font-bold py-3.5 px-6 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 group"
+                  className="w-full border-2 border-dashed border-[#FCE9ED] text-[#D11E48] hover:border-[#D11E48] hover:bg-[#D11E48]/5 font-bold py-3.5 px-6 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 group"
                 >
                   <Home className="w-4 h-4" />
                   Về trang chủ

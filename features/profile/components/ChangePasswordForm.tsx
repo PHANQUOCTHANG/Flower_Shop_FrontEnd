@@ -74,7 +74,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
           className={`w-full px-3 sm:px-5 py-2.5 sm:py-3.5 rounded-lg sm:rounded-xl border-2 transition-all outline-none font-medium text-sm ${
             error
               ? "border-rose-300 bg-rose-50/50 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-              : "border-slate-200 bg-slate-50 focus:border-[#13ec5b] focus:ring-2 focus:ring-[#13ec5b]/20"
+              : "border-slate-200 bg-slate-50 focus:border-[#EE2B5B] focus:ring-2 focus:ring-[#EE2B5B]/20"
           }`}
         />
 
@@ -191,7 +191,7 @@ export const ChangePasswordForm: React.FC = () => {
     <section className="animate-in fade-in duration-500 relative w-full">
       {/* Header */}
       <div className="flex items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8 md:mb-10">
-        <div className="size-12 sm:size-14 bg-[#13ec5b]/10 rounded-lg sm:rounded-2xl flex items-center justify-center text-[#0d9e3e] shrink-0">
+        <div className="size-12 sm:size-14 bg-[#EE2B5B]/10 rounded-lg sm:rounded-2xl flex items-center justify-center text-[#D11E48] shrink-0">
           <Lock size={28} />
         </div>
         <div className="min-w-0 flex-1">
@@ -267,7 +267,7 @@ export const ChangePasswordForm: React.FC = () => {
         />
 
         {/* Password Tips */}
-        <div className="bg-[#f0fdf4] border border-[#13ec5b]/20 rounded-lg sm:rounded-xl p-3 sm:p-4">
+        <div className="bg-[#FEF0F3] border border-[#EE2B5B]/20 rounded-lg sm:rounded-xl p-3 sm:p-4">
           <p className="text-[11px] sm:text-xs font-bold text-[#0d9e3e] mb-2 uppercase tracking-wide">
             💡 Gợi ý mật khẩu mạnh
           </p>
@@ -302,7 +302,7 @@ export const ChangePasswordForm: React.FC = () => {
           <button
             type="submit"
             disabled={isPending}
-            className="flex-1 px-4 sm:px-8 py-2.5 sm:py-4 bg-[#13ec5b] text-[#0d1b12] font-black text-xs sm:text-sm uppercase tracking-wider rounded-lg sm:rounded-xl shadow-lg shadow-[#13ec5b]/20 hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+            className="flex-1 px-4 sm:px-8 py-2.5 sm:py-4 bg-[#EE2B5B] text-white font-black text-xs sm:text-sm uppercase tracking-wider rounded-lg sm:rounded-xl shadow-lg shadow-[#EE2B5B]/20 hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
           >
             {isPending ? (
               <span className="flex items-center justify-center gap-2">

@@ -218,7 +218,7 @@ export const ProductCard = ({
           {/* Nút yêu thích */}
           <button
             onClick={(e) => e.stopPropagation()}
-            className="absolute top-3 right-3 z-10 size-8 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-gray-600 hover:text-[#e91e63] transition-all active:scale-90"
+            className="absolute top-3 right-3 z-10 size-8 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-gray-600 hover:text-[#13ec5b] transition-all active:scale-90"
           >
             <Heart size={16} />
           </button>
@@ -242,12 +242,12 @@ export const ProductCard = ({
             </h3>
             {product.sku && (
               <p className="text-[10px] sm:text-xs text-gray-500 mb-2 font-mono bg-gray-100/50 w-fit px-1.5 py-0.5 rounded">
-               SKU: {product.sku}
+                SKU: {product.sku}
               </p>
             )}
-           
+
             <div className="flex flex-wrap items-baseline gap-2 sm:gap-3 mb-1">
-              <p className="text-base sm:text-lg md:text-xl font-black text-[#e91e63]">
+              <p className="text-base sm:text-lg md:text-xl font-black text-black">
                 {parseInt(String(product.price)).toLocaleString("vi-VN")}đ
               </p>
               {product.comparePrice && (
@@ -270,10 +270,12 @@ export const ProductCard = ({
                 e.stopPropagation();
                 router.push(`/products/${product.slug}`);
               }}
-              className="bg-[#e91e63] hover:bg-[#db2777] disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-bold py-2 sm:py-2.5 px-3 sm:px-5 rounded-lg sm:rounded-xl transition-all transform active:scale-95 flex items-center justify-center gap-1.5 flex-1 sm:flex-none shadow-sm hover:shadow-md"
+              className="bg-[#EE2B5B] hover:bg-[#B3163B] disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-bold py-2 sm:py-2.5 px-3 sm:px-5 rounded-lg sm:rounded-xl transition-all transform active:scale-95 flex items-center justify-center gap-1.5 flex-1 sm:flex-none shadow-sm hover:shadow-md"
             >
               <Bolt size={14} className="sm:w-4 sm:h-4" fill="currentColor" />
-              <span className="whitespace-nowrap">{isOutOfStock ? "HẾT HÀNG" : "MUA NGAY"}</span>
+              <span className="whitespace-nowrap">
+                {isOutOfStock ? "HẾT HÀNG" : "MUA NGAY"}
+              </span>
             </button>
 
             {/* Giỏ hàng: Bộ chọn hoặc Nút thêm */}
@@ -324,7 +326,7 @@ export const ProductCard = ({
         {/* Nút yêu thích */}
         <button
           onClick={(e) => e.stopPropagation()}
-          className="absolute top-4 right-4 z-10 size-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-gray-600 hover:text-[#e91e63] transition-all active:scale-90"
+          className="absolute top-4 right-4 z-10 size-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-gray-600 hover:text-[#13ec5b] transition-all active:scale-90"
         >
           <Heart size={DROPDOWN_SIZE_DEFAULT} />
         </button>
@@ -344,7 +346,7 @@ export const ProductCard = ({
       <div className="p-4 sm:p-5 flex flex-col flex-1">
         {/* Tiêu đề & giá */}
         <div className="flex flex-col gap-1.5 mb-4">
-          <h3 className="text-sm font-bold text-gray-800 group-hover:text-[#e91e63] transition-colors line-clamp-1">
+          <h3 className="text-sm font-bold text-gray-800 group-hover:text-[#13ec5b] transition-colors line-clamp-1">
             {product.name}
           </h3>
           {product.sku && (
@@ -374,7 +376,7 @@ export const ProductCard = ({
               e.stopPropagation();
               router.push(`/products/${product.slug}`);
             }}
-            className="w-full bg-[#e91e63] hover:bg-[#db2777] disabled:bg-gray-400 disabled:cursor-not-allowed text-white typo-button-sm py-3.5 rounded-[14px] transition-all transform active:scale-95 flex items-center justify-center gap-2 font-bold"
+            className="w-full bg-[#EE2B5B] hover:bg-[#B3163B] disabled:bg-gray-400 disabled:cursor-not-allowed text-white typo-button-sm py-3.5 rounded-[14px] transition-all transform active:scale-95 flex items-center justify-center gap-2 font-bold"
           >
             <Bolt size={16} fill="currentColor" />
             {isOutOfStock ? "HẾT HÀNG" : "MUA NGAY"}

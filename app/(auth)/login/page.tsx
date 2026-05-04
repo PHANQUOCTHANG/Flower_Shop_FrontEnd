@@ -60,7 +60,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen w-full bg-[#fcfbf9] text-[#1b0d11] transition-colors duration-300 font-sans antialiased">
       {/* ───────── Cột trái – ảnh nền ───────── */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[#13ec5b]/10 mix-blend-multiply z-10" />
+        <div className="absolute inset-0 bg-[#EE2B5B]/10 mix-blend-multiply z-10" />
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
@@ -91,14 +91,14 @@ export default function LoginPage() {
             {/* Nút quay lại */}
             <button
               onClick={() => router.push("/")}
-              className="mb-4 lg:mb-6 inline-flex items-center gap-2 text-[#13ec5b] hover:text-[#10c94d] font-semibold transition-colors"
+              className="mb-4 lg:mb-6 inline-flex items-center gap-2 text-[#EE2B5B] hover:text-[#B3163B] font-semibold transition-colors"
             >
               <ArrowLeft size={20} />
               <span>Quay lại trang chủ</span>
             </button>
             {/* Logo hiện trên mobile */}
             <div className="lg:hidden flex justify-center mb-6">
-              <div className="flex items-center gap-2 text-[#13ec5b]">
+              <div className="flex items-center gap-2 text-[#EE2B5B]">
                 <Flower2 size={32} />
                 <span className="text-xl font-bold tracking-tight">
                   Flower Shop
@@ -148,7 +148,7 @@ export default function LoginPage() {
                 required
                 disabled={isLoading}
                 className="w-full px-4 py-3.5 rounded-lg border border-gray-200 bg-white text-[#1b0d11] placeholder:text-gray-400 
- focus:ring-2 focus:ring-[#13ec5b]/20 focus:border-[#13ec5b] outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+ focus:ring-2 focus:ring-[#EE2B5B]/20 focus:border-[#EE2B5B] outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 
@@ -160,7 +160,7 @@ export default function LoginPage() {
                 </label>
                 <a
                   href="/forgot-password"
-                  className="text-xs font-semibold text-[#13ec5b] hover:underline"
+                  className="text-xs font-semibold text-[#EE2B5B] hover:underline"
                 >
                   Quên mật khẩu?
                 </a>
@@ -174,12 +174,12 @@ export default function LoginPage() {
                   required
                   disabled={isLoading}
                   className="w-full px-4 py-3.5 pr-12 rounded-lg border border-gray-200 bg-white text-[#1b0d11] placeholder:text-gray-400 
- focus:ring-2 focus:ring-[#13ec5b]/20 focus:border-[#13ec5b] outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+ focus:ring-2 focus:ring-[#EE2B5B]/20 focus:border-[#EE2B5B] outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#13ec5b] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#EE2B5B] transition-colors"
                 >
                   {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -192,7 +192,7 @@ export default function LoginPage() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 accent-[#13ec5b] cursor-pointer"
+                className="h-4 w-4 rounded border-gray-300 accent-[#EE2B5B] cursor-pointer"
               />
               <span className="text-sm text-gray-600 ">Ghi nhớ đăng nhập</span>
             </label>
@@ -200,8 +200,8 @@ export default function LoginPage() {
             {/* Nút submit */}
             <button
               disabled={isLoading}
-              className="w-full bg-[#13ec5b] hover:bg-[#10c94d] disabled:bg-[#13ec5b]/50 active:scale-[0.98]
- text-white font-bold py-4 rounded-lg shadow-lg shadow-[#13ec5b]/25
+              className="w-full bg-[#EE2B5B] hover:bg-[#B3163B] disabled:bg-[#EE2B5B]/50 active:scale-[0.98]
+ text-white font-bold py-4 rounded-lg shadow-lg shadow-[#EE2B5B]/25
  transition-all text-sm uppercase tracking-wider disabled:cursor-not-allowed
  flex items-center justify-center gap-2"
             >
@@ -255,7 +255,7 @@ export default function LoginPage() {
             Bạn chưa có tài khoản?{" "}
             <Link
               href="/register"
-              className="font-bold text-[#13ec5b] hover:underline ml-1"
+              className="font-bold text-[#EE2B5B] hover:underline ml-1"
             >
               Đăng ký ngay
             </Link>

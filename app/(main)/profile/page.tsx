@@ -193,7 +193,7 @@ function UserAccountContent() {
   }, [user?.id, queryClient, selectedOrderId]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#13ec5b]/5 to-slate-50 font-['Inter',_sans-serif] text-slate-900 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#EE2B5B]/5 to-slate-50 font-['Inter',_sans-serif] text-slate-900 transition-colors duration-300">
       {/* Thông báo thành công */}
       {successMessage && (
         <div className="fixed bottom-4 right-4 left-4 sm:bottom-6 sm:right-6 sm:left-auto sm:max-w-sm z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">

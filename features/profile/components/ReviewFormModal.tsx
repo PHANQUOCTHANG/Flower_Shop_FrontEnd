@@ -235,7 +235,7 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
               placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
               maxLength={1000}
               disabled={isPending}
-              className="w-full h-24 px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#13ec5b]/50 focus:border-[#13ec5b] resize-none text-sm disabled:bg-slate-50 disabled:opacity-50"
+              className="w-full h-24 px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#EE2B5B]/50 focus:border-[#EE2B5B] resize-none text-sm disabled:bg-slate-50 disabled:opacity-50"
             />
             <p className="text-xs text-slate-400 mt-1">{content.length}/1000 ký tự</p>
           </div>
@@ -250,7 +250,7 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
             {localFiles.length < 5 && (
               <div
                 onClick={() => !isPending && fileInputRef.current?.click()}
-                className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center cursor-pointer hover:border-[#13ec5b] hover:bg-[#13ec5b]/5 transition-all"
+                className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center cursor-pointer hover:border-[#EE2B5B] hover:bg-[#EE2B5B]/5 transition-all"
               >
                 <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
                 <p className="text-sm font-bold text-slate-600">Chọn ảnh hoặc video</p>
@@ -331,7 +331,7 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
             <button
               type="submit"
               disabled={isPending}
-              className="flex-1 bg-gradient-to-r from-[#13ec5b] to-[#0db34b] text-[#102216] font-black py-2.5 rounded-lg hover:shadow-lg hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+              className="flex-1 bg-gradient-to-r from-[#EE2B5B] to-[#D11E48] text-white font-black py-2.5 rounded-lg hover:shadow-lg hover:shadow-[#EE2B5B]/30 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
             >
               {isPending ? "Đang gửi..." : "Gửi đánh giá"}
             </button>

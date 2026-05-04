@@ -27,12 +27,12 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({
 }) => {
   const avatarSrc =
     avatarUrl ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "User")}&background=13ec5b&color=0d1b12`;
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "User")}&background=ec4899&color=ffffff`;
 
   return (
     <div className="w-full flex flex-col items-center">
       {/* Cover Photo */}
-      <div className="w-full h-32 sm:h-48 md:h-56 bg-gradient-to-r from-[#13ec5b]/30 via-[#0fd34d]/20 to-[#13ec5b]/30 relative overflow-hidden">
+      <div className="w-full h-32 sm:h-48 md:h-56 bg-gradient-to-r from-[#EE2B5B]/30 via-[#D11E48]/20 to-[#EE2B5B]/30 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
       </div>
@@ -69,7 +69,7 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({
               onClick={() => onTabChange(item.id)}
               className={`flex items-center gap-2.5 px-5 py-3 rounded-xl font-bold text-sm sm:text-base whitespace-nowrap transition-all duration-300 ${
                 activeTab === item.id
-                  ? "bg-gradient-to-r from-[#13ec5b] to-[#0fd34d] text-[#0d1b12] shadow-md shadow-[#13ec5b]/30 scale-[1.02]"
+                  ? "bg-gradient-to-r from-[#EE2B5B] to-[#D11E48] text-white shadow-md shadow-[#EE2B5B]/30 scale-[1.02]"
                   : "bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
               }`}
               type="button"

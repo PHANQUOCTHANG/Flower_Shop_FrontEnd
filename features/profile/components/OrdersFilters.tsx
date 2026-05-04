@@ -47,7 +47,7 @@ const CustomSelect: FC<CustomSelectProps> = ({
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full px-3 sm:px-5 py-2.5 sm:py-3.5 bg-white border border-slate-200 rounded-lg sm:rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#13ec5b] focus:ring-4 focus:ring-[#13ec5b]/10 transition-all cursor-pointer shadow-sm appearance-none"
+          className="w-full px-3 sm:px-5 py-2.5 sm:py-3.5 bg-white border border-slate-200 rounded-lg sm:rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#EE2B5B] focus:ring-4 focus:ring-[#EE2B5B]/10 transition-all cursor-pointer shadow-sm appearance-none"
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>

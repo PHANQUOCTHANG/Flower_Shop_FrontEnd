@@ -64,7 +64,7 @@ export const OrdersSection: FC<OrdersSectionProps> = ({
   return (
     <section className="animate-in fade-in duration-500 relative w-full">
       {/* Decorative gradient */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#13ec5b]/10 to-transparent rounded-full blur-3xl pointer-events-none -mr-10 -mt-10 z-0" />
+      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#EE2B5B]/10 to-transparent rounded-full blur-3xl pointer-events-none -mr-10 -mt-10 z-0" />
 
       {/* Header */}
       <div className="flex flex-col gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-10 relative z-10">
@@ -76,7 +76,7 @@ export const OrdersSection: FC<OrdersSectionProps> = ({
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-50 text-slate-600 rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-[#13ec5b]/10 hover:text-[#0d9e3e] transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap shadow-sm hover:shadow-md border border-slate-100"
+            className="flex items-center gap-2 px-4 py-2 bg-slate-50 text-slate-600 rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-[#EE2B5B]/10 hover:text-[#D11E48] transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap shadow-sm hover:shadow-md border border-slate-100"
             type="button"
           >
             <RefreshCw
@@ -106,7 +106,7 @@ export const OrdersSection: FC<OrdersSectionProps> = ({
       {isLoading && (
         <div className="flex justify-center items-center py-10">
           <div className="animate-spin">
-            <Package className="text-[#13ec5b]" size={32} />
+            <Package className="text-[#EE2B5B]" size={32} />
           </div>
         </div>
       )}
@@ -123,8 +123,8 @@ export const OrdersSection: FC<OrdersSectionProps> = ({
       {/* Trạng thái rỗng */}
       {!isLoading && !error && orders.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 sm:py-20 animate-in fade-in zoom-in-95 duration-500 relative z-10">
-          <div className="size-24 rounded-full bg-[#13ec5b]/10 flex items-center justify-center mb-6 relative">
-            <div className="absolute inset-0 rounded-full bg-[#13ec5b]/20 animate-ping opacity-20" />
+          <div className="size-24 rounded-full bg-[#EE2B5B]/10 flex items-center justify-center mb-6 relative">
+            <div className="absolute inset-0 rounded-full bg-[#EE2B5B]/20 animate-ping opacity-20" />
             <Package className="text-[#0d9e3e] relative z-10" size={40} />
           </div>
           <h3 className="text-lg font-black text-slate-900 mb-2">Chưa có đơn hàng nào</h3>
@@ -133,7 +133,7 @@ export const OrdersSection: FC<OrdersSectionProps> = ({
           </p>
           <a
             href="/products"
-            className="inline-block px-6 py-3 bg-gradient-to-r from-[#13ec5b] to-[#0fd34d] text-[#0d1b12] rounded-xl text-xs font-black uppercase tracking-widest hover:shadow-lg hover:shadow-[#13ec5b]/30 hover:-translate-y-0.5 transition-all duration-300"
+            className="inline-block px-6 py-3 bg-gradient-to-r from-[#EE2B5B] to-[#D11E48] text-white rounded-xl text-xs font-black uppercase tracking-widest hover:shadow-lg hover:shadow-[#EE2B5B]/30 hover:-translate-y-0.5 transition-all duration-300"
           >
             Khám phá ngay
           </a>

@@ -35,7 +35,7 @@ export const RecipientForm: React.FC<RecipientFormProps> = ({
     <section className="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-gray-100">
       {/* Header */}
       <div className="flex items-center gap-3 mb-8">
-        <Truck className="w-5 h-5 text-[#e91e63]" />
+        <Truck className="w-5 h-5 text-[#EE2B5B]" />
         <h2 className="text-xl font-bold text-gray-900 tracking-tight">
           Thông tin giao hàng
         </h2>
@@ -61,7 +61,7 @@ export const RecipientForm: React.FC<RecipientFormProps> = ({
               className={`w-full h-[46px] px-4 rounded-xl border bg-white transition-all outline-none text-[13px] placeholder:text-gray-400 ${
                 errors.name
                   ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
-                  : "border-gray-200 focus:border-[#e91e63] focus:ring-2 focus:ring-[#e91e63]/10"
+                  : "border-gray-200 focus:border-[#EE2B5B] focus:ring-2 focus:ring-[#EE2B5B]/10"
               }`}
             />
             {errors.name && (
@@ -80,7 +80,7 @@ export const RecipientForm: React.FC<RecipientFormProps> = ({
               className={`w-full h-[46px] px-4 rounded-xl border bg-white transition-all outline-none text-[13px] placeholder:text-gray-400 ${
                 errors.shippingPhone
                   ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
-                  : "border-gray-200 focus:border-[#e91e63] focus:ring-2 focus:ring-[#e91e63]/10"
+                  : "border-gray-200 focus:border-[#EE2B5B] focus:ring-2 focus:ring-[#EE2B5B]/10"
               }`}
             />
             {errors.shippingPhone && (
@@ -95,7 +95,7 @@ export const RecipientForm: React.FC<RecipientFormProps> = ({
             Địa chỉ giao hoa <span className="text-red-500">*</span>
           </label>
           <div className="relative">
-            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#e91e63]" />
+            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#EE2B5B]" />
             <input
               type="text"
               value={shippingAddress}
@@ -104,7 +104,7 @@ export const RecipientForm: React.FC<RecipientFormProps> = ({
               className={`w-full h-[46px] pl-10 pr-4 rounded-xl border bg-white transition-all outline-none text-[13px] placeholder:text-gray-400 ${
                 errors.shippingAddress
                   ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
-                  : "border-gray-200 focus:border-[#e91e63] focus:ring-2 focus:ring-[#e91e63]/10"
+                  : "border-gray-200 focus:border-[#EE2B5B] focus:ring-2 focus:ring-[#EE2B5B]/10"
               }`}
             />
           </div>
@@ -116,7 +116,7 @@ export const RecipientForm: React.FC<RecipientFormProps> = ({
         {/* Ghi chú đơn hàng */}
         <div>
           <label className="text-[13px] font-bold text-gray-800 mb-2 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-[#e91e63]" />
+            <FileText className="w-4 h-4 text-[#EE2B5B]" />
             Lời chúc trên thiệp / Ghi chú
           </label>
           <textarea
@@ -127,7 +127,7 @@ export const RecipientForm: React.FC<RecipientFormProps> = ({
             className={`w-full p-4 rounded-xl border bg-[#fbfbfb] transition-all outline-none text-[13px] resize-none placeholder:text-gray-400 ${
               errors.note
                 ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
-                : "border-gray-200 focus:border-[#e91e63] focus:ring-2 focus:ring-[#e91e63]/10"
+                : "border-gray-200 focus:border-[#EE2B5B] focus:ring-2 focus:ring-[#EE2B5B]/10"
             }`}
           />
           {errors.note && (

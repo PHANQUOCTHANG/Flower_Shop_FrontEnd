@@ -47,7 +47,7 @@ function Field({
           id={id}
           className={`w-full pl-10 ${rightSlot ? "pr-12" : "pr-4"} py-3 bg-white border border-gray-200 rounded-lg
  text-[#1b0d11] placeholder:text-gray-400 
- focus:ring-2 focus:ring-[#13ec5b] focus:border-[#13ec5b] outline-none transition-all
+ focus:ring-2 focus:ring-[#EE2B5B] focus:border-[#EE2B5B] outline-none transition-all
  disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
           {...rest}
         />
@@ -104,7 +104,7 @@ export default function RegisterPage() {
       <div className="flex flex-1 flex-col justify-center bg-white px-6 py-12 sm:px-12 lg:w-1/2 xl:w-2/5 shadow-2xl z-10">
         <div className="mx-auto w-full max-w-md">
           {/* Logo mobile */}
-          <div className="flex lg:hidden items-center justify-center gap-2 mb-8 text-[#13ec5b]">
+          <div className="flex lg:hidden items-center justify-center gap-2 mb-8 text-[#EE2B5B]">
             <Flower2 size={32} />
             <span className="text-xl font-bold">Flower Shop</span>
           </div>
@@ -190,7 +190,7 @@ export default function RegisterPage() {
                   type="button"
                   disabled={isLoading}
                   onClick={() => setShowPass(!showPass)}
-                  className="text-gray-400 hover:text-[#13ec5b] transition-colors disabled:opacity-50"
+                  className="text-gray-400 hover:text-[#EE2B5B] transition-colors disabled:opacity-50"
                 >
                   {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -215,10 +215,10 @@ export default function RegisterPage() {
                 type="submit"
                 disabled={isLoading}
                 className="group flex w-full justify-center items-center gap-2 rounded-lg
- bg-[#13ec5b] hover:bg-[#10c94d] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
+ bg-[#EE2B5B] hover:bg-[#B3163B] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
  px-4 py-4 text-sm font-bold text-white
- shadow-lg shadow-[#13ec5b]/25 transition-all
- focus:outline-none focus:ring-2 focus:ring-[#13ec5b] focus:ring-offset-2"
+ shadow-lg shadow-[#EE2B5B]/25 transition-all
+ focus:outline-none focus:ring-2 focus:ring-[#EE2B5B] focus:ring-offset-2"
               >
                 {isLoading ? (
                   <>
@@ -244,7 +244,7 @@ export default function RegisterPage() {
               Đã có tài khoản?{" "}
               <Link
                 href="/login"
-                className="font-bold text-[#13ec5b] hover:underline ml-1"
+                className="font-bold text-[#EE2B5B] hover:underline ml-1"
               >
                 Đăng nhập ngay
               </Link>

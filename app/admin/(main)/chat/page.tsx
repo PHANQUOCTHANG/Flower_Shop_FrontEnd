@@ -22,7 +22,7 @@ import { formatTimeAgo } from "@/utils/format";
 
 // ============ Avatar Component ============
 
-const AVATAR_COLORS = ["#10b981", "#3b82f6", "#8b5cf6", "#f59e0b", "#ef4444", "#ec4899", "#14b8a6"];
+const AVATAR_COLORS = ["#10b981", "#3b82f6", "#8b5cf6", "#f59e0b", "#ef4444", "#EE2B5B", "#14b8a6"];
 
 function getAvatarColor(name?: string) {
   if (!name) return AVATAR_COLORS[0];

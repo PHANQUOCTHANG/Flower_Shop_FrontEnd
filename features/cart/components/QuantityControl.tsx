@@ -73,14 +73,14 @@ export const QuantityControl: React.FC<QuantityControlProps> = ({
 
  return (
  <div
- className={`flex items-center border border-[#cce7d4] overflow-hidden bg-white 
+ className={`flex items-center border border-[#FCE9ED] overflow-hidden bg-white 
  ${isDesktop ? "rounded-xl" : "rounded-lg h-9"}`}
  >
  <button
  onClick={() => handleChange(localQuantity - 1)}
  disabled={localQuantity <= min}
  aria-label="Giảm số lượng"
- className={`flex items-center justify-center hover:bg-[#e91e63]/10 transition-colors
+ className={`flex items-center justify-center hover:bg-[#EE2B5B]/10 transition-colors
  disabled:opacity-40 disabled:cursor-not-allowed
  ${isDesktop ? "p-2" : "px-3 h-full"}`}
  >
@@ -98,7 +98,7 @@ export const QuantityControl: React.FC<QuantityControlProps> = ({
  onClick={() => handleChange(localQuantity + 1)}
  disabled={localQuantity >= max}
  aria-label="Tăng số lượng"
- className={`flex items-center justify-center hover:bg-[#e91e63]/10 transition-colors
+ className={`flex items-center justify-center hover:bg-[#EE2B5B]/10 transition-colors
  disabled:opacity-40 disabled:cursor-not-allowed
  ${isDesktop ? "p-2" : "px-3 h-full"}`}
  >

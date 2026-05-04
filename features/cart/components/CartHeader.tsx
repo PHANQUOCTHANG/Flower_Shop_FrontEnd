@@ -20,7 +20,7 @@ export function CartHeader({ itemCount }: CartHeaderProps) {
       {/* Nút quay lại mua sắm */}
       <button
         onClick={() => router.push(CART_CONFIG.PRODUCTS_ROUTE)}
-        className="transition-all self-start sm:self-center text-[#e91e63] hover:opacity-80"
+        className="transition-all self-start sm:self-center text-[#EE2B5B] hover:opacity-80"
       >
         <div className="text-sm font-bold flex items-center gap-1">
           <ArrowLeft className="w-4 h-4" />

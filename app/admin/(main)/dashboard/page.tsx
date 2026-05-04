@@ -40,7 +40,7 @@ const CATEGORY_COLORS = [
   "#f59e0b",
   "#ef4444",
   "#06b6d4",
-  "#ec4899",
+  "#EE2B5B",
   "#84cc16",
 ];
 

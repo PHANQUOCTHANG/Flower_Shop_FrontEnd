@@ -23,7 +23,7 @@ export const AddressCard: FC<AddressCardProps> = ({
     <div
       className={`bg-white border-2 rounded-lg sm:rounded-xl p-4 sm:p-5 transition-all hover:shadow-[0_2px_12px_rgba(0,0,0,0.04)] ${
         address.isDefault
-          ? "border-[#13ec5b]/40 bg-[#13ec5b]/5"
+          ? "border-[#EE2B5B]/40 bg-[#EE2B5B]/5"
           : "border-gray-200 hover:border-gray-300"
       }`}
     >
@@ -38,7 +38,7 @@ export const AddressCard: FC<AddressCardProps> = ({
           </p>
         </div>
         {address.isDefault && (
-          <div className="shrink-0 px-2 sm:px-3 py-1 bg-[#13ec5b]/10 text-[#0d9e3e] rounded-full text-[10px] sm:text-xs font-bold flex items-center gap-1 whitespace-nowrap">
+          <div className="shrink-0 px-2 sm:px-3 py-1 bg-[#EE2B5B]/10 text-[#D11E48] rounded-full text-[10px] sm:text-xs font-bold flex items-center gap-1 whitespace-nowrap">
             <CheckCircle2 size={12} />
             <span className="hidden sm:inline">Mặc định</span>
             <span className="sm:hidden">MĐ</span>

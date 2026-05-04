@@ -278,7 +278,7 @@ function OrderToast({
         iconBg: "var(--danger)",
         labelBg: "rgba(238, 43, 91, 0.05)",
         labelBorder: "rgba(238, 43, 91, 0.15)",
-        labelTitle: "#be123c",
+        labelTitle: "#B3163B",
         labelValue: "#9f1239",
       }
     : {

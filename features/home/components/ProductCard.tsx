@@ -26,10 +26,10 @@ export default function ProductCard({ product }: ProductCardProps) {
  <div
  className={`absolute top-3 left-3 z-10 text-white text-[10px] font-bold px-2 py-1 rounded-md ${
  product.badgeType === "discount"
- ? "bg-[#e91e63]"
+ ? "bg-[#13ec5b]"
  : product.badgeType === "new"
  ? "bg-[#13ec5b] text-[#0d1b12]"
- : "bg-[#e91e63]"
+ : "bg-[#13ec5b]"
  }`}
  >
  {product.badge}
@@ -42,7 +42,7 @@ export default function ProductCard({ product }: ProductCardProps) {
  className="group-hover:scale-110 transition-transform duration-500"
  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
  />
- <button className="absolute bottom-3 right-3 z-10 size-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-[#e91e63] shadow-md hover:scale-110 transition-transform">
+ <button className="absolute bottom-3 right-3 z-10 size-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-[#13ec5b] shadow-md hover:scale-110 transition-transform">
  <Heart size={20} fill="currentColor" />
  </button>
  </div>
@@ -51,7 +51,7 @@ export default function ProductCard({ product }: ProductCardProps) {
  {product.name}
  </h4>
  <div className="flex items-center justify-center gap-2 mb-4">
- <span className="text-[#e91e63] typo-heading-sm">
+ <span className="text-[#13ec5b] typo-heading-sm">
  {product.price.toLocaleString("vi-VN")}đ
  </span>
  {product.oldPrice && (
@@ -60,7 +60,7 @@ export default function ProductCard({ product }: ProductCardProps) {
  </span>
  )}
  </div>
- <button className="w-full bg-[#e91e63] text-white py-3 rounded-xl typo-button-sm hover:brightness-110 active:scale-95 transition-all">
+ <button className="w-full bg-[#13ec5b] text-white py-3 rounded-xl typo-button-sm hover:brightness-110 active:scale-95 transition-all">
  MUA NGAY
  </button>
  </div>

@@ -71,7 +71,7 @@ export const CartTable: React.FC<CartTableProps> = ({
 
  {/* Thành tiền */}
  <td className="px-6 py-6 text-center">
- <span className="font-bold text-[#e91e63] text-[13px] whitespace-nowrap">
+ <span className="font-bold text-[#EE2B5B] text-[13px] whitespace-nowrap">
  {formatCurrency(item.product.price * item.quantity)}
  </span>
  </td>
@@ -81,7 +81,7 @@ export const CartTable: React.FC<CartTableProps> = ({
  <button
  onClick={() => onRemoveItem(item.product.id)}
  aria-label="Xóa sản phẩm"
- className="text-white bg-[#e91e63] rounded p-1.5 hover:bg-[#db2777] transition-colors inline-flex"
+ className="text-white bg-[#EE2B5B] rounded p-1.5 hover:bg-[#B3163B] transition-colors inline-flex"
  >
  <Trash2 className="w-4 h-4" />
  </button>

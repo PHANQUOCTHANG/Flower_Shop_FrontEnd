@@ -14,8 +14,10 @@ export const CHECKOUT_CONFIG = {
 export const CHECKOUT_COLORS = {
   BACKGROUND: "#fcfbf9",
   TEXT: "#1b0d11",
-  BORDER: "#e7f3eb",
+  BORDER: "#FCE9ED",
   BORDER_GRAY: "gray-100",
+  ACCENT: "#EE2B5B",
+  ACCENT_HOVER: "#B3163B",
 } as const;
 
 // Validation messages
