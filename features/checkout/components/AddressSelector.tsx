@@ -22,7 +22,7 @@ export const AddressSelector: FC<AddressSelectorProps> = ({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-6">
-        <Loader size={18} className="animate-spin text-[#ee2b5b]" />
+        <Loader size={18} className="animate-spin text-[#e91e63]" />
         <span className="ml-2 text-sm text-gray-600">Đang tải địa chỉ...</span>
       </div>
     );
@@ -47,7 +47,7 @@ export const AddressSelector: FC<AddressSelectorProps> = ({
   return (
     <div className="space-y-2">
       <label className="typo-label-sm text-gray-400 ml-1 flex items-center gap-2">
-        <MapPin size={16} className="text-[#ee2b5b]" />
+        <MapPin size={16} className="text-[#e91e63]" />
         Chọn từ địa chỉ lưu trữ
       </label>
 
@@ -59,8 +59,8 @@ export const AddressSelector: FC<AddressSelectorProps> = ({
             onClick={() => onAddressSelect(address)}
             className={`w-full p-3 rounded-2xl border-2 transition-all text-left ${
               selectedAddressId === address.id
-                ? "border-[#ee2b5b] bg-[#ee2b5b]/5"
-                : "border-gray-100 bg-white hover:border-[#ee2b5b] hover:bg-gray-50"
+                ? "border-[#e91e63] bg-[#e91e63]/5"
+                : "border-gray-100 bg-white hover:border-[#e91e63] hover:bg-gray-50"
             }`}
             type="button"
           >
@@ -70,7 +70,7 @@ export const AddressSelector: FC<AddressSelectorProps> = ({
                 {selectedAddressId === address.id ? (
                   <CheckCircle
                     size={18}
-                    className="text-[#ee2b5b]"
+                    className="text-[#e91e63]"
                     fill="currentColor"
                   />
                 ) : (
@@ -85,7 +85,7 @@ export const AddressSelector: FC<AddressSelectorProps> = ({
                     {address.name}
                   </p>
                   {address.isDefault && (
-                    <span className="text-xs font-bold text-[#ee2b5b] bg-[#ee2b5b]/10 px-1.5 py-0.5 rounded">
+                    <span className="text-xs font-bold text-[#e91e63] bg-[#e91e63]/10 px-1.5 py-0.5 rounded">
                       Mặc định
                     </span>
                   )}

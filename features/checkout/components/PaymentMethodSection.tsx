@@ -37,8 +37,8 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
  <section className="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-gray-200/60 ">
  {/* Header */}
  <div className="flex items-center gap-4 mb-8">
- <div className="p-3 bg-[#ee2b5b]/10 rounded-2xl">
- <CreditCard className="w-7 h-7 text-[#ee2b5b]" />
+ <div className="p-3 bg-[#e91e63]/10 rounded-2xl">
+ <CreditCard className="w-7 h-7 text-[#e91e63]" />
  </div>
  <h2 className="typo-heading-lg tracking-tight">
  Phương thức thanh toán
@@ -56,7 +56,7 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
  key={item.id}
  className={`flex items-center gap-5 p-6 border-2 rounded-2xl cursor-pointer transition-all duration-300 ${
  isSelected
- ? "border-[#ee2b5b] bg-[#ee2b5b]/[0.02] shadow-md shadow-[#ee2b5b]/5"
+ ? "border-[#e91e63] bg-[#e91e63]/[0.02] shadow-md shadow-[#e91e63]/5"
  : "border-gray-100 hover:border-gray-200"
  }`}
  >
@@ -64,7 +64,7 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
  <div
  className={`size-6 rounded-full border-2 flex items-center justify-center transition-all ${
  isSelected
- ? "border-[#ee2b5b] bg-[#ee2b5b]"
+ ? "border-[#e91e63] bg-[#e91e63]"
  : "border-gray-300"
  }`}
  >
@@ -99,7 +99,7 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
  {/* Icon */}
  <Icon
  className={`w-8 h-8 opacity-20 hidden sm:block ${
- isSelected ? "text-[#ee2b5b] opacity-40" : ""
+ isSelected ? "text-[#e91e63] opacity-40" : ""
  }`}
  />
  </label>

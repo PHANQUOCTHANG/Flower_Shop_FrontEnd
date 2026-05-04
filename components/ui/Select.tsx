@@ -70,7 +70,7 @@ export const Select: FC<SelectProps> = ({
     <div className="relative">
       {/* Label */}
       <label className="block text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] mb-2">
-        {label} {required && <span className="text-[#ee2b5b]">*</span>}
+        {label} {required && <span className="text-[#13ec5b]">*</span>}
       </label>
 
       {/* Dropdown trigger */}
@@ -82,9 +82,9 @@ export const Select: FC<SelectProps> = ({
           className={`w-full px-4 py-3 rounded-lg border-2 transition-colors flex items-center justify-between ${
             error
               ? "border-red-500 bg-red-50"
-              : "border-slate-200 bg-white hover:border-slate-300 focus:border-[#ee2b5b]"
+              : "border-slate-200 bg-white hover:border-slate-300 focus:border-[#13ec5b]"
           } ${
-            isOpen ? "border-[#ee2b5b]" : ""
+            isOpen ? "border-[#13ec5b]" : ""
           } text-slate-900 placeholder:text-slate-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           <span
@@ -117,7 +117,7 @@ export const Select: FC<SelectProps> = ({
                   placeholder="Tìm kiếm..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-[#ee2b5b]"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-[#13ec5b]"
                   autoFocus
                 />
               </div>
@@ -140,7 +140,7 @@ export const Select: FC<SelectProps> = ({
                       }}
                       className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
                         value === option.id
-                          ? "bg-[#ee2b5b]/10 text-[#ee2b5b] font-semibold"
+                          ? "bg-[#13ec5b]/10 text-[#13ec5b] font-semibold"
                           : "text-slate-700 hover:bg-slate-50"
                       }`}
                     >

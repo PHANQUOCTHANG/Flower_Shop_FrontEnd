@@ -29,14 +29,14 @@ const STATUS_STEPS = [
 // Mapping trạng thái sang màu theo theme website
 const STATUS_CONFIG = {
   queued: {
-    dotColor: "bg-[#ee2b5b]",
-    ringColor: "ring-[#ee2b5b]/30",
-    textColor: "text-[#ee2b5b]",
+    dotColor: "bg-[#e91e63]",
+    ringColor: "ring-[#e91e63]/30",
+    textColor: "text-[#e91e63]",
   },
   processing: {
-    dotColor: "bg-[#ee2b5b]",
-    ringColor: "ring-[#ee2b5b]/30",
-    textColor: "text-[#ee2b5b]",
+    dotColor: "bg-[#e91e63]",
+    ringColor: "ring-[#e91e63]/30",
+    textColor: "text-[#e91e63]",
   },
   completed: {
     dotColor: "bg-green-500",
@@ -69,10 +69,10 @@ export const OrderStatusTracker: React.FC<OrderStatusTrackerProps> = ({
   return (
     <div className="w-full">
       {/* ─── Main Card ─────────────────────────────────────────────────────── */}
-      <div className="relative rounded-3xl border border-[#e7cfd5] bg-white overflow-hidden shadow-xl">
+      <div className="relative rounded-3xl border border-[#cce7d4] bg-white overflow-hidden shadow-xl">
         {/* Decorative top bar */}
         <div
-          className={`h-1.5 w-full ${isFailed ? "bg-red-500" : isCompleted ? "bg-green-500" : "bg-[#ee2b5b]"}`}
+          className={`h-1.5 w-full ${isFailed ? "bg-red-500" : isCompleted ? "bg-green-500" : "bg-[#e91e63]"}`}
         />
 
         {/* Floral watermark decoration */}
@@ -90,7 +90,7 @@ export const OrderStatusTracker: React.FC<OrderStatusTrackerProps> = ({
                     ? "bg-red-50"
                     : isCompleted
                       ? "bg-green-50"
-                      : "bg-[#ee2b5b]/10"
+                      : "bg-[#e91e63]/10"
                 }`}
               >
                 <Package
@@ -99,7 +99,7 @@ export const OrderStatusTracker: React.FC<OrderStatusTrackerProps> = ({
                       ? "text-red-500"
                       : isCompleted
                         ? "text-green-500"
-                        : "text-[#ee2b5b]"
+                        : "text-[#e91e63]"
                   }`}
                 />
               </div>
@@ -109,7 +109,7 @@ export const OrderStatusTracker: React.FC<OrderStatusTrackerProps> = ({
             </div>
 
             {status?.jobId && (
-              <p className="typo-caption text-[#9a4c5f]">
+              <p className="typo-caption text-[#4c9a66]">
                 Mã theo dõi:{" "}
                 <span className="font-mono font-bold text-[#1b0d11]">
                   {status.jobId.slice(0, 20)}...
@@ -122,7 +122,7 @@ export const OrderStatusTracker: React.FC<OrderStatusTrackerProps> = ({
           <div className="mb-10">
             <div className="flex justify-between items-start relative">
               {/* Đường nền */}
-              <div className="absolute top-5 left-[calc(50%/3)] right-[calc(50%/3)] h-[2px] bg-[#e7cfd5] z-0" />
+              <div className="absolute top-5 left-[calc(50%/3)] right-[calc(50%/3)] h-[2px] bg-[#cce7d4] z-0" />
 
               {STATUS_STEPS.map((step, index) => {
                 const isStepDone = currentStepIndex > index;
@@ -143,8 +143,8 @@ export const OrderStatusTracker: React.FC<OrderStatusTrackerProps> = ({
                               ? "bg-red-300"
                               : isCompleted
                                 ? "bg-green-400"
-                                : "bg-[#ee2b5b]"
-                            : "bg-[#e7cfd5]"
+                                : "bg-[#e91e63]"
+                            : "bg-[#cce7d4]"
                         }`}
                       />
                     )}
@@ -154,7 +154,7 @@ export const OrderStatusTracker: React.FC<OrderStatusTrackerProps> = ({
                       className={`relative mb-3 size-10 rounded-full flex items-center justify-center font-semibold text-white shadow-md transition-all duration-300 ${
                         isStepActive || isStepDone
                           ? `${stepConfig.dotColor} ring-4 ${stepConfig.ringColor} scale-110`
-                          : "bg-[#e7cfd5] text-[#9a4c5f] scale-100"
+                          : "bg-[#cce7d4] text-[#4c9a66] scale-100"
                       }`}
                     >
                       {isStepDone && step.key !== "completed" ? (
@@ -171,7 +171,7 @@ export const OrderStatusTracker: React.FC<OrderStatusTrackerProps> = ({
                           ? `${stepConfig.textColor} font-bold`
                           : isStepDone
                             ? "text-[#1b0d11]"
-                            : "text-[#9a4c5f]"
+                            : "text-[#4c9a66]"
                       }`}
                     >
                       {step.label}
@@ -192,9 +192,9 @@ export const OrderStatusTracker: React.FC<OrderStatusTrackerProps> = ({
           {/* ─── Loading Animation ─────────────────────────────────────────── */}
           {!isCompleted && !isFailed && (
             <div className="flex justify-center mb-8">
-              <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#ee2b5b]/5 border border-[#ee2b5b]/20">
-                <Loader2 className="w-4 h-4 text-[#ee2b5b] animate-spin" />
-                <span className="typo-label-sm text-[#9a4c5f]">
+              <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#e91e63]/5 border border-[#e91e63]/20">
+                <Loader2 className="w-4 h-4 text-[#e91e63] animate-spin" />
+                <span className="typo-label-sm text-[#4c9a66]">
                   Đang xử lý đơn hàng, vui lòng chờ...
                 </span>
               </div>
@@ -246,22 +246,22 @@ export const OrderStatusTracker: React.FC<OrderStatusTrackerProps> = ({
                 <h4 className="typo-heading-md text-green-900 mb-1">
                   Đơn hàng thành công!
                 </h4>
-                <p className="typo-body-sm text-[#9a4c5f]">
+                <p className="typo-body-sm text-[#4c9a66]">
                   Cảm ơn bạn đã tin tưởng Flower Shop 🌸
                 </p>
               </div>
 
               {/* Order summary card */}
-              <div className="bg-[#fcfbf9] border border-[#e7cfd5] rounded-2xl p-5 space-y-3">
+              <div className="bg-[#fcfbf9] border border-[#cce7d4] rounded-2xl p-5 space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="typo-body text-[#9a4c5f]">Mã đơn hàng</span>
+                  <span className="typo-body text-[#4c9a66]">Mã đơn hàng</span>
                   <span className="font-mono typo-label text-[#1b0d11]">
                     #{status.data.orderId}
                   </span>
                 </div>
-                <div className="border-t border-[#e7cfd5] pt-3 flex justify-between items-center">
-                  <span className="typo-body text-[#9a4c5f]">Tổng tiền</span>
-                  <span className="typo-heading-sm text-[#ee2b5b]">
+                <div className="border-t border-[#cce7d4] pt-3 flex justify-between items-center">
+                  <span className="typo-body text-[#4c9a66]">Tổng tiền</span>
+                  <span className="typo-heading-sm text-[#e91e63]">
                     {status.data.totalPrice.toLocaleString("vi-VN")}₫
                   </span>
                 </div>
@@ -271,14 +271,14 @@ export const OrderStatusTracker: React.FC<OrderStatusTrackerProps> = ({
               <div className="grid sm:grid-cols-2 gap-3 pt-1">
                 <button
                   onClick={() => router.push("/")}
-                  className="w-full bg-[#ee2b5b] hover:bg-[#ee2b5b]/90 text-white py-3.5 rounded-2xl typo-button-sm transition-all flex items-center justify-center gap-2 group shadow-lg shadow-[#ee2b5b]/20"
+                  className="w-full bg-[#e91e63] hover:bg-[#e91e63]/90 text-white py-3.5 rounded-2xl typo-button-sm transition-all flex items-center justify-center gap-2 group shadow-lg shadow-[#e91e63]/20"
                 >
                   Về trang chủ
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button
                   onClick={() => router.push("/products")}
-                  className="w-full border-2 border-dashed border-[#e7cfd5] text-[#ee2b5b] hover:border-[#ee2b5b] hover:bg-[#ee2b5b]/5 py-3.5 rounded-2xl typo-button-sm transition-all flex items-center justify-center gap-2 group"
+                  className="w-full border-2 border-dashed border-[#cce7d4] text-[#e91e63] hover:border-[#e91e63] hover:bg-[#e91e63]/5 py-3.5 rounded-2xl typo-button-sm transition-all flex items-center justify-center gap-2 group"
                 >
                   Tiếp tục mua sắm
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

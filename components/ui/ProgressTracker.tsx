@@ -43,7 +43,7 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
  isCompleted
  ? "bg-green-500 text-white shadow-green-500/20"
  : isActive
- ? "bg-[#ee2b5b] text-white shadow-[#ee2b5b]/20 scale-110"
+ ? "bg-[#13ec5b] text-white shadow-[#13ec5b]/20 scale-110"
  : "bg-gray-200 text-gray-400"
  }`}
  >
@@ -54,7 +54,7 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
  isCompleted
  ? "text-green-500"
  : isActive
- ? "text-[#ee2b5b] font-bold"
+ ? "text-[#13ec5b] font-bold"
  : "text-gray-400"
  }`}
  >
@@ -68,7 +68,7 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
  className={`h-1 grow mx-2 -mt-6 transition-all duration-500 ${
  getStepStatus(steps[index + 1].id) === "completed" ||
  getStepStatus(steps[index + 1].id) === "active"
- ? "bg-[#ee2b5b]"
+ ? "bg-[#13ec5b]"
  : "bg-gray-200 "
  }`}
  ></div>

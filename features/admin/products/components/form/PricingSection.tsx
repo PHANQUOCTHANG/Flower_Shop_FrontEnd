@@ -26,7 +26,7 @@ const PricingSection = forwardRef<HTMLDivElement, PricingSectionProps>(
               value={price}
               onChange={(e) => onPriceChange(e.target.value)}
               step="1000"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#ee2b5b] focus:ring-1 focus:ring-[#ee2b5b] outline-none transition-colors"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#13ec5b] focus:ring-1 focus:ring-[#13ec5b] outline-none transition-colors"
               required
             />
           </div>
@@ -41,7 +41,7 @@ const PricingSection = forwardRef<HTMLDivElement, PricingSectionProps>(
               onChange={(e) => onComparePriceChange(e.target.value)}
               step="1000"
               placeholder="Để trống nếu không khuyến mãi"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#ee2b5b] focus:ring-1 focus:ring-[#ee2b5b] outline-none transition-colors"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#13ec5b] focus:ring-1 focus:ring-[#13ec5b] outline-none transition-colors"
             />
           </div>
         </div>

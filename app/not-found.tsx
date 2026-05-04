@@ -24,7 +24,7 @@ export default function NotFound() {
 
         {/* Illustration */}
         <div className="mb-12 inline-block">
-          <div className="w-48 h-48 bg-gradient-to-br from-[#13ec5b]/10 to-[#e91e63]/10 rounded-full flex items-center justify-center">
+          <div className="w-48 h-48 bg-gradient-to-br from-[#13ec5b]/10 to-[#13ec5b]/10 rounded-full flex items-center justify-center">
             <div className="text-6xl">🌸</div>
           </div>
         </div>

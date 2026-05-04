@@ -42,11 +42,11 @@ interface ValueItem {
 const ValueCard: FC<{ item: ValueItem }> = ({ item }) => {
   const Icon = ICON_MAP[item.iconName] || Star;
   return (
-    <div className="group p-8 rounded-[2rem] border border-[#ee2b5b]/10 hover:border-[#ee2b5b]/30 transition-all bg-[#f8f6f6] text-center hover:shadow-xl hover:shadow-[#ee2b5b]/5">
-      <div className="size-20 bg-[#ee2b5b]/10 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:bg-[#ee2b5b] transition-all duration-500 group-hover:scale-110">
+    <div className="group p-8 rounded-[2rem] border border-[#13ec5b]/10 hover:border-[#13ec5b]/30 transition-all bg-[#f8f6f6] text-center hover:shadow-xl hover:shadow-[#13ec5b]/5">
+      <div className="size-20 bg-[#13ec5b]/10 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:bg-[#13ec5b] transition-all duration-500 group-hover:scale-110">
         <Icon
           size={32}
-          className="text-[#ee2b5b] group-hover:text-white transition-colors"
+          className="text-[#13ec5b] group-hover:text-white transition-colors"
         />
       </div>
       <h3 className="text-2xl font-black mb-4 text-slate-900 uppercase tracking-tight">
@@ -137,7 +137,7 @@ export default function App() {
     return parts.reduce((acc: any[], part, i) => {
       acc.push(part);
       if (i < parts.length - 1) {
-        acc.push(<span key={i} className="text-[#ee2b5b] italic font-medium">{italic}</span>);
+        acc.push(<span key={i} className="text-[#13ec5b] italic font-medium">{italic}</span>);
       }
       return acc;
     }, []);
@@ -151,8 +151,8 @@ export default function App() {
           <div className="flex flex-col lg:flex-row gap-8 sm:gap-12 md:gap-16 lg:gap-24 items-center">
             {/* Khung ảnh nghệ thuật */}
             <div className="w-full lg:w-1/2 relative group">
-              <div className="absolute -top-6 -left-6 size-20 sm:size-24 md:size-32 bg-[#ee2b5b]/10 rounded-full blur-3xl group-hover:bg-[#ee2b5b]/20 transition-all"></div>
-              <div className="absolute -bottom-6 -right-6 size-24 sm:size-32 md:size-40 bg-[#ee2b5b]/10 rounded-full blur-3xl group-hover:bg-[#ee2b5b]/20 transition-all"></div>
+              <div className="absolute -top-6 -left-6 size-20 sm:size-24 md:size-32 bg-[#13ec5b]/10 rounded-full blur-3xl group-hover:bg-[#13ec5b]/20 transition-all"></div>
+              <div className="absolute -bottom-6 -right-6 size-24 sm:size-32 md:size-40 bg-[#13ec5b]/10 rounded-full blur-3xl group-hover:bg-[#13ec5b]/20 transition-all"></div>
               <div className="aspect-[4/5] w-full rounded-[2.5rem] overflow-hidden shadow-2xl z-10 relative border-8 border-white ">
                 <img
                   src={aboutPage.heroImage}
@@ -165,20 +165,20 @@ export default function App() {
             {/* Nội dung chữ */}
             <div className="w-full lg:w-1/2 space-y-10 animate-in fade-in slide-in-from-right-10 duration-1000">
               <div className="space-y-6">
-                <span className="text-[#ee2b5b] font-black tracking-[0.3em] uppercase text-xs">
+                <span className="text-[#13ec5b] font-black tracking-[0.3em] uppercase text-xs">
                   {aboutPage.badgeText}
                 </span>
                 <h1 className="text-slate-900 text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-serif leading-[1.1] tracking-tighter">
                   {renderTitle(aboutPage.title, aboutPage.titleItalic)}
                 </h1>
-                <div className="w-24 h-1.5 bg-[#ee2b5b] rounded-full"></div>
+                <div className="w-24 h-1.5 bg-[#13ec5b] rounded-full"></div>
               </div>
               <div className="space-y-6 text-slate-500 leading-loose text-lg font-medium italic">
                 {Array.isArray(aboutPage.description) && aboutPage.description.map((p, i) => (
                   <p key={i}>{p}</p>
                 ))}
               </div>
-              <button className="bg-[#ee2b5b] text-white px-10 py-5 rounded-2xl font-black hover:translate-y-[-4px] transition-all shadow-2xl shadow-[#ee2b5b]/30 inline-flex items-center gap-4 group">
+              <button className="bg-[#13ec5b] text-white px-10 py-5 rounded-2xl font-black hover:translate-y-[-4px] transition-all shadow-2xl shadow-[#13ec5b]/30 inline-flex items-center gap-4 group">
                 <span>KHÁM PHÁ BỘ SƯU TẬP</span>
                 <ArrowRight
                   size={20}
@@ -190,13 +190,13 @@ export default function App() {
         </section>
 
         {/* 2. Core Values Section: Giá trị cốt lõi */}
-        <section className="bg-white py-12 sm:py-20 md:py-24 lg:py-32 border-y border-[#ee2b5b]/5">
+        <section className="bg-white py-12 sm:py-20 md:py-24 lg:py-32 border-y border-[#13ec5b]/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-20 text-center">
             <div className="mb-20 space-y-4">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-slate-900 tracking-tight">
                 Giá trị cốt lõi
               </h2>
-              <p className="text-[#ee2b5b] font-bold italic tracking-widest uppercase text-xs">
+              <p className="text-[#13ec5b] font-bold italic tracking-widest uppercase text-xs">
                 Tận tâm trong từng công đoạn
               </p>
             </div>
@@ -228,7 +228,7 @@ export default function App() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 md:gap-10">
                 {contactDetails.map((detail, idx) => (
                   <div key={idx} className="space-y-3 group">
-                    <h4 className="font-black text-[#ee2b5b] flex items-center gap-3 text-xs uppercase tracking-[0.2em]">
+                    <h4 className="font-black text-[#13ec5b] flex items-center gap-3 text-xs uppercase tracking-[0.2em]">
                       <detail.icon size={18} />
                       {detail.title}
                     </h4>
@@ -242,9 +242,9 @@ export default function App() {
               {/* Form liên hệ */}
               <form
                 onSubmit={handleFormSubmit}
-                className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-[#ee2b5b]/5 relative overflow-hidden"
+                className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-[#13ec5b]/5 relative overflow-hidden"
               >
-                <div className="absolute top-0 right-0 size-32 bg-[#ee2b5b]/5 rounded-bl-full -z-0"></div>
+                <div className="absolute top-0 right-0 size-32 bg-[#13ec5b]/5 rounded-bl-full -z-0"></div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 relative z-10">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
@@ -252,7 +252,7 @@ export default function App() {
                     </label>
                     <input
                       type="text"
-                      className="w-full h-12 rounded-xl border-slate-100 bg-slate-50 focus:border-[#ee2b5b] focus:ring-0 font-bold transition-all text-sm px-4"
+                      className="w-full h-12 rounded-xl border-slate-100 bg-slate-50 focus:border-[#13ec5b] focus:ring-0 font-bold transition-all text-sm px-4"
                       placeholder="Nguyễn Văn A"
                       onChange={(e) =>
                         setFormState({ ...formState, name: e.target.value })
@@ -265,7 +265,7 @@ export default function App() {
                     </label>
                     <input
                       type="tel"
-                      className="w-full h-12 rounded-xl border-slate-100 bg-slate-50 focus:border-[#ee2b5b] focus:ring-0 font-bold transition-all text-sm px-4"
+                      className="w-full h-12 rounded-xl border-slate-100 bg-slate-50 focus:border-[#13ec5b] focus:ring-0 font-bold transition-all text-sm px-4"
                       placeholder="090 xxx xxxx"
                       onChange={(e) =>
                         setFormState({ ...formState, phone: e.target.value })
@@ -279,7 +279,7 @@ export default function App() {
                   </label>
                   <input
                     type="email"
-                    className="w-full h-12 rounded-xl border-slate-100 bg-slate-50 focus:border-[#ee2b5b] focus:ring-0 font-bold transition-all text-sm px-4"
+                    className="w-full h-12 rounded-xl border-slate-100 bg-slate-50 focus:border-[#13ec5b] focus:ring-0 font-bold transition-all text-sm px-4"
                     placeholder="example@email.com"
                     onChange={(e) =>
                       setFormState({ ...formState, email: e.target.value })
@@ -291,7 +291,7 @@ export default function App() {
                     Lời nhắn của bạn
                   </label>
                   <textarea
-                    className="w-full rounded-xl border-slate-100 bg-slate-50 focus:border-[#ee2b5b] focus:ring-0 font-bold transition-all text-sm px-4 py-3 resize-none"
+                    className="w-full rounded-xl border-slate-100 bg-slate-50 focus:border-[#13ec5b] focus:ring-0 font-bold transition-all text-sm px-4 py-3 resize-none"
                     placeholder="Chúng tôi có thể giúp gì cho bạn?"
                     rows={4}
                     onChange={(e) =>
@@ -301,7 +301,7 @@ export default function App() {
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-[#ee2b5b] text-white py-5 rounded-2xl font-black hover:bg-[#ee2b5b]/90 transition-all shadow-xl shadow-[#ee2b5b]/20 flex items-center justify-center gap-3 uppercase tracking-widest text-sm relative z-10 active:scale-95"
+                  className="w-full bg-[#13ec5b] text-white py-5 rounded-2xl font-black hover:bg-[#13ec5b]/90 transition-all shadow-xl shadow-[#13ec5b]/20 flex items-center justify-center gap-3 uppercase tracking-widest text-sm relative z-10 active:scale-95"
                 >
                   <Send size={20} />
                   GỬI LỜI NHẮN NGAY
@@ -324,7 +324,7 @@ export default function App() {
                   Bản đồ chưa được cấu hình
                 </div>
               )}
-              <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-md px-6 py-3 rounded-full text-[10px] font-black tracking-[0.2em] uppercase text-[#ee2b5b] shadow-2xl pointer-events-none border border-[#ee2b5b]/10">
+              <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-md px-6 py-3 rounded-full text-[10px] font-black tracking-[0.2em] uppercase text-[#13ec5b] shadow-2xl pointer-events-none border border-[#13ec5b]/10">
                 VỊ TRÍ FLAGSHIP STORE
               </div>
             </div>

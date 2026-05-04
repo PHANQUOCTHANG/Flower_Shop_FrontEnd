@@ -28,7 +28,7 @@ const BasicInfoSection = forwardRef<HTMLDivElement, BasicInfoSectionProps>(
               value={name}
               onChange={(e) => onNameChange(e.target.value)}
               placeholder="Ví dụ: Bó hoa oải hương"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#ee2b5b] focus:ring-1 focus:ring-[#ee2b5b] outline-none transition-colors"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#13ec5b] focus:ring-1 focus:ring-[#13ec5b] outline-none transition-colors"
               required
             />
           </div>

@@ -156,10 +156,17 @@ api.interceptors.response.use(
 
     // Guard: không có response hoặc request config
     if (!error.response || !originalRequest) {
+      // Server down hoặc lỗi kết nối mạng
+      error.message = "Kết nối máy chủ bị gián đoạn, vui lòng kiểm tra mạng hoặc thử lại sau! 🌸";
       return Promise.reject(error);
     }
 
     const { status } = error.response;
+
+    // Chuẩn hoá lỗi 5xx
+    if (status >= 500) {
+      error.message = "Hệ thống đang gặp sự cố kỹ thuật, vui lòng thử lại sau ít phút! 🌷";
+    }
 
     // Chỉ xử lý lỗi 401
     if (status !== 401) {

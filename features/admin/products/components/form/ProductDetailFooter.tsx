@@ -42,7 +42,7 @@ export function ProductDetailFooter({
           type="submit"
           onClick={onSubmit}
           disabled={isUpdating}
-          className="bg-[#ee2b5b] text-white px-8 py-2 text-sm font-bold rounded-lg shadow-lg shadow-[#ee2b5b]/20 hover:bg-[#d42552] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          className="bg-[#13ec5b] text-white px-8 py-2 text-sm font-bold rounded-lg shadow-lg shadow-[#13ec5b]/20 hover:bg-[#d42552] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
         >
           {isUpdating ? `${submitLabel.split(" ")[0]}...` : submitLabel}
         </button>

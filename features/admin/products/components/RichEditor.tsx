@@ -167,7 +167,7 @@ const RichEditor = (
     <div
       className={`rounded-lg border transition-colors overflow-hidden ${
         focused && tab === "visual"
-          ? "border-[#ee2b5b] ring-1 ring-[#ee2b5b]"
+          ? "border-[#13ec5b] ring-1 ring-[#13ec5b]"
           : tab === "html"
             ? "border-amber-400"
             : "border-slate-300"
@@ -321,7 +321,7 @@ const RichEditor = (
           [&_h2]:text-base [&_h2]:font-bold [&_h2]:mt-2 [&_h2]:mb-1
           [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:mt-2 [&_h3]:mb-1
           [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
-          [&_a]:text-[#ee2b5b] [&_a]:underline"
+          [&_a]:text-[#13ec5b] [&_a]:underline"
         />
       </div>
 

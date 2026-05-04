@@ -80,7 +80,7 @@ const ThumbnailSection = forwardRef<HTMLDivElement, ThumbnailSectionProps>(
             onDrop={handleDrop}
             className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
               isDragging
-                ? "border-[#ee2b5b] bg-red-50"
+                ? "border-[#13ec5b] bg-red-50"
                 : "border-slate-300 hover:border-slate-400"
             }`}
           >

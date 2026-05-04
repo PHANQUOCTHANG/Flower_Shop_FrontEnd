@@ -70,7 +70,7 @@ const ProductCard = ({
         />
         <button
           onClick={() => onRemove(product.id)}
-          className="absolute top-4 right-4 p-2.5 bg-white/90 backdrop-blur-md rounded-full text-slate-400 hover:text-[#ee2b5b] shadow-sm transition-colors active:scale-90"
+          className="absolute top-4 right-4 p-2.5 bg-white/90 backdrop-blur-md rounded-full text-slate-400 hover:text-[#13ec5b] shadow-sm transition-colors active:scale-90"
           title="Xóa khỏi danh sách"
         >
           <Trash2 size={18} />
@@ -79,15 +79,15 @@ const ProductCard = ({
 
       {/* Thông tin chi tiết sản phẩm */}
       <div className="p-5 flex flex-col flex-1">
-        <span className="text-[10px] font-black uppercase text-[#ee2b5b] tracking-widest mb-1">
+        <span className="text-[10px] font-black uppercase text-[#13ec5b] tracking-widest mb-1">
           {product.category}
         </span>
-        <h3 className="text-slate-900 text-lg font-bold mb-2 leading-snug group-hover:text-[#ee2b5b] transition-colors line-clamp-1">
+        <h3 className="text-slate-900 text-lg font-bold mb-2 leading-snug group-hover:text-[#13ec5b] transition-colors line-clamp-1">
           {product.name}
         </h3>
 
         <div className="flex items-baseline gap-2 mb-5">
-          <span className="text-[#ee2b5b] text-xl font-black">
+          <span className="text-[#13ec5b] text-xl font-black">
             {product.price.toLocaleString("vi-VN")}đ
           </span>
           {product.originalPrice && (
@@ -99,7 +99,7 @@ const ProductCard = ({
 
         {/* Nút hành động (Đã bỏ phần So sánh giá) */}
         <div className="mt-auto">
-          <button className="w-full bg-[#ee2b5b] text-white py-3 rounded-xl text-sm font-black flex items-center justify-center gap-2 hover:bg-[#ee2b5b]/90 transition-all shadow-lg shadow-[#ee2b5b]/20 active:scale-95 uppercase tracking-wider">
+          <button className="w-full bg-[#13ec5b] text-white py-3 rounded-xl text-sm font-black flex items-center justify-center gap-2 hover:bg-[#13ec5b]/90 transition-all shadow-lg shadow-[#13ec5b]/20 active:scale-95 uppercase tracking-wider">
             <ShoppingBag size={18} />
             THÊM VÀO GIỎ
           </button>
@@ -132,7 +132,7 @@ export default function WishlistPage() {
         {/* Tiêu đề trang */}
         <div className="mb-12">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-black text-slate-900 tracking-tighter uppercase mb-3 leading-tight">
-            Sản phẩm <span className="text-[#ee2b5b]">yêu thích</span>
+            Sản phẩm <span className="text-[#13ec5b]">yêu thích</span>
           </h1>
           <p className="text-slate-500 font-medium">
             Lưu lại những bó hoa tuyệt đẹp để hoàn tất việc mua sắm sau này.
@@ -153,7 +153,7 @@ export default function WishlistPage() {
         ) : (
           /* Trạng thái danh sách trống */
           <div className="flex flex-col items-center justify-center py-32 text-center animate-in zoom-in-95 duration-700">
-            <div className="size-48 mb-8 bg-[#ee2b5b]/5 rounded-full flex items-center justify-center text-[#ee2b5b]/30">
+            <div className="size-48 mb-8 bg-[#13ec5b]/5 rounded-full flex items-center justify-center text-[#13ec5b]/30">
               <HeartOff size={84} strokeWidth={1.5} />
             </div>
             <h2 className="text-2xl font-black text-slate-900 uppercase mb-3">
@@ -163,7 +163,7 @@ export default function WishlistPage() {
               Bạn chưa có sản phẩm nào trong danh sách yêu thích. Hãy chọn cho
               mình những bó hoa ưng ý nhất nhé.
             </p>
-            <button className="bg-[#ee2b5b] text-white px-10 py-4 rounded-2xl font-black shadow-xl shadow-[#ee2b5b]/20 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-sm">
+            <button className="bg-[#13ec5b] text-white px-10 py-4 rounded-2xl font-black shadow-xl shadow-[#13ec5b]/20 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-sm">
               Khám phá cửa hàng
             </button>
           </div>

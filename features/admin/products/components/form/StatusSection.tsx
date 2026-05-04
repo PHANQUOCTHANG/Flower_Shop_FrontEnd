@@ -41,7 +41,7 @@ const StatusSection = forwardRef<HTMLDivElement, StatusSectionProps>(
                     e.target.value as "active" | "hidden" | "draft",
                   )
                 }
-                className="w-4 h-4 accent-[#ee2b5b] cursor-pointer"
+                className="w-4 h-4 accent-[#13ec5b] cursor-pointer"
               />
               <span className={`ml-3 font-medium ${s.color}`}>{s.icon}</span>
               <span className="ml-2 text-sm font-medium text-slate-700">

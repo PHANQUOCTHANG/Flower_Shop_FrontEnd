@@ -28,7 +28,7 @@ const NAV_LINKS = [
 function LogoIcon() {
   return (
     <svg
-      className="size-8 text-[#13ec5b]"
+      className="size-8 text-[#e91e63]"
       fill="none"
       viewBox="0 0 48 48"
       xmlns="http://www.w3.org/2000/svg"
@@ -138,7 +138,7 @@ export default function Header() {
         <img
           src={userAvatar}
           alt={userName}
-          className={`${cls} rounded-full object-cover border-2 border-[#13ec5b]/30`}
+          className={`${cls} rounded-full object-cover border-2 border-[#e91e63]/30`}
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).style.display = "none";
           }}
@@ -147,7 +147,7 @@ export default function Header() {
     }
     return (
       <div
-        className={`${cls} rounded-full bg-[#13ec5b] flex items-center justify-center text-[#0d1b12] font-black shrink-0`}
+        className={`${cls} rounded-full bg-[#e91e63] flex items-center justify-center text-[#0d1b12] font-black shrink-0`}
       >
         {initial}
       </div>
@@ -176,7 +176,7 @@ export default function Header() {
               <p className="text-sm font-semibold text-slate-800 truncate">
                 {p.name}
               </p>
-              <p className="text-xs font-bold text-[#13ec5b]">
+              <p className="text-xs font-bold text-[#e91e63]">
                 {formatCurrency(p.price)}
               </p>
             </div>
@@ -221,13 +221,13 @@ export default function Header() {
                 href={link.href}
                 className={`relative text-sm font-semibold py-1 transition-colors ${
                   isActive(link.href)
-                    ? "text-[#13ec5b]"
-                    : "text-[#0d1b12] hover:text-[#13ec5b]"
+                    ? "text-[#e91e63]"
+                    : "text-[#0d1b12] hover:text-[#e91e63]"
                 }`}
               >
                 {link.label}
                 {isActive(link.href) && (
-                  <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#13ec5b] rounded-full" />
+                  <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#e91e63] rounded-full" />
                 )}
               </Link>
             ))}
@@ -247,7 +247,7 @@ export default function Header() {
                   setShowSuggestions(true);
                 }}
                 onFocus={() => searchQuery && setShowSuggestions(true)}
-                className="w-full h-10 pl-10 pr-4 bg-[#f0fdf4] border border-transparent rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#13ec5b]/40 focus:border-[#13ec5b]/30 transition-all"
+                className="w-full h-10 pl-10 pr-4 bg-[#f0fdf4] border border-transparent rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#e91e63]/40 focus:border-[#e91e63]/30 transition-all"
                 placeholder="Tìm kiếm hoa..."
               />
             </form>
@@ -272,7 +272,7 @@ export default function Header() {
               onClick={() => router.push(isLoggedIn ? "/cart" : "/login")}
               className={`relative p-2 rounded-xl transition-all ${
                 pathname === "/cart"
-                  ? "bg-[#13ec5b] text-[#0d1b12]"
+                  ? "bg-[#e91e63] text-[#0d1b12]"
                   : "hover:bg-[#f0fdf4] text-slate-600"
               }`}
               aria-label="Giỏ hàng"
@@ -290,7 +290,7 @@ export default function Header() {
               onClick={() => router.push("/favorite")}
               className={`hidden sm:flex relative p-2 rounded-xl transition-all ${
                 pathname === "/favorite"
-                  ? "bg-[#13ec5b] text-[#0d1b12]"
+                  ? "bg-[#e91e63] text-[#0d1b12]"
                   : "hover:bg-[#f0fdf4] text-slate-600"
               }`}
               aria-label="Yêu thích"
@@ -312,13 +312,19 @@ export default function Header() {
             ) : (
               <button
                 onClick={handleAccount}
-                className="hidden md:flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-xl hover:bg-[#f0fdf4] transition-colors"
+                className={`hidden md:flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-xl transition-all border border-transparent ${
+                  pathname.startsWith("/profile")
+                    ? "bg-[#e91e63]/15 border-[#e91e63]/30 shadow-sm"
+                    : "hover:bg-[#f0fdf4]"
+                }`}
                 aria-label="Tài khoản"
               >
                 {isLoggedIn ? (
                   <>
                     <AvatarEl size="sm" />
-                    <span className="text-sm font-semibold text-[#0d1b12] truncate">
+                    <span className={`text-sm font-semibold truncate ${
+                      pathname.startsWith("/profile") ? "text-[#0d1b12]" : "text-[#0d1b12]"
+                    }`}>
                       {userName}
                     </span>
                   </>
@@ -364,7 +370,7 @@ export default function Header() {
                   autoFocus
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-11 pl-10 pr-4 bg-[#f0fdf4] border border-[#13ec5b]/20 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#13ec5b]/30"
+                  className="w-full h-11 pl-10 pr-4 bg-[#f0fdf4] border border-[#e91e63]/20 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#e91e63]/30"
                   placeholder="Tìm kiếm hoa..."
                 />
               </form>
@@ -399,7 +405,7 @@ export default function Header() {
                         <p className="text-sm font-semibold truncate">
                           {p.name}
                         </p>
-                        <p className="text-xs font-bold text-[#13ec5b]">
+                        <p className="text-xs font-bold text-[#e91e63]">
                           {formatCurrency(p.price)}
                         </p>
                       </div>
@@ -464,7 +470,11 @@ export default function Header() {
         ) : (
           <button
             onClick={handleAccount}
-            className="flex items-center gap-3 px-5 py-4 bg-[#f0fdf4] border-b border-[#e8fdf0] hover:bg-[#e8fdf0] transition-colors w-full text-left"
+            className={`flex items-center gap-3 px-5 py-4 border-b border-[#e8fdf0] transition-colors w-full text-left ${
+              pathname.startsWith("/profile")
+                ? "bg-[#e91e63]/15 hover:bg-[#e91e63]/25"
+                : "bg-[#f0fdf4] hover:bg-[#e8fdf0]"
+            }`}
           >
             {isLoggedIn ? (
               <>
@@ -473,7 +483,7 @@ export default function Header() {
                   <p className="font-bold text-[#0d1b12] truncate max-w-[190px]">
                     {userName}
                   </p>
-                  <p className="text-xs text-[#13ec5b] font-semibold mt-0.5">
+                  <p className="text-xs text-[#e91e63] font-semibold mt-0.5">
                     Xem hồ sơ →
                   </p>
                 </div>
@@ -485,7 +495,7 @@ export default function Header() {
                 </div>
                 <div>
                   <p className="font-bold text-slate-700">Chưa đăng nhập</p>
-                  <p className="text-xs text-[#13ec5b] font-semibold mt-0.5">
+                  <p className="text-xs text-[#e91e63] font-semibold mt-0.5">
                     Đăng nhập ngay →
                   </p>
                 </div>
@@ -507,8 +517,8 @@ export default function Header() {
                   onClick={() => setDrawerOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                     isActive(link.href)
-                      ? "bg-[#13ec5b] text-[#0d1b12] shadow-md shadow-[#13ec5b]/20"
-                      : "text-slate-600 hover:bg-[#f0fdf4] hover:text-[#13ec5b]"
+                      ? "bg-[#e91e63] text-[#0d1b12] shadow-md shadow-[#e91e63]/20"
+                      : "text-slate-600 hover:bg-[#f0fdf4] hover:text-[#e91e63]"
                   }`}
                 >
                   {link.label}
@@ -528,7 +538,7 @@ export default function Header() {
                     router.push(isLoggedIn ? "/cart" : "/login");
                     setDrawerOpen(false);
                   }}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-[#f0fdf4] hover:text-[#13ec5b] transition-all w-full text-left"
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-[#f0fdf4] hover:text-[#e91e63] transition-all w-full text-left"
                 >
                   <ShoppingCart size={18} />
                   Giỏ hàng
@@ -545,7 +555,7 @@ export default function Header() {
                     router.push("/favorite");
                     setDrawerOpen(false);
                   }}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-[#f0fdf4] hover:text-[#13ec5b] transition-all w-full text-left"
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-[#f0fdf4] hover:text-[#e91e63] transition-all w-full text-left"
                 >
                   <Heart size={18} />
                   Yêu thích

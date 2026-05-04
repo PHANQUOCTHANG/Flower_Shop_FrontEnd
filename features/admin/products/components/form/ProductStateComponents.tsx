@@ -21,7 +21,7 @@ export function ProductLoadingState({
   return (
     <div className="min-h-screen bg-[#f8f6f6] flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 border-4 border-slate-200 border-t-[#ee2b5b] rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-slate-200 border-t-[#13ec5b] rounded-full animate-spin" />
         <p className="text-slate-600">{message}</p>
       </div>
     </div>
@@ -50,7 +50,7 @@ export function ProductErrorState({
           />
         </svg>
         <p className="text-slate-600">{error}</p>
-        <button onClick={onBack} className="text-[#ee2b5b] hover:underline">
+        <button onClick={onBack} className="text-[#13ec5b] hover:underline">
           {PRODUCT_FORM_LABELS.BACK}
         </button>
       </div>

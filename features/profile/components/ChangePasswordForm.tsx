@@ -188,7 +188,7 @@ export const ChangePasswordForm: React.FC = () => {
   };
 
   return (
-    <section className="bg-white rounded-2xl p-6 sm:p-8 md:p-10 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] animate-in slide-in-from-right-10 duration-500">
+    <section className="animate-in fade-in duration-500 relative w-full">
       {/* Header */}
       <div className="flex items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8 md:mb-10">
         <div className="size-12 sm:size-14 bg-[#13ec5b]/10 rounded-lg sm:rounded-2xl flex items-center justify-center text-[#0d9e3e] shrink-0">

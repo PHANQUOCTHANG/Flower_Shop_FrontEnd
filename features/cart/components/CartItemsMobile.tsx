@@ -20,7 +20,7 @@ export const CartItemsMobile: React.FC<CartItemsMobileProps> = ({
  {items.map((item) => (
  <div
  key={item.id}
- className="bg-white rounded-2xl p-4 border border-[#e7cfd5] shadow-sm space-y-4"
+ className="bg-white rounded-2xl p-4 border border-[#cce7d4] shadow-sm space-y-4"
  >
  {/* Header: ảnh + tên + xóa */}
  <div className="flex gap-4">
@@ -35,15 +35,15 @@ export const CartItemsMobile: React.FC<CartItemsMobileProps> = ({
  <button
  onClick={() => onRemoveItem(item.product.id)}
  aria-label="Xóa sản phẩm"
- className="text-[#9a4c5f] hover:text-red-500 shrink-0 transition-colors"
+ className="text-[#4c9a66] hover:text-red-500 shrink-0 transition-colors"
  >
  <Trash2 className="w-4 h-4" />
  </button>
  </div>
- <p className="typo-caption-xs text-[#9a4c5f] mt-1">
+ <p className="typo-caption-xs text-[#4c9a66] mt-1">
  {item.product.id}
  </p>
- <p className="typo-label text-[#ee2b5b] mt-2">
+ <p className="typo-label text-[#e91e63] mt-2">
  {formatCurrency(item.product.price)}
  </p>
  </div>
@@ -60,7 +60,7 @@ export const CartItemsMobile: React.FC<CartItemsMobileProps> = ({
 
  <div className="text-right">
  <p className="typo-caption-xs text-gray-400">Thành tiền</p>
- <p className="typo-label text-[#ee2b5b]">
+ <p className="typo-label text-[#e91e63]">
  {formatCurrency(item.product.price * item.quantity)}
  </p>
  </div>

@@ -60,13 +60,13 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen flex flex-col bg-[#f8f6f6] font-['Inter',sans-serif] text-slate-900 transition-colors duration-300">
       <main className="flex-1 flex items-center justify-center p-6 relative overflow-hidden">
         {/* Hiệu ứng nền */}
-        <div className="absolute top-1/4 -left-20 size-96 bg-[#ee2b5b]/5 rounded-full blur-[120px] pointer-events-none"></div>
-        <div className="absolute bottom-1/4 -right-20 size-96 bg-[#ee2b5b]/5 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute top-1/4 -left-20 size-96 bg-[#13ec5b]/5 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute bottom-1/4 -right-20 size-96 bg-[#13ec5b]/5 rounded-full blur-[120px] pointer-events-none"></div>
 
-        <div className="w-full max-w-[480px] bg-white rounded-[2.5rem] shadow-2xl shadow-[#ee2b5b]/5 p-8 md:p-12 border border-[#ee2b5b]/10 relative z-10 animate-in fade-in zoom-in-95 duration-500">
+        <div className="w-full max-w-[480px] bg-white rounded-[2.5rem] shadow-2xl shadow-[#13ec5b]/5 p-8 md:p-12 border border-[#13ec5b]/10 relative z-10 animate-in fade-in zoom-in-95 duration-500">
           {/* Logo */}
           <div className="flex justify-center mb-8">
-            <div className="bg-[#ee2b5b]/10 p-2.5 rounded-2xl text-[#ee2b5b]">
+            <div className="bg-[#13ec5b]/10 p-2.5 rounded-2xl text-[#13ec5b]">
               <Flower2 size={32} />
             </div>
           </div>
@@ -131,7 +131,7 @@ export default function ForgotPasswordPage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-10 border-t border-[#ee2b5b]/5 text-center opacity-60 shrink-0">
+      <footer className="py-10 border-t border-[#13ec5b]/5 text-center opacity-60 shrink-0">
         <p className="text-xs text-slate-400 font-medium italic tracking-wide text-[10px] uppercase">
           © 2024 Flower Shop • Trao gửi yêu thương qua từng cánh hoa.
         </p>

@@ -1,5 +1,6 @@
 // Export tất cả components từ thư mục profile
 
+export { ProfileHeader } from "./ProfileHeader";
 export { ProfileSidebar } from "./ProfileSidebar";
 export { ProfileInfo } from "./ProfileInfo";
 export { OrdersFilters } from "./OrdersFilters";

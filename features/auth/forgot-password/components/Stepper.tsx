@@ -44,9 +44,9 @@ export default function Stepper({ currentStep }: StepperProps) {
  <div
  className={`size-9 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 shadow-sm ${
  isActive
- ? "bg-[#ee2b5b] text-white scale-110 shadow-[#ee2b5b]/30"
+ ? "bg-[#13ec5b] text-white scale-110 shadow-[#13ec5b]/30"
  : isDone
- ? "bg-[#ee2b5b]/20 text-[#ee2b5b]"
+ ? "bg-[#13ec5b]/20 text-[#13ec5b]"
  : "bg-slate-100 text-slate-400"
  }`}
  title={step.label}
@@ -56,7 +56,7 @@ export default function Stepper({ currentStep }: StepperProps) {
  {index < steps.length - 1 && (
  <div
  className={`h-0.5 w-8 rounded-full transition-colors duration-500 ${
- isDone ? "bg-[#ee2b5b]/30" : "bg-slate-100 "
+ isDone ? "bg-[#13ec5b]/30" : "bg-slate-100 "
  }`}
  />
  )}

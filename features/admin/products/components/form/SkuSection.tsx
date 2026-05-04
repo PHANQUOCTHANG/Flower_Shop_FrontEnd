@@ -23,7 +23,7 @@ const SkuSection = forwardRef<HTMLDivElement, SkuSectionProps>(
             value={sku}
             onChange={(e) => onSkuChange(e.target.value)}
             placeholder="FLW-LAV-001"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#ee2b5b] focus:ring-1 focus:ring-[#ee2b5b] outline-none transition-colors"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#13ec5b] focus:ring-1 focus:ring-[#13ec5b] outline-none transition-colors"
           />
           <p className="text-xs text-slate-500 mt-1">
             Mã định danh duy nhất cho sản phẩm

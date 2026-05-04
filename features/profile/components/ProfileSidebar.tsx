@@ -34,7 +34,7 @@ export const ProfileSidebar: FC<ProfileSidebarProps> = ({
   return (
     <>
       {/* ══ MOBILE: Sticky tab bar ══ */}
-      <div className="md:hidden sticky top-16 z-30 bg-white border-b border-slate-100 shadow-sm">
+      <div className="md:hidden sticky top-16 z-30 bg-white/85 backdrop-blur-md border-b border-white/40 shadow-sm">
         {/* User row */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-50">
           <div className="size-9 rounded-full overflow-hidden border-2 border-[#13ec5b]/30 shrink-0">
@@ -85,19 +85,24 @@ export const ProfileSidebar: FC<ProfileSidebarProps> = ({
 
       {/* ══ DESKTOP: Vertical sidebar ══ */}
       <aside className="hidden md:flex w-64 lg:w-72 shrink-0 flex-col gap-6">
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+        <div className="bg-white rounded-3xl p-6 lg:p-8 border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-shadow duration-500 relative overflow-hidden">
+          {/* Decorative glowing gradient */}
+          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#13ec5b]/10 to-transparent pointer-events-none" />
+          
           {/* Avatar */}
-          <div className="flex flex-col items-center text-center mb-8">
+          <div className="flex flex-col items-center text-center mb-8 relative z-10">
             <div className="relative group">
-              <div className="size-24 rounded-full border-4 border-[#13ec5b]/20 overflow-hidden shadow-xl group-hover:border-[#13ec5b] transition-all duration-300">
-                <Image
-                  src={avatarSrc}
-                  width={96}
-                  height={96}
-                  priority
-                  className="size-full object-cover"
-                  alt="Ảnh đại diện"
-                />
+              <div className="size-28 rounded-full p-1 bg-gradient-to-tr from-[#13ec5b]/40 to-yellow-400/40 group-hover:from-[#13ec5b] group-hover:to-yellow-400 overflow-hidden shadow-xl transition-all duration-500 group-hover:scale-105">
+                <div className="size-full rounded-full border-[3px] border-white overflow-hidden bg-white">
+                  <Image
+                    src={avatarSrc}
+                    width={112}
+                    height={112}
+                    priority
+                    className="size-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    alt="Ảnh đại diện"
+                  />
+                </div>
               </div>
               <div className="absolute -bottom-1 -right-1 size-8 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
                 <Star size={14} fill="white" className="text-white" />
@@ -119,16 +124,16 @@ export const ProfileSidebar: FC<ProfileSidebarProps> = ({
               <button
                 key={item.id}
                 onClick={() => onTabChange(item.id)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all group ${
+                className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold text-sm transition-all duration-300 group ${
                   activeTab === item.id
-                    ? "bg-[#13ec5b] text-[#0d1b12] shadow-lg shadow-[#13ec5b]/20"
-                    : "text-slate-500 hover:bg-[#f0fdf4] hover:text-[#13ec5b]"
+                    ? "bg-gradient-to-r from-[#13ec5b] to-[#0fd34d] text-[#0d1b12] shadow-lg shadow-[#13ec5b]/30 scale-[1.02]"
+                    : "text-slate-500 hover:bg-slate-50 hover:text-[#13ec5b] hover:scale-[1.01]"
                 }`}
                 type="button"
               >
                 <item.icon
                   size={18}
-                  className={activeTab === item.id ? "" : "group-hover:scale-110 transition-transform"}
+                  className={activeTab === item.id ? "" : "group-hover:scale-110 transition-transform duration-300"}
                 />
                 <span className="truncate">{item.label}</span>
               </button>

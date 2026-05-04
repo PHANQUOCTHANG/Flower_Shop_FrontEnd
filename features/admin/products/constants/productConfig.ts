@@ -6,7 +6,7 @@ export const PRODUCT_CONFIG = {
 
   // UI config
   BACKGROUND_COLOR: "#f8f6f6",
-  PRIMARY_COLOR: "#ee2b5b",
+  PRIMARY_COLOR: "#13ec5b",
   DARK_PRIMARY: "#d42552",
 
   // Time delays

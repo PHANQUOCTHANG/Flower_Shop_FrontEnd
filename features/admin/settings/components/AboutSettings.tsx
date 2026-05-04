@@ -96,7 +96,7 @@ export default function AboutSettings({ data, onSave, saving }: Props) {
                 type="text"
                 value={form?.heroImage}
                 onChange={(e) => setForm({ ...form, heroImage: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-[#ee2b5b]/20 outline-none"
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-[#13ec5b]/20 outline-none"
               />
             </div>
           </div>
@@ -108,7 +108,7 @@ export default function AboutSettings({ data, onSave, saving }: Props) {
                 type="text"
                 value={form?.badgeText}
                 onChange={(e) => setForm({ ...form, badgeText: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-[#ee2b5b]/20 outline-none"
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-[#13ec5b]/20 outline-none"
               />
             </div>
             <div className="space-y-2">
@@ -117,7 +117,7 @@ export default function AboutSettings({ data, onSave, saving }: Props) {
                 type="text"
                 value={form?.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-[#ee2b5b]/20 outline-none"
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-[#13ec5b]/20 outline-none"
               />
             </div>
             <div className="space-y-2">
@@ -126,7 +126,7 @@ export default function AboutSettings({ data, onSave, saving }: Props) {
                 type="text"
                 value={form?.titleItalic}
                 onChange={(e) => setForm({ ...form, titleItalic: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-[#ee2b5b]/20 outline-none"
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-[#13ec5b]/20 outline-none"
               />
             </div>
           </div>
@@ -138,7 +138,7 @@ export default function AboutSettings({ data, onSave, saving }: Props) {
             <label className="text-sm font-semibold text-slate-700">Nội dung câu chuyện (các đoạn văn)</label>
             <button
               onClick={handleAddDescription}
-              className="text-xs font-bold text-[#ee2b5b] hover:underline flex items-center gap-1"
+              className="text-xs font-bold text-[#13ec5b] hover:underline flex items-center gap-1"
             >
               <Plus size={14} /> Thêm đoạn văn
             </button>
@@ -148,7 +148,7 @@ export default function AboutSettings({ data, onSave, saving }: Props) {
               <textarea
                 value={desc}
                 onChange={(e) => handleUpdateDescription(idx, e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-[#ee2b5b]/20 outline-none min-h-[80px]"
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-[#13ec5b]/20 outline-none min-h-[80px]"
               />
               <button
                 onClick={() => handleRemoveDescription(idx)}
@@ -221,7 +221,7 @@ export default function AboutSettings({ data, onSave, saving }: Props) {
         <button
           onClick={() => onSave(form)}
           disabled={saving}
-          className="flex items-center gap-2 bg-[#ee2b5b] text-white px-8 py-3 rounded-xl font-bold hover:bg-[#d62651] transition-all shadow-lg shadow-[#ee2b5b]/20 disabled:opacity-50"
+          className="flex items-center gap-2 bg-[#13ec5b] text-white px-8 py-3 rounded-xl font-bold hover:bg-[#d62651] transition-all shadow-lg shadow-[#13ec5b]/20 disabled:opacity-50"
         >
           <Save size={20} />
           {saving ? "Đang lưu..." : "Lưu cấu hình Trang giới thiệu"}

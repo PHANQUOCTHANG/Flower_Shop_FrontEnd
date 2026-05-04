@@ -11,6 +11,6 @@ export const CART_CONFIG = {
 export const CART_COLORS = {
   BACKGROUND: "#fcfbf9",
   TEXT: "#1b0d11",
-  ACCENT: "#ee2b5b",
-  ACCENT_HOVER: "#ee2b5b/80",
+  ACCENT: "#e91e63",
+  ACCENT_HOVER: "#e91e63/80",
 } as const;

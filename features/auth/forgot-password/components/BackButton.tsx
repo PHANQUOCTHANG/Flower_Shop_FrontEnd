@@ -21,7 +21,7 @@ export default function BackButton({
             type="button"
             onClick={onBack}
             disabled={isSubmitting}
-            className="inline-flex items-center gap-2 text-[#ee2b5b] text-sm font-black uppercase tracking-wider hover:opacity-80 group transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 text-[#13ec5b] text-sm font-black uppercase tracking-wider hover:opacity-80 group transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ArrowLeft
               size={18}

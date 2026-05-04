@@ -125,7 +125,7 @@ export const AddressSection: FC = () => {
     setDefaultMutation.isPending;
 
   return (
-    <section className="bg-white rounded-2xl p-6 sm:p-8 md:p-10 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+    <section className="animate-in fade-in duration-500 relative w-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 sm:mb-8 md:mb-10">
         <div className="min-w-0 flex-1">

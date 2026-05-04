@@ -18,6 +18,8 @@ import {
 import { useLogout } from "@/features/auth/logout/hooks";
 import { useAuthStore } from "@/stores/auth.store";
 import { useUnreadCount } from "@/features/admin/activity-log/hooks/useActivityLog";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { useState } from "react";
 
 // --- Định nghĩa kiểu dữ liệu (Interfaces) ---
 interface SidebarLinkProps {
@@ -80,9 +82,15 @@ export const Sidebar: FC<SidebarProps> = ({ currentPath, onNavigate, isOpen, onC
   // Hook logout
   const { logout, isLoading: isLogoutLoading } = useLogout("ADMIN");
 
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
   // Hàm đăng xuất
-  const handleLogout = async () => {
-    // setSuccessMessage("Đăng xuất thành công! Chuyển hướng...");
+  const handleLogout = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = async () => {
+    setShowLogoutConfirm(false);
     await logout();
   };
 
@@ -200,6 +208,19 @@ export const Sidebar: FC<SidebarProps> = ({ currentPath, onNavigate, isOpen, onC
         </div>
       </div>
     </aside>
+
+    {/* Logout Confirmation */}
+    <ConfirmDialog
+      isOpen={showLogoutConfirm}
+      title="Xác nhận đăng xuất"
+      message="Bạn có chắc chắn muốn đăng xuất khỏi hệ thống quản trị không?"
+      confirmLabel="Đăng xuất"
+      cancelLabel="Hủy"
+      onConfirm={confirmLogout}
+      onCancel={() => setShowLogoutConfirm(false)}
+      isLoading={isLogoutLoading}
+      type="danger"
+    />
     </>
   );
 };

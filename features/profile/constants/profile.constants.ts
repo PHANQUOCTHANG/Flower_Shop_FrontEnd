@@ -61,4 +61,4 @@ export const ORDERS_PAGE_LIMIT = 4;
 
 // Màu sắc chủ đề
 
-export const THEME_COLOR = "#ee2b5b";
+export const THEME_COLOR = "#13ec5b";

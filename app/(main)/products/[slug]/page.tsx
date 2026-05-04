@@ -88,7 +88,7 @@ export default function ProductDetail() {
       )}
 
       <div className="min-h-screen bg-[#fcfbf9] text-[#1b0d11] transition-colors duration-300">
-        <main className="max-w-360 mx-auto px-4 sm:px-10 lg:px-20 py-12">
+        <main className="max-w-360 mx-auto px-4 sm:px-10 lg:px-20 py-10">
           {/* Breadcrumb */}
           <Breadcrumbs
             items={[
@@ -98,13 +98,18 @@ export default function ProductDetail() {
             ]}
           />
 
-          {/* Hình ảnh + Thông tin */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-16 mb-16">
-            <Gallery
-              product={product}
-              activeImage={activeImage}
-              onImageChange={setActiveImage}
-            />
+          {/* Hình ảnh + Thông tin — sticky sidebar on desktop */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-16 mt-8 mb-20">
+            {/* Gallery — sticky on desktop */}
+            <div className="lg:sticky lg:top-28 lg:self-start">
+              <Gallery
+                product={product}
+                activeImage={activeImage}
+                onImageChange={setActiveImage}
+              />
+            </div>
+
+            {/* Info panel */}
             <div className="flex flex-col">
               <ProductInfo product={product} />
               <ActionButtons
@@ -118,7 +123,7 @@ export default function ProductDetail() {
           </div>
 
           {/* Tabs: Mô tả & Đánh giá */}
-          <section className="mb-16 border-t border-gray-100 pt-10">
+          <section className="mb-20 border-t border-gray-100 pt-12">
             <TabNavigation
               activeTab={activeTab}
               setActiveTab={setActiveTab}

@@ -16,7 +16,7 @@ export default function AccessDeniedPage() {
       <div className="w-full max-w-md text-center animate-in fade-in zoom-in-95 duration-500">
         {/* Biểu tượng khóa tối giản */}
         <div className="mb-8 flex justify-center">
-          <div className="size-24 rounded-3xl bg-[#ee2b5b]/10 flex items-center justify-center text-[#ee2b5b] shadow-inner">
+          <div className="size-24 rounded-3xl bg-[#13ec5b]/10 flex items-center justify-center text-[#13ec5b] shadow-inner">
             <Lock size={48} strokeWidth={2.5} />
           </div>
         </div>
@@ -32,7 +32,7 @@ export default function AccessDeniedPage() {
         <div className="flex flex-col gap-3">
           <Link
             href="/"
-            className="w-full h-14 bg-[#ee2b5b] text-white font-black rounded-2xl shadow-lg shadow-[#ee2b5b]/20 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-widest text-xs"
+            className="w-full h-14 bg-[#13ec5b] text-white font-black rounded-2xl shadow-lg shadow-[#13ec5b]/20 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-widest text-xs"
           >
             <Home size={18} />
             Về trang chủ

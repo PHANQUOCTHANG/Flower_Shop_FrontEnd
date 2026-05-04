@@ -37,8 +37,8 @@ export default function ResetPasswordStep({
  return (
  <div className="animate-in fade-in slide-in-from-bottom-6 duration-500">
  <div className="text-center mb-8">
- <div className="size-16 bg-[#ee2b5b]/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
- <ShieldCheck size={32} className="text-[#ee2b5b]" />
+ <div className="size-16 bg-[#13ec5b]/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+ <ShieldCheck size={32} className="text-[#13ec5b]" />
  </div>
  <h1 className="text-3xl font-black uppercase tracking-tight mb-2 leading-none">
  Mật khẩu mới
@@ -65,14 +65,14 @@ export default function ResetPasswordStep({
  disabled={isSubmitting}
  value={newPassword}
  onChange={(e) => onNewPasswordChange(e.target.value)}
- className="w-full h-14 pl-12 pr-12 rounded-xl border-2 border-slate-100 bg-slate-50 focus:border-[#ee2b5b] outline-none transition-all font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+ className="w-full h-14 pl-12 pr-12 rounded-xl border-2 border-slate-100 bg-slate-50 focus:border-[#13ec5b] outline-none transition-all font-bold disabled:opacity-50 disabled:cursor-not-allowed"
  placeholder="Tối thiểu 8 ký tự"
  />
  <button
  type="button"
  disabled={isSubmitting}
  onClick={() => onToggleShowPassword("newPassword")}
- className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#ee2b5b] disabled:opacity-50"
+ className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#13ec5b] disabled:opacity-50"
  >
  {showPassword.newPassword ? (
  <EyeOff size={20} />
@@ -90,7 +90,7 @@ export default function ResetPasswordStep({
  className={
  passwordStrength.score > 60
  ? "text-emerald-500"
- : "text-[#ee2b5b]"
+ : "text-[#13ec5b]"
  }
  >
  {passwordStrength.label}
@@ -121,14 +121,14 @@ export default function ResetPasswordStep({
  disabled={isSubmitting}
  value={confirmPassword}
  onChange={(e) => onConfirmPasswordChange(e.target.value)}
- className="w-full h-14 pl-12 pr-12 rounded-xl border-2 border-slate-100 bg-slate-50 focus:border-[#ee2b5b] outline-none transition-all font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+ className="w-full h-14 pl-12 pr-12 rounded-xl border-2 border-slate-100 bg-slate-50 focus:border-[#13ec5b] outline-none transition-all font-bold disabled:opacity-50 disabled:cursor-not-allowed"
  placeholder="Nhập lại mật khẩu"
  />
  <button
  type="button"
  disabled={isSubmitting}
  onClick={() => onToggleShowPassword("confirmPassword")}
- className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#ee2b5b] disabled:opacity-50"
+ className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#13ec5b] disabled:opacity-50"
  >
  {showPassword.confirmPassword ? (
  <EyeOff size={20} />
@@ -142,7 +142,7 @@ export default function ResetPasswordStep({
  <button
  type="submit"
  disabled={!isFormValid}
- className="w-full h-14 bg-[#ee2b5b] text-white font-black rounded-xl shadow-xl flex items-center justify-center active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+ className="w-full h-14 bg-[#13ec5b] text-white font-black rounded-xl shadow-xl flex items-center justify-center active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
  >
  {isSubmitting ? (
  <Loader2 className="animate-spin" />

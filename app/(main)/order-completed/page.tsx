@@ -79,50 +79,50 @@ export default function OrderCompletedPage() {
             <h1 className="typo-heading-lg text-3xl sm:text-4xl mb-4 text-green-500">
               Đơn hàng đã được xác nhận!
             </h1>
-            <p className="typo-body-lg text-[#9a4c5f] mb-12 px-4">
+            <p className="typo-body-lg text-[#4c9a66] mb-12 px-4">
               Cảm ơn bạn đã tin tưởng Flower Shop. Chúng tôi sẽ giao hoa tươi
               mới đến tay bạn sớm nhất có thể.
             </p>
 
             {/* Info Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-              <div className="bg-white rounded-2xl p-6 border border-[#e7cfd5] shadow-sm hover:shadow-lg transition-all">
+              <div className="bg-white rounded-2xl p-6 border border-[#cce7d4] shadow-sm hover:shadow-lg transition-all">
                 <div className="size-12 bg-green-500/10 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Gift className="w-6 h-6 text-green-500" />
                 </div>
                 <h3 className="typo-label-lg mb-2">Thiệp lời nhắn</h3>
-                <p className="typo-caption-xs text-[#9a4c5f] ">
+                <p className="typo-caption-xs text-[#4c9a66] ">
                   Miễn phí và sẽ được gắn vào bó hoa
                 </p>
               </div>
 
-              <div className="bg-white rounded-2xl p-6 border border-[#e7cfd5] shadow-sm hover:shadow-lg transition-all">
+              <div className="bg-white rounded-2xl p-6 border border-[#cce7d4] shadow-sm hover:shadow-lg transition-all">
                 <div className="size-12 bg-green-500/10 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Truck className="w-6 h-6 text-green-500" />
                 </div>
                 <h3 className="typo-label-lg mb-2">Giao nhanh 2 giờ</h3>
-                <p className="typo-caption-xs text-[#9a4c5f] ">
+                <p className="typo-caption-xs text-[#4c9a66] ">
                   Hoặc đúng khung giờ bạn chọn
                 </p>
               </div>
 
-              <div className="bg-white rounded-2xl p-6 border border-[#e7cfd5] shadow-sm hover:shadow-lg transition-all">
+              <div className="bg-white rounded-2xl p-6 border border-[#cce7d4] shadow-sm hover:shadow-lg transition-all">
                 <div className="size-12 bg-green-500/10 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Heart className="w-6 h-6 text-green-500" />
                 </div>
                 <h3 className="typo-label-lg mb-2">Hoa tươi 100%</h3>
-                <p className="typo-caption-xs text-[#9a4c5f] ">
+                <p className="typo-caption-xs text-[#4c9a66] ">
                   Cam kết chất lượng cao nhất
                 </p>
               </div>
             </div>
 
             {/* Support Section */}
-            <div className="bg-[#ee2b5b]/5 rounded-2xl border border-[#ee2b5b]/20 p-8 mb-8">
-              <p className="typo-label-sm text-[#ee2b5b] mb-3">
+            <div className="bg-[#13ec5b]/5 rounded-2xl border border-[#13ec5b]/20 p-8 mb-8">
+              <p className="typo-label-sm text-[#13ec5b] mb-3">
                 Cần hỗ trợ gấp?
               </p>
-              <p className="typo-heading-md text-[#ee2b5b] flex items-center justify-center gap-3 mb-4">
+              <p className="typo-heading-md text-[#13ec5b] flex items-center justify-center gap-3 mb-4">
                 <Phone className="w-5 h-5" /> 1900 1234
               </p>
               <p className="typo-caption-xs text-gray-400">
@@ -134,7 +134,7 @@ export default function OrderCompletedPage() {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 onClick={() => router.back()}
-                className="flex-1 border-2 border-[#e7cfd5] text-[#4c9a66] hover:bg-[#4c9a66]/5 py-3 sm:py-4 rounded-xl sm:rounded-2xl typo-button transition-all flex items-center justify-center gap-2 group hover:border-[#4c9a66]/70"
+                className="flex-1 border-2 border-[#cce7d4] text-[#4c9a66] hover:bg-[#4c9a66]/5 py-3 sm:py-4 rounded-xl sm:rounded-2xl typo-button transition-all flex items-center justify-center gap-2 group hover:border-[#4c9a66]/70"
               >
                 <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                 QUAY LẠI
@@ -142,7 +142,7 @@ export default function OrderCompletedPage() {
 
               <button
                 onClick={() => router.push("/")}
-                className="flex-1 bg-[#ee2b5b] hover:bg-[#ee2b5b]/90 text-white py-3 sm:py-4 rounded-xl sm:rounded-2xl typo-button-lg transition-all flex items-center justify-center gap-2 group shadow-lg shadow-[#ee2b5b]/20 hover:shadow-xl"
+                className="flex-1 bg-[#13ec5b] hover:bg-[#13ec5b]/90 text-white py-3 sm:py-4 rounded-xl sm:rounded-2xl typo-button-lg transition-all flex items-center justify-center gap-2 group shadow-lg shadow-[#13ec5b]/20 hover:shadow-xl"
               >
                 TRANG CHỦ
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

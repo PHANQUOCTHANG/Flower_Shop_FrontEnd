@@ -103,8 +103,8 @@ export function ProductToolbar({
             onClick={onClearFilters}
             className="shrink-0 flex items-center gap-2 px-4 py-2.5 bg-white border border-[#e7f3eb] rounded-xl text-[#0d1b12] hover:bg-slate-50 transition-all typo-body-sm font-bold"
           >
-            <X size={16} className="text-[#e91e63]" />
-            <span className="hidden sm:inline text-[#e91e63]">Xóa lọc</span>
+            <X size={16} className="text-[#13ec5b]" />
+            <span className="hidden sm:inline text-[#13ec5b]">Xóa lọc</span>
           </button>
         )}
         </div>

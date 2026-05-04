@@ -12,7 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getSocket } from "@/lib/socket";
 import { useFetchMyOrders } from "@/features/profile/hooks/useProfile";
 import {
-  ProfileSidebar,
+  ProfileHeader,
   ProfileInfo,
   OrdersSection,
   AddressSection,
@@ -20,6 +20,7 @@ import {
   ReviewFormModal,
 } from "@/features/profile/components";
 import { OrderDetailModal } from "@/features/admin/orders/components";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import type { ProfileTabType } from "@/features/profile/constants/profile.constants";
 import { ORDERS_PAGE_LIMIT } from "@/features/profile/constants/profile.constants";
 
@@ -59,6 +60,7 @@ function UserAccountContent() {
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(urlOrderId);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [reviewModal, setReviewModal] = useState<ReviewModalState>(INITIAL_REVIEW_MODAL);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const queryClient = useQueryClient();
 
   // Sync active tab khi URL param thay đổi
@@ -87,7 +89,12 @@ function UserAccountContent() {
     activeTab === "orders",
   );
 
-  const handleLogout = useCallback(async () => {
+  const handleLogout = useCallback(() => {
+    setShowLogoutConfirm(true);
+  }, []);
+
+  const confirmLogout = useCallback(async () => {
+    setShowLogoutConfirm(false);
     setSuccessMessage("Đăng xuất thành công! Chuyển hướng...");
     await logout();
   }, [logout]);
@@ -186,7 +193,7 @@ function UserAccountContent() {
   }, [user?.id, queryClient, selectedOrderId]);
 
   return (
-    <div className="min-h-screen bg-gray-50 font-['Inter',_sans-serif] text-slate-900 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#13ec5b]/5 to-slate-50 font-['Inter',_sans-serif] text-slate-900 transition-colors duration-300">
       {/* Thông báo thành công */}
       {successMessage && (
         <div className="fixed bottom-4 right-4 left-4 sm:bottom-6 sm:right-6 sm:left-auto sm:max-w-sm z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -207,9 +214,9 @@ function UserAccountContent() {
           ]}
         />
 
-        <div className="flex flex-col md:flex-row gap-4 sm:gap-6 lg:gap-10">
-          {/* Sidebar */}
-          <ProfileSidebar
+        <div className="mt-6 sm:mt-8 bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.06)] overflow-hidden border border-white/50 relative">
+          {/* Header & Navigation */}
+          <ProfileHeader
             userName={user?.name}
             avatarUrl={user?.avatar ?? undefined}
             activeTab={activeTab}
@@ -218,8 +225,8 @@ function UserAccountContent() {
             isLogoutLoading={isLogoutLoading}
           />
 
-          {/* Content */}
-          <div className="flex-1 space-y-8">
+          {/* Content Area */}
+          <div className="p-4 sm:p-8 md:p-12 min-h-[500px]">
             {activeTab === "profile" && (
               <ProfileInfo
                 fields={[
@@ -280,6 +287,19 @@ function UserAccountContent() {
         productImage={reviewModal.productImage}
         orderId={reviewModal.orderId}
         onSuccess={handleRefresh}
+      />
+
+      {/* Logout Confirmation */}
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        title="Xác nhận đăng xuất"
+        message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này không?"
+        confirmLabel="Đăng xuất"
+        cancelLabel="Hủy"
+        onConfirm={confirmLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+        isLoading={isLogoutLoading}
+        type="danger"
       />
     </div>
   );

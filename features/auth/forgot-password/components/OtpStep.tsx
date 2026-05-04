@@ -60,8 +60,8 @@ export default function OtpStep({
  return (
  <div className="animate-in fade-in slide-in-from-right-6 duration-500">
  <div className="flex flex-col items-center mb-10 text-center">
- <div className="size-20 bg-[#ee2b5b]/10 rounded-full flex items-center justify-center mb-6 shadow-inner">
- <Smartphone size={36} className="text-[#ee2b5b]" />
+ <div className="size-20 bg-[#13ec5b]/10 rounded-full flex items-center justify-center mb-6 shadow-inner">
+ <Smartphone size={36} className="text-[#13ec5b]" />
  </div>
  <h1 className="text-3xl font-black uppercase tracking-tight mb-2 leading-none">
  Xác thực OTP
@@ -93,7 +93,7 @@ export default function OtpStep({
  disabled={isSubmitting}
  onChange={(e) => handleOtpChange(index, e.target.value)}
  onKeyDown={(e) => handleOtpKeyDown(e, index)}
- className="size-11 sm:size-14 text-center text-2xl font-black border-2 border-slate-100 rounded-xl focus:border-[#ee2b5b] focus:ring-4 focus:ring-[#ee2b5b]/10 bg-slate-50 outline-none transition-all placeholder:text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed"
+ className="size-11 sm:size-14 text-center text-2xl font-black border-2 border-slate-100 rounded-xl focus:border-[#13ec5b] focus:ring-4 focus:ring-[#13ec5b]/10 bg-slate-50 outline-none transition-all placeholder:text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed"
  placeholder="·"
  />
  ))}
@@ -110,7 +110,7 @@ export default function OtpStep({
  className={`text-sm font-black transition-all ${
  timer > 0
  ? "text-slate-300 cursor-not-allowed"
- : "text-[#ee2b5b] hover:underline"
+ : "text-[#13ec5b] hover:underline"
  }`}
  >
  Gửi lại mã {timer > 0 && `(${timer}s)`}
@@ -119,7 +119,7 @@ export default function OtpStep({
  <button
  onClick={onVerify}
  disabled={otp.join("").length < 6 || isSubmitting}
- className="w-full h-14 bg-[#ee2b5b] text-white font-black rounded-xl shadow-xl flex items-center justify-center active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+ className="w-full h-14 bg-[#13ec5b] text-white font-black rounded-xl shadow-xl flex items-center justify-center active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
  >
  {isSubmitting ? <Loader2 className="animate-spin" /> : "XÁC NHẬN"}
  </button>

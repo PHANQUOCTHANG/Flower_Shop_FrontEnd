@@ -73,7 +73,7 @@ export const useChat = () => {
       }));
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Không thể mở chat";
+        err instanceof Error ? err.message : "Hệ thống đang bận, vui lòng thử lại sau! 🌸";
       setState((prev) => ({
         ...prev,
         error: errorMessage,
@@ -118,7 +118,7 @@ export const useChat = () => {
       await chatService.sendUserMessage({ content });
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Không thể gửi tin nhắn";
+        err instanceof Error ? err.message : "Không thể gửi tin nhắn, vui lòng thử lại sau!";
       setState((prev) => ({ ...prev, error: errorMessage }));
       console.error("Lỗi gửi tin nhắn:", err);
       throw err;

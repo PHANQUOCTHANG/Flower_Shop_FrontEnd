@@ -65,7 +65,7 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
                 type="checkbox"
                 checked={selectedCategoryIds.includes(cat.id)}
                 onChange={() => onSelectCategory(cat.id)}
-                className="w-4 h-4 accent-[#ee2b5b] cursor-pointer"
+                className="w-4 h-4 accent-[#13ec5b] cursor-pointer"
               />
               <span className="ml-3 text-sm text-slate-700">
                 {level > 0 && <span className="text-slate-400 mr-1">↳</span>}
@@ -125,7 +125,7 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
             <button 
               type="button" 
               onClick={() => setShowAddForm(true)} 
-              className="flex items-center gap-2 text-sm font-semibold text-[#ee2b5b] hover:text-[#d91e49] transition-colors"
+              className="flex items-center gap-2 text-sm font-semibold text-[#13ec5b] hover:text-[#d91e49] transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus-circle"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
               Thêm danh mục mới
@@ -163,13 +163,13 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
                 }}
                 placeholder="Nhập tên danh mục..."
                 disabled={isAddingCategory}
-                className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#ee2b5b] focus:ring-1 focus:ring-[#ee2b5b] outline-none transition-colors disabled:bg-slate-100"
+                className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#13ec5b] focus:ring-1 focus:ring-[#13ec5b] outline-none transition-colors disabled:bg-slate-100"
               />
               <button
                 type="button"
                 onClick={handleAddCategory}
                 disabled={!newCategoryName.trim() || isAddingCategory}
-                className="px-5 py-2 bg-[#ee2b5b] text-white rounded-lg font-medium text-sm hover:bg-[#d91e49] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-5 py-2 bg-[#13ec5b] text-white rounded-lg font-medium text-sm hover:bg-[#d91e49] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isAddingCategory ? "Thêm..." : "Thêm"}
               </button>
@@ -182,7 +182,7 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
                 value={newCategoryParentId}
                 onChange={(e) => setNewCategoryParentId(e.target.value)}
                 disabled={isAddingCategory}
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#ee2b5b] focus:ring-1 focus:ring-[#ee2b5b] outline-none transition-colors disabled:bg-slate-100"
+                className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#13ec5b] focus:ring-1 focus:ring-[#13ec5b] outline-none transition-colors disabled:bg-slate-100"
               >
                 <option value="">-- Không có (Danh mục gốc) --</option>
                 {renderOptions(rootCategories)}
