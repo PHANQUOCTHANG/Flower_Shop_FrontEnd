@@ -1,53 +1,33 @@
 // Component bộ lọc và sắp xếp danh sách đơn hàng
-
 "use client";
 
 import React, { FC } from "react";
+import { Filter, ChevronDown } from "lucide-react";
 import {
   ORDER_STATUS_OPTIONS,
   ORDER_SORT_OPTIONS,
 } from "@/features/profile/constants/profile.constants";
 
-// Props của component
 interface OrdersFiltersProps {
-  // Trạng thái đơn hàng được chọn
   status: string;
-  // Callback khi thay đổi trạng thái
   onStatusChange: (status: string) => void;
-  // Loại sắp xếp được chọn
   sort: string;
-  // Callback khi thay đổi sắp xếp
   onSortChange: (sort: string) => void;
 }
 
-// Component chọn select tùy chọn
-interface CustomSelectProps {
-  // Label của select
+const CustomSelect: FC<{
   label: string;
-  // Giá trị hiện tại
   value: string;
-  // Danh sách tùy chọn
   options: Array<{ value: string; label: string }>;
-  // Callback khi thay đổi
   onChange: (value: string) => void;
-}
-
-const CustomSelect: FC<CustomSelectProps> = ({
-  label,
-  value,
-  options,
-  onChange,
-}) => {
+}> = ({ label, value, options, onChange }) => {
   return (
-    <div className="flex-1 space-y-2 sm:space-y-2.5">
-      <label className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-        {label}
-      </label>
-      <div className="relative">
+    <div className="flex-1 min-w-[180px]">
+      <div className="relative group">
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full px-3 sm:px-5 py-2.5 sm:py-3.5 bg-white border border-slate-200 rounded-lg sm:rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#EE2B5B] focus:ring-4 focus:ring-[#EE2B5B]/10 transition-all cursor-pointer shadow-sm appearance-none"
+          className="w-full pl-4 pr-10 py-3 bg-white border border-slate-100 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#EE2B5B]/30 focus:ring-4 focus:ring-[#EE2B5B]/5 transition-all cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.02)] appearance-none"
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -55,29 +35,14 @@ const CustomSelect: FC<CustomSelectProps> = ({
             </option>
           ))}
         </select>
-
-        {/* Custom dropdown icon */}
-        <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="m6 9 6 6 6-6" />
-          </svg>
+        <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400 group-hover:text-[#EE2B5B] transition-colors">
+          <ChevronDown size={16} />
         </div>
       </div>
     </div>
   );
 };
 
-// Component chính
 export const OrdersFilters: FC<OrdersFiltersProps> = ({
   status,
   onStatusChange,
@@ -85,26 +50,26 @@ export const OrdersFilters: FC<OrdersFiltersProps> = ({
   onSortChange,
 }) => {
   return (
-    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-4 sm:p-5 bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-100/80">
-      {/* Bộ lọc trạng thái */}
-      <CustomSelect
-        label="Trạng thái đơn hàng"
-        value={status}
-        options={ORDER_STATUS_OPTIONS}
-        onChange={(newStatus) => {
-          onStatusChange(newStatus);
-        }}
-      />
-
-      {/* Bộ lọc sắp xếp */}
-      <CustomSelect
-        label="Sắp xếp hiển thị"
-        value={sort}
-        options={ORDER_SORT_OPTIONS}
-        onChange={(newSort) => {
-          onSortChange(newSort);
-        }}
-      />
+    <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
+      <div className="hidden md:flex items-center gap-2 text-slate-400 mr-2">
+        <Filter size={18} />
+        <span className="text-xs font-bold uppercase tracking-widest">Bộ lọc</span>
+      </div>
+      
+      <div className="flex flex-col sm:flex-row w-full gap-4">
+        <CustomSelect
+          label="Trạng thái"
+          value={status}
+          options={ORDER_STATUS_OPTIONS}
+          onChange={onStatusChange}
+        />
+        <CustomSelect
+          label="Sắp xếp"
+          value={sort}
+          options={ORDER_SORT_OPTIONS}
+          onChange={onSortChange}
+        />
+      </div>
     </div>
   );
 };

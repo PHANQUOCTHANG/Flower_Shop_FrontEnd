@@ -88,7 +88,13 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                     #{order.id.slice(0, 8).toUpperCase()}
                   </td>
                   <td className="px-5 py-4 text-sm text-slate-500 font-medium whitespace-nowrap">
-                    {formatDate(order.createdAt)}
+                    <span>
+                      {new Date(order.createdAt).toLocaleTimeString("vi-VN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                    <span className="ml-2">{formatDate(order.createdAt)}</span>
                   </td>
                   <td className="px-5 py-4 text-sm font-bold text-slate-900 max-w-[160px] truncate">
                     {order.user?.fullName}
@@ -170,6 +176,12 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                 </p>
                 {/* Row 3: Ngày + SĐT */}
                 <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
+                  <span className="font-black text-slate-700">
+                    {new Date(order.createdAt).toLocaleTimeString("vi-VN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
                   <span>{formatDate(order.createdAt)}</span>
                   {order.shippingPhone && (
                     <>

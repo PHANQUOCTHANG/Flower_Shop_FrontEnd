@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, Suspense } from "react";
+import React, { useState, useMemo, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loading } from "@/components/ui/Loading";
 import {
@@ -128,6 +128,33 @@ function OrdersPageContent() {
     router.push("/admin/orders");
   };
 
+  // Debounce search onChange
+  const debounceTimerRef = useRef<NodeJS.Timeout>();
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    const nextFilters = { ...filters, search: val };
+    setFilters(nextFilters);
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      setAppliedFilters(nextFilters);
+      setCurrentPage(1);
+      updateUrl(nextFilters, 1);
+    }, 500);
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
   const handleStatusUpdate = (orderId: string, status: string) => {
     updateStatus(
       { orderId, status: status as any },
@@ -176,9 +203,7 @@ function OrdersPageContent() {
             dateTo={filters.dateTo}
             paymentStatusFilter={filters.paymentStatus}
             sortBy={filters.sort}
-            onSearchChange={(e) =>
-              setFilters({ ...filters, search: e.target.value })
-            }
+            onSearchChange={handleSearchChange}
             onDateFromChange={(e) =>
               setFilters({ ...filters, dateFrom: e.target.value })
             }

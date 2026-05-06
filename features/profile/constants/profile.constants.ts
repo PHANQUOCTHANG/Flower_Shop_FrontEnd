@@ -1,6 +1,6 @@
 // Các hằng số và cấu hình cho trang profile
 
-import { User, Package, MapPin, LogOut, LucideIcon } from "lucide-react";
+import { User, Package, MapPin, LogOut, LucideIcon, Lock } from "lucide-react";
 
 // Kiểu Tab
 
@@ -18,7 +18,7 @@ export const PROFILE_NAV_ITEMS: NavItem[] = [
   { id: "profile", label: "Thông tin cá nhân", icon: User },
   { id: "orders", label: "Đơn hàng của tôi", icon: Package },
   { id: "address", label: "Sổ địa chỉ", icon: MapPin },
-  { id: "password", label: "Đổi mật khẩu", icon: User },
+  { id: "password", label: "Đổi mật khẩu", icon: Lock },
 ];
 
 // Trạng thái đơn hàng
@@ -61,4 +61,4 @@ export const ORDERS_PAGE_LIMIT = 4;
 
 // Màu sắc chủ đề
 
-export const THEME_COLOR = "#13ec5b";
+export const THEME_COLOR = "#EE2B5B";

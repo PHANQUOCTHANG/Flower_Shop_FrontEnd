@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, Suspense } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  Suspense,
+  useRef,
+} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loading } from "@/components/ui/Loading";
 import { DeleteConfirmDialog } from "@/components/ui/admin/DeleteConfirmDialog";
@@ -48,7 +54,9 @@ function ProductsPageContent() {
     undefined,
   );
   const [sortBy, setSortBy] = useState<string>(FILTER_DEFAULTS.SORT_NEWEST);
-  const [statusFilter, setStatusFilter] = useState<string>(FILTER_DEFAULTS.STATUS_ALL);
+  const [statusFilter, setStatusFilter] = useState<string>(
+    FILTER_DEFAULTS.STATUS_ALL,
+  );
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
 
@@ -67,7 +75,9 @@ function ProductsPageContent() {
   const [appliedMaxPrice, setAppliedMaxPrice] = useState<number | null>(null);
 
   // Phân trang và UI state
-  const [currentPage, setCurrentPage] = useState<number>(FILTER_DEFAULTS.PAGE_DEFAULT);
+  const [currentPage, setCurrentPage] = useState<number>(
+    FILTER_DEFAULTS.PAGE_DEFAULT,
+  );
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProductForDelete, setSelectedProductForDelete] =
     useState<Product | null>(null);
@@ -150,9 +160,39 @@ function ProductsPageContent() {
   // Các hàm xử lý
 
   // Xử lý thay đổi search keyword
+  const debounceTimerRef = useRef<NodeJS.Timeout>();
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchKeyword(e.target.value);
+    const keyword = e.target.value;
+    setSearchKeyword(keyword);
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      setAppliedSearchKeyword(keyword);
+      setCurrentPage(FILTER_DEFAULTS.PAGE_DEFAULT);
+
+      updateQueryParams(
+        keyword,
+        appliedCategory,
+        FILTER_DEFAULTS.PAGE_DEFAULT,
+        appliedSortBy,
+        appliedMinPrice,
+        appliedMaxPrice,
+        appliedStatusFilter,
+      );
+    }, 500);
   };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   // Xử lý thay đổi category
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

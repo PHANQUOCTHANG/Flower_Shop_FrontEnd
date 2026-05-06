@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState, FC } from "react";
+import React, { FC } from "react";
 import {
   ArrowRight,
   MapPin,
   PhoneCall,
   Mail,
   Clock,
-  Send,
   Leaf,
   Paintbrush,
   Zap,
@@ -62,40 +61,38 @@ const ValueCard: FC<{ item: ValueItem }> = ({ item }) => {
 // --- Component chính: App ---
 export default function App() {
   const { settings } = useSettingStore();
-  const [formState, setFormState] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    message: "",
-  });
 
   // Default values
   const defaultAbout = {
-    heroImage: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=1000",
+    heroImage:
+      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=1000",
     badgeText: "Về chúng tôi",
     title: "Câu chuyện của chúng tôi",
     titleItalic: "chúng tôi",
     description: [
       "Khởi nguồn từ niềm đam mê mãnh liệt với vẻ đẹp thuần khiết của những đóa hoa, Flower Shop không chỉ là một cửa hàng, mà là nơi những cảm xúc được kết tinh qua đôi bàn tay khéo léo.",
-      "Suốt hơn 10 năm qua, chúng tôi đã đồng hành cùng hàng ngàn khách hàng trong những khoảnh khắc đáng nhớ nhất, mang sứ mệnh kết nối những tâm hồn qua ngôn ngữ của cái đẹp."
+      "Suốt hơn 10 năm qua, chúng tôi đã đồng hành cùng hàng ngàn khách hàng trong những khoảnh khắc đáng nhớ nhất, mang sứ mệnh kết nối những tâm hồn qua ngôn ngữ của cái đẹp.",
     ],
     coreValues: [
       {
         title: "Hoa tươi nhập mới",
-        description: "Chúng tôi tuyển chọn khắt khe những bông hoa tươi nhất từ các nông trại uy tín quốc tế và Đà Lạt mỗi sớm mai.",
-        iconName: "Leaf"
+        description:
+          "Chúng tôi tuyển chọn khắt khe những bông hoa tươi nhất từ các nông trại uy tín quốc tế và Đà Lạt mỗi sớm mai.",
+        iconName: "Leaf",
       },
       {
         title: "Thiết kế độc bản",
-        description: "Mỗi bó hoa là một tác phẩm nghệ thuật riêng biệt, được cá nhân hóa theo phong cách và thông điệp bạn muốn gửi gắm.",
-        iconName: "Paintbrush"
+        description:
+          "Mỗi bó hoa là một tác phẩm nghệ thuật riêng biệt, được cá nhân hóa theo phong cách và thông điệp bạn muốn gửi gắm.",
+        iconName: "Paintbrush",
       },
       {
         title: "Giao hoa hỏa tốc",
-        description: "Cam kết giao hàng trong 60-120 phút nội thành, đảm bảo hoa luôn giữ được độ tươi mới khi đến tay người nhận.",
-        iconName: "Zap"
-      }
-    ]
+        description:
+          "Cam kết giao hàng trong 60-120 phút nội thành, đảm bảo hoa luôn giữ được độ tươi mới khi đến tay người nhận.",
+        iconName: "Zap",
+      },
+    ],
   };
 
   // Robust merging: only use setting if it's not empty/null
@@ -105,39 +102,48 @@ export default function App() {
     badgeText: sAbout?.badgeText || defaultAbout.badgeText,
     title: sAbout?.title || defaultAbout.title,
     titleItalic: sAbout?.titleItalic || defaultAbout.titleItalic,
-    description: (sAbout?.description && sAbout.description.length > 0) ? sAbout.description : defaultAbout.description,
-    coreValues: (sAbout?.coreValues && sAbout.coreValues.length > 0) ? sAbout.coreValues : defaultAbout.coreValues,
+    description:
+      sAbout?.description && sAbout.description.length > 0
+        ? sAbout.description
+        : defaultAbout.description,
+    coreValues:
+      sAbout?.coreValues && sAbout.coreValues.length > 0
+        ? sAbout.coreValues
+        : defaultAbout.coreValues,
   };
 
   const shopConfig = settings?.shopConfig || {
     phone: "1900 6868",
     email: "support@flowershop.vn",
     address: "273 Đ. An Dương Vương, Phường 3, Quận 5, Hồ Chí Minh, Việt Nam",
-    mapIframeUrl: ""
+    mapIframeUrl: "",
   };
 
   const contactDetails = [
     { title: "Địa chỉ", content: shopConfig.address, icon: MapPin },
     { title: "Hotline", content: shopConfig.phone, icon: PhoneCall },
     { title: "Email", content: shopConfig.email, icon: Mail },
-    { title: "Giờ mở cửa", content: "Tất cả các ngày: 08:00 - 21:00", icon: Clock },
+    {
+      title: "Giờ mở cửa",
+      content: "Tất cả các ngày: 08:00 - 21:00",
+      icon: Clock,
+    },
   ];
-
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Dữ liệu gửi đi:", formState);
-  };
 
   const renderTitle = (title: string, italic: string) => {
     if (!title) return "";
     if (!italic) return title;
-    
+
     // Split by the italic word and join with the styled span
     const parts = title.split(italic);
     return parts.reduce((acc: any[], part, i) => {
       acc.push(part);
       if (i < parts.length - 1) {
-        acc.push(<span key={i} className="text-[#EE2B5B] italic font-medium">{italic}</span>);
+        acc.push(
+          <span key={i} className="text-[#EE2B5B] italic font-medium">
+            {italic}
+          </span>,
+        );
       }
       return acc;
     }, []);
@@ -174,9 +180,8 @@ export default function App() {
                 <div className="w-24 h-1.5 bg-[#EE2B5B] rounded-full"></div>
               </div>
               <div className="space-y-6 text-slate-500 leading-loose text-lg font-medium italic">
-                {Array.isArray(aboutPage.description) && aboutPage.description.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
+                {Array.isArray(aboutPage.description) &&
+                  aboutPage.description.map((p, i) => <p key={i}>{p}</p>)}
               </div>
               <button className="bg-[#EE2B5B] text-white px-10 py-5 rounded-2xl font-black hover:translate-y-[-4px] transition-all shadow-2xl shadow-[#EE2B5B]/30 inline-flex items-center gap-4 group">
                 <span>KHÁM PHÁ BỘ SƯU TẬP</span>
@@ -201,9 +206,10 @@ export default function App() {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16">
-              {Array.isArray(aboutPage.coreValues) && aboutPage.coreValues.map((val: any, idx: number) => (
-                <ValueCard key={idx} item={val} />
-              ))}
+              {Array.isArray(aboutPage.coreValues) &&
+                aboutPage.coreValues.map((val: any, idx: number) => (
+                  <ValueCard key={idx} item={val} />
+                ))}
             </div>
           </div>
         </section>
@@ -223,7 +229,7 @@ export default function App() {
           </div>
 
           <div className="flex flex-col lg:flex-row gap-8 sm:gap-12 md:gap-14 lg:gap-16 items-stretch">
-            {/* Cột trái: Thông tin & Form */}
+            {/* Cột trái: Thông tin liên hệ */}
             <div className="w-full lg:w-[45%] space-y-12">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 md:gap-10">
                 {contactDetails.map((detail, idx) => (
@@ -238,75 +244,6 @@ export default function App() {
                   </div>
                 ))}
               </div>
-
-              {/* Form liên hệ */}
-              <form
-                onSubmit={handleFormSubmit}
-                className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-[#EE2B5B]/5 relative overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 size-32 bg-[#EE2B5B]/5 rounded-bl-full -z-0"></div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 relative z-10">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                      Họ và tên
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full h-12 rounded-xl border-slate-100 bg-slate-50 focus:border-[#EE2B5B] focus:ring-0 font-bold transition-all text-sm px-4"
-                      placeholder="Nguyễn Văn A"
-                      onChange={(e) =>
-                        setFormState({ ...formState, name: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                      Số điện thoại
-                    </label>
-                    <input
-                      type="tel"
-                      className="w-full h-12 rounded-xl border-slate-100 bg-slate-50 focus:border-[#EE2B5B] focus:ring-0 font-bold transition-all text-sm px-4"
-                      placeholder="090 xxx xxxx"
-                      onChange={(e) =>
-                        setFormState({ ...formState, phone: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2 relative z-10">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                    Email liên hệ
-                  </label>
-                  <input
-                    type="email"
-                    className="w-full h-12 rounded-xl border-slate-100 bg-slate-50 focus:border-[#13ec5b] focus:ring-0 font-bold transition-all text-sm px-4"
-                    placeholder="example@email.com"
-                    onChange={(e) =>
-                      setFormState({ ...formState, email: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-2 relative z-10">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                    Lời nhắn của bạn
-                  </label>
-                  <textarea
-                    className="w-full rounded-xl border-slate-100 bg-slate-50 focus:border-[#13ec5b] focus:ring-0 font-bold transition-all text-sm px-4 py-3 resize-none"
-                    placeholder="Chúng tôi có thể giúp gì cho bạn?"
-                    rows={4}
-                    onChange={(e) =>
-                      setFormState({ ...formState, message: e.target.value })
-                    }
-                  ></textarea>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-[#EE2B5B] text-white py-5 rounded-2xl font-black hover:bg-[#B3163B] transition-all shadow-xl shadow-[#EE2B5B]/20 flex items-center justify-center gap-3 uppercase tracking-widest text-sm relative z-10 active:scale-95"
-                >
-                  <Send size={20} />
-                  GỬI LỜI NHẮN NGAY
-                </button>
-              </form>
             </div>
 
             {/* Cột phải: Bản đồ */}

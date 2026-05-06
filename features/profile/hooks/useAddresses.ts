@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Address, CreateAddressRequest } from "@/types/profile";
 import * as addressService from "../services/addressService";
 
-export const useAddresses = () => {
+export const useAddresses = ({ limit }: { limit?: number } = {}) => {
   // State: Danh sách địa chỉ (quản lý cục bộ)
   const [addresses, setAddresses] = useState<Address[]>([]);
   // State: Lỗi từ API
@@ -21,7 +21,7 @@ export const useAddresses = () => {
     queryKey: ["addresses"],
     queryFn: async () => {
       try {
-        const data = await addressService.fetchAddresses();
+        const data = await addressService.fetchAddresses(limit);
         return data;
       } catch (err) {
         const message =

@@ -1,132 +1,115 @@
-// Component hiển thị bảng danh sách đơn hàng
-
+// Component hiển thị danh sách đơn hàng phong cách Dashboard hiện đại
 "use client";
 
 import React, { FC } from "react";
-import { Eye } from "lucide-react";
+import Image from "next/image";
+import { Eye, Calendar, Package, ChevronRight } from "lucide-react";
 import {
   ORDER_STATUS_MAP,
   StatusConfig,
 } from "@/features/profile/constants/profile.constants";
 import { MyOrder } from "@/features/profile/types/profile";
 
-// Props của component
 interface OrdersTableProps {
-  // Danh sách đơn hàng
-  orders: MyOrder[];
-  // Callback khi click nút xem chi tiết
+  orders: any[]; // Sử dụng any tạm thời để hỗ trợ các trường mở rộng như items
   onViewOrder: (orderId: string) => void;
 }
 
-// Component hiện thị badge trạng thái
-interface StatusBadgeProps {
-  // Trạng thái đơn hàng
-  status: string;
-}
-
-const StatusBadge: FC<StatusBadgeProps> = ({ status }) => {
-  // Chuyển đổi sang chữ thường để kiểm tra trong map
+const StatusBadge: FC<{ status: string }> = ({ status }) => {
   const statusLower = status?.toLowerCase() || "";
   const { styles, label }: StatusConfig = ORDER_STATUS_MAP[statusLower] || {
-    styles: "bg-gray-100 text-gray-700",
+    styles: "bg-slate-100 text-slate-700",
     label: status,
   };
 
   return (
-    <span
-      className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${styles}`}
-    >
+    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${styles}`}>
+      <span className="size-1.5 rounded-full bg-current mr-1.5 opacity-60"></span>
       {label}
     </span>
   );
 };
 
-// Component hiển thị một dòng đơn hàng
-interface OrderRowProps {
-  order: MyOrder;
-  onViewOrder: (orderId: string) => void;
-}
-
-const OrderRow: FC<OrderRowProps> = ({ order, onViewOrder }) => {
-  return (
-    <tr 
-      className="group hover:bg-[#EE2B5B]/5 transition-colors duration-300 cursor-pointer" 
-      onClick={() => onViewOrder(order.id)}
-    >
-      {/* Mã đơn hàng */}
-      <td className="py-4 sm:py-5 px-4 sm:px-6 text-xs sm:text-sm font-black text-[#0d1b12] truncate max-w-[120px]">
-        {order.id}
-      </td>
-
-      {/* Ngày đặt - ẩn trên mobile, hiện từ sm trở lên */}
-      <td className="py-4 sm:py-5 px-4 sm:px-6 text-xs sm:text-sm font-bold text-slate-500 hidden sm:table-cell">
-        {new Date(order.createdAt).toLocaleDateString("vi-VN")}
-      </td>
-
-      {/* Trạng thái */}
-      <td className="py-4 sm:py-5 px-4 sm:px-6">
-        <StatusBadge status={order.status} />
-      </td>
-
-      {/* Thành tiền */}
-      <td className="py-4 sm:py-5 px-4 sm:px-6 text-right text-xs sm:text-sm font-black text-slate-900">
-        {order.totalPrice.toLocaleString("vi-VN")}₫
-      </td>
-
-      {/* Hành động */}
-      <td className="py-4 sm:py-5 px-4 sm:px-6 text-center">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onViewOrder(order.id);
-          }}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest group-hover:border-[#EE2B5B] group-hover:bg-[#EE2B5B] group-hover:text-white shadow-sm transition-all duration-300"
-          type="button"
-        >
-          <Eye size={12} />
-          <span className="hidden sm:inline">Xem</span>
-        </button>
-      </td>
-    </tr>
-  );
-};
-
-// Component chính
 export const OrdersTable: FC<OrdersTableProps> = ({ orders, onViewOrder }) => {
-  return (
-    <div className="overflow-x-auto no-scrollbar -mx-2 px-2 sm:mx-0 sm:px-0 relative z-10">
-      <div className="min-w-[600px] sm:min-w-full rounded-2xl ring-1 ring-slate-100 overflow-hidden bg-white">
-        <table className="w-full">
-          {/* Header của bảng */}
-          <thead className="bg-slate-50/80">
-            <tr className="text-left">
-              <th className="py-4 px-4 sm:px-6 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                Mã đơn
-              </th>
-              <th className="py-4 px-4 sm:px-6 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest hidden sm:table-cell">
-                Ngày đặt
-              </th>
-              <th className="py-4 px-4 sm:px-6 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                Trạng thái
-              </th>
-              <th className="py-4 px-4 sm:px-6 text-right text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                Thành tiền
-              </th>
-              <th className="py-4 px-4 sm:px-6 text-center text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                <span className="hidden sm:inline">Hành động</span>
-                <span className="sm:hidden">Xem</span>
-              </th>
-            </tr>
-          </thead>
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("vi-VN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
-        {/* Nội dung bảng */}
-          <tbody className="divide-y divide-slate-50/80 text-xs sm:text-sm">
-            {orders.map((order) => (
-              <OrderRow key={order.id} order={order} onViewOrder={onViewOrder} />
-            ))}
-          </tbody>
-        </table>
-      </div>
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price);
+  };
+
+  return (
+    <div className="flex flex-col gap-4 relative z-10">
+      {orders.map((order) => {
+        const firstItem = order.items?.[0];
+        const itemName = firstItem?.productName || "Đơn hàng hoa";
+        const itemCount = order.items?.length || 1;
+
+        return (
+          <div
+            key={order.id}
+            onClick={() => onViewOrder(order.id)}
+            className="group bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 shadow-[0_2px_12px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:border-[#EE2B5B]/20 transition-all duration-300 cursor-pointer flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6"
+          >
+            {/* 1. Order Details */}
+            <div className="flex-1 min-w-0 flex flex-col gap-1 sm:gap-1.5">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xs font-bold text-[#EE2B5B] uppercase tracking-wider">
+                  #{order.id.slice(-8).toUpperCase()}
+                </span>
+                <StatusBadge status={order.status} />
+              </div>
+              
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 line-clamp-1 group-hover:text-[#EE2B5B] transition-colors">
+                {itemName}
+                {itemCount > 1 && ` và ${itemCount - 1} sản phẩm khác`}
+              </h3>
+              
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-500 text-xs sm:text-sm">
+                <div className="flex items-center gap-1.5">
+                  <Calendar size={14} className="opacity-70" />
+                  <span>{formatDate(order.createdAt)}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Package size={14} className="opacity-70" />
+                  <span>{order.paymentMethod === "cod" ? "Thanh toán khi nhận hàng" : "Chuyển khoản / Ví"}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Price & Action */}
+            <div className="w-full sm:w-auto flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-50 sm:pl-6 sm:border-l sm:border-slate-100">
+              <div className="flex flex-col items-start sm:items-end">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">
+                  Tổng thanh toán
+                </span>
+                <span className="text-lg sm:text-xl font-black text-slate-900">
+                  {formatPrice(order.totalPrice || order.totalAmount)}
+                </span>
+              </div>
+              
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onViewOrder(order.id);
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-50 text-slate-600 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-[#EE2B5B] hover:text-white transition-all shadow-sm group/btn"
+              >
+                <span>Chi tiết</span>
+                <ChevronRight size={14} className="group-hover/btn:translate-x-0.5 transition-transform" />
+              </button>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

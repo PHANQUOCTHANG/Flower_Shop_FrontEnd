@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useCallback, useMemo, Suspense } from "react";
+import {
+  useState,
+  useCallback,
+  useMemo,
+  Suspense,
+  useEffect,
+  useRef,
+} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 // Nhập components
@@ -124,11 +131,33 @@ function FlowerCollectionContent() {
     });
   };
 
-  // Xử lý tìm kiếm
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    navigate({ search: searchInput.trim() || null });
-  };
+  // Debounce search onChange - tự động tìm kiếm sau khi người dùng dừng gõ
+  const debounceTimerRef = useRef<NodeJS.Timeout>();
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearchInput(value);
+
+      // Xóa timeout cũ
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+
+      // Thiết lập timeout mới
+      debounceTimerRef.current = setTimeout(() => {
+        navigate({ search: value.trim() || null });
+      }, 500); // 500ms debounce
+    },
+    [navigate],
+  );
+
+  // Cleanup timeout khi unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   // Xóa tất cả lọc
   const handleClearFilters = () => {
@@ -182,8 +211,7 @@ function FlowerCollectionContent() {
               sort={sort}
               hasActiveFilters={hasActiveFilters}
               onViewModeChange={setViewMode}
-              onSearchChange={setSearchInput}
-              onSearch={handleSearch}
+              onSearchChange={handleSearchChange}
               onSortChange={handleSort}
               onClearFilters={handleClearFilters}
               onOpenFilter={() => setIsMobileFilterOpen(true)}

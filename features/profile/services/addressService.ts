@@ -9,8 +9,8 @@ import type {
 const API_BASE = "/addresses";
 
 // Lấy danh sách tất cả địa chỉ của người dùng
-export const fetchAddresses = async (): Promise<Address[]> => {
-  const response = await axiosInstance.get<AddressesResponse>(API_BASE);
+export const fetchAddresses = async (limit?:number): Promise<Address[]> => {
+  const response = await axiosInstance.get<AddressesResponse>(API_BASE , { params: { limit } });
   return response.data.data || [];
 };
 

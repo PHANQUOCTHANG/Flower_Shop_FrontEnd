@@ -9,7 +9,6 @@ interface ProductToolbarProps {
   hasActiveFilters: boolean;
   onViewModeChange: (mode: ViewMode) => void;
   onSearchChange: (value: string) => void;
-  onSearch: (e: React.FormEvent<HTMLFormElement>) => void;
   onSortChange: (sort: string) => void;
   onClearFilters: () => void;
   onOpenFilter?: () => void;
@@ -23,7 +22,6 @@ export function ProductToolbar({
   hasActiveFilters,
   onViewModeChange,
   onSearchChange,
-  onSearch,
   onSortChange,
   onClearFilters,
   onOpenFilter,
@@ -48,10 +46,7 @@ export function ProductToolbar({
         </div>
 
         {/* Search form */}
-        <form
-          onSubmit={onSearch}
-          className="flex flex-1 items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-[#e7f3eb] min-w-0"
-        >
+        <div className="flex flex-1 items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-[#e7f3eb] min-w-0">
           <Search size={16} className="text-[#4c9a66] shrink-0" />
           <input
             type="text"
@@ -60,13 +55,7 @@ export function ProductToolbar({
             onChange={(e) => onSearchChange(e.target.value)}
             className="flex-1 bg-transparent border-none focus:ring-0 outline-none text-[#0d1b12] placeholder:text-[#4c9a66] text-sm w-full"
           />
-          <button
-            type="submit"
-            className="shrink-0 px-3 py-1 bg-[#13ec5b] text-[#0d1b12] rounded-lg font-semibold hover:bg-[#13ec5b]/90 transition-colors text-xs"
-          >
-            Tìm
-          </button>
-        </form>
+        </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto overflow-x-auto scrollbar-hide">
           {/* Nút lọc Mobile */}
@@ -74,39 +63,50 @@ export function ProductToolbar({
             onClick={onOpenFilter}
             className="shrink-0 flex sm:hidden items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-[#e7f3eb] text-[#0d1b12] hover:bg-slate-50 transition-all font-semibold text-sm"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#4c9a66]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-[#4c9a66]"
+            >
               <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
             </svg>
             Lọc
           </button>
 
           {/* Sort dropdown */}
-        <div className="shrink-0 bg-white p-2 px-4 rounded-xl border border-[#e7f3eb] flex items-center gap-3">
-          <span className="typo-caption-xs text-[#4c9a66] whitespace-nowrap hidden sm:inline">
-            Sắp xếp:
-          </span>
-          <select
-            value={sort}
-            onChange={(e) => onSortChange(e.target.value)}
-            className="bg-transparent border-none typo-body-sm font-bold text-[#0d1b12] focus:ring-0 p-0 cursor-pointer outline-none"
-          >
-            <option value="newest">Mới nhất</option>
-            <option value="oldest">Cũ nhất</option>
-            <option value="price-asc">Giá (thấp → cao)</option>
-            <option value="price-desc">Giá (cao → thấp)</option>
-          </select>
-        </div>
+          <div className="shrink-0 bg-white p-2 px-4 rounded-xl border border-[#e7f3eb] flex items-center gap-3">
+            <span className="typo-caption-xs text-[#4c9a66] whitespace-nowrap hidden sm:inline">
+              Sắp xếp:
+            </span>
+            <select
+              value={sort}
+              onChange={(e) => onSortChange(e.target.value)}
+              className="bg-transparent border-none typo-body-sm font-bold text-[#0d1b12] focus:ring-0 p-0 cursor-pointer outline-none"
+            >
+              <option value="newest">Mới nhất</option>
+              <option value="oldest">Cũ nhất</option>
+              <option value="price-asc">Giá (thấp → cao)</option>
+              <option value="price-desc">Giá (cao → thấp)</option>
+            </select>
+          </div>
 
-        {/* Clear filters button */}
-        {hasActiveFilters && (
-          <button
-            onClick={onClearFilters}
-            className="shrink-0 flex items-center gap-2 px-4 py-2.5 bg-white border border-[#e7f3eb] rounded-xl text-[#0d1b12] hover:bg-slate-50 transition-all typo-body-sm font-bold"
-          >
-            <X size={16} className="text-[#13ec5b]" />
-            <span className="hidden sm:inline text-[#13ec5b]">Xóa lọc</span>
-          </button>
-        )}
+          {/* Clear filters button */}
+          {hasActiveFilters && (
+            <button
+              onClick={onClearFilters}
+              className="shrink-0 flex items-center gap-2 px-4 py-2.5 bg-white border border-[#e7f3eb] rounded-xl text-[#0d1b12] hover:bg-slate-50 transition-all typo-body-sm font-bold"
+            >
+              <X size={16} className="text-[#13ec5b]" />
+              <span className="hidden sm:inline text-[#13ec5b]">Xóa lọc</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

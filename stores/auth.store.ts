@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist , createJSONStorage } from "zustand/middleware";
 
 export interface User {
   id: string;
@@ -70,8 +70,8 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "auth-storage",
+      storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
-        // Chỉ lưu những gì cần thiết vào localStorage
         accessToken: state.accessToken,
         user: state.user,
         hasLoggedIn: state.hasLoggedIn,

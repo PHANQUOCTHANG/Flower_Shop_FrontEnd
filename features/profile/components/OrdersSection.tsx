@@ -67,23 +67,28 @@ export const OrdersSection: FC<OrdersSectionProps> = ({
       <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#EE2B5B]/10 to-transparent rounded-full blur-3xl pointer-events-none -mr-10 -mt-10 z-0" />
 
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-10 relative z-10">
+      <div className="flex flex-col mb-8 relative z-10">
         {/* Títl và nút làm mới */}
-        <div className="flex items-center justify-between gap-3 xs:gap-4">
-          <h2 className="text-xl sm:text-2xl font-black text-slate-900 uppercase tracking-tight leading-tight">
-            Đơn hàng của bạn
-          </h2>
+        <div className="flex items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight">
+              Đơn hàng của bạn
+            </h2>
+            <p className="text-sm text-slate-500">
+              Xem lại toàn bộ lịch sử mua sắm và trạng thái đơn hàng của bạn.
+            </p>
+          </div>
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-50 text-slate-600 rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-[#EE2B5B]/10 hover:text-[#D11E48] transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap shadow-sm hover:shadow-md border border-slate-100"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white text-slate-600 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-[#EE2B5B] hover:text-white transition-all disabled:opacity-50 shadow-sm border border-slate-100"
             type="button"
           >
             <RefreshCw
-              size={12}
+              size={14}
               className={isRefreshing ? "animate-spin" : ""}
             />
-            <span>{isRefreshing ? "Tải..." : "Làm mới"}</span>
+            <span>{isRefreshing ? "Đang tải" : "Làm mới"}</span>
           </button>
         </div>
 
@@ -92,48 +97,55 @@ export const OrdersSection: FC<OrdersSectionProps> = ({
           status={status}
           onStatusChange={(newStatus) => {
             onStatusChange(newStatus);
-            onPageChange(1); // Reset về trang 1 khi thay đổi bộ lọc
+            onPageChange(1);
           }}
           sort={sort}
           onSortChange={(newSort) => {
             onSortChange(newSort);
-            onPageChange(1); // Reset về trang 1 khi thay đổi sắp xếp
+            onPageChange(1);
           }}
         />
       </div>
 
       {/* Trạng thái đang tải */}
       {isLoading && (
-        <div className="flex justify-center items-center py-10">
-          <div className="animate-spin">
-            <Package className="text-[#EE2B5B]" size={32} />
+        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm">
+          <div className="animate-spin mb-4">
+            <RefreshCw className="text-[#EE2B5B]" size={32} />
           </div>
+          <p className="text-slate-500 font-medium">
+            Đang tải danh sách đơn hàng...
+          </p>
         </div>
       )}
 
       {/* Trạng thái lỗi */}
-      {error && (
-        <Alert
-          type="error"
-          message="Không thể tải danh sách đơn hàng. Vui lòng thử lại."
-          onClose={() => {}}
-        />
+      {error && !isLoading && (
+        <div className="mb-6">
+          <Alert
+            type="error"
+            message="Không thể tải danh sách đơn hàng. Vui lòng thử lại."
+            onClose={() => {}}
+          />
+        </div>
       )}
 
       {/* Trạng thái rỗng */}
       {!isLoading && !error && orders.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 sm:py-20 animate-in fade-in zoom-in-95 duration-500 relative z-10">
-          <div className="size-24 rounded-full bg-[#EE2B5B]/10 flex items-center justify-center mb-6 relative">
-            <div className="absolute inset-0 rounded-full bg-[#EE2B5B]/20 animate-ping opacity-20" />
-            <Package className="text-[#0d9e3e] relative z-10" size={40} />
+        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm animate-in fade-in zoom-in-95 duration-500 relative z-10">
+          <div className="size-20 rounded-full bg-slate-50 flex items-center justify-center mb-6">
+            <Package className="text-slate-300" size={32} />
           </div>
-          <h3 className="text-lg font-black text-slate-900 mb-2">Chưa có đơn hàng nào</h3>
-          <p className="text-sm text-slate-500 max-w-xs text-center mb-6">
-            Bạn chưa thực hiện đơn hàng nào. Hãy khám phá các sản phẩm tuyệt vời của chúng tôi nhé!
+          <h3 className="text-xl font-bold text-slate-900 mb-2">
+            Chưa có đơn hàng nào
+          </h3>
+          <p className="text-sm text-slate-500 max-w-xs text-center mb-8">
+            Bạn chưa thực hiện đơn hàng nào. Hãy khám phá các sản phẩm tuyệt vời
+            của chúng tôi nhé!
           </p>
           <a
             href="/products"
-            className="inline-block px-6 py-3 bg-gradient-to-r from-[#EE2B5B] to-[#D11E48] text-white rounded-xl text-xs font-black uppercase tracking-widest hover:shadow-lg hover:shadow-[#EE2B5B]/30 hover:-translate-y-0.5 transition-all duration-300"
+            className="inline-block px-8 py-3 bg-[#EE2B5B] text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-[#D11E48] hover:shadow-lg hover:shadow-[#EE2B5B]/20 transition-all duration-300"
           >
             Khám phá ngay
           </a>

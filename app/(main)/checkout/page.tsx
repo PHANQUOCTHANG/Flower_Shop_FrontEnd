@@ -83,10 +83,6 @@ export default function CheckoutPage() {
     queryClient, // Pass queryClient để hook xử lí cache invalidation
     onJobIdReceived: (jobId) => {
       // Redirect sang trang xử lí đơn hàng khi nhận jobId (202 response)
-      console.log(
-        "[CheckoutPage] Redirecting to order processing with jobId:",
-        jobId,
-      );
       router.push(`/order-processing?jobId=${jobId}`);
     },
     onSuccess: (order) => {
@@ -98,7 +94,6 @@ export default function CheckoutPage() {
     },
     onError: (error: any) => {
       // Xử lí lỗi - show alert ở checkout page
-      console.error("[CheckoutPage] Order error:", error);
       setAlertType("error");
       setAlertMessage(error?.message || VALIDATION_MESSAGES.ORDER_ERROR);
       setShowAlert(true);

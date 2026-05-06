@@ -12,8 +12,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getSocket } from "@/lib/socket";
 import { useFetchMyOrders } from "@/features/profile/hooks/useProfile";
 import {
-  ProfileHeader,
-  ProfileInfo,
+  ProfileSidebar,
+  ProfileDashboard,
   OrdersSection,
   AddressSection,
   ChangePasswordForm,
@@ -45,6 +45,7 @@ function UserAccountContent() {
   const searchParams = useSearchParams();
 
   const user = useAuthStore((state) => state.user);
+
   const { logout, isLoading: isLogoutLoading } = useLogout();
 
   // Đọc tab từ URL, mặc định là "profile"
@@ -77,7 +78,7 @@ function UserAccountContent() {
     }
   }, [urlOrderId]);
 
-  // Lấy dữ liệu đơn hàng — chỉ enable khi activeTab === "orders"
+  // Lấy dữ liệu đơn hàng
   const {
     orders,
     meta,
@@ -86,7 +87,7 @@ function UserAccountContent() {
     refetch: refetchOrders,
   } = useFetchMyOrders(
     { page, limit: ORDERS_PAGE_LIMIT, status, sort },
-    activeTab === "orders",
+    activeTab === "orders" || activeTab === "profile",
   );
 
   const handleLogout = useCallback(() => {
@@ -193,7 +194,7 @@ function UserAccountContent() {
   }, [user?.id, queryClient, selectedOrderId]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#EE2B5B]/5 to-slate-50 font-['Inter',_sans-serif] text-slate-900 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 font-['Inter',_sans-serif] text-slate-900 transition-colors duration-300">
       {/* Thông báo thành công */}
       {successMessage && (
         <div className="fixed bottom-4 right-4 left-4 sm:bottom-6 sm:right-6 sm:left-auto sm:max-w-sm z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -206,7 +207,7 @@ function UserAccountContent() {
         </div>
       )}
 
-      <main className="mx-auto w-full max-w-[1300px] px-4 sm:px-6 md:px-8 lg:px-12 py-6 sm:py-8 md:py-10 animate-in fade-in duration-700">
+      <main className="mx-auto w-full max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 animate-in fade-in duration-700">
         <Breadcrumbs
           items={[
             { label: "Trang chủ", href: "/" },
@@ -214,30 +215,22 @@ function UserAccountContent() {
           ]}
         />
 
-        <div className="mt-6 sm:mt-8 bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.06)] overflow-hidden border border-white/50 relative">
-          {/* Header & Navigation */}
-          <ProfileHeader
-            userName={user?.name}
-            avatarUrl={user?.avatar ?? undefined}
+        <div className="mt-6 flex flex-col lg:flex-row gap-8 lg:gap-12">
+          {/* Left Sidebar */}
+          <ProfileSidebar
             activeTab={activeTab}
             onTabChange={handleTabChange}
             onLogout={handleLogout}
             isLogoutLoading={isLogoutLoading}
           />
 
-          {/* Content Area */}
-          <div className="p-4 sm:p-8 md:p-12 min-h-[500px]">
+          {/* Right Content Area */}
+          <div className="flex-1 min-w-0 min-h-[600px]">
             {activeTab === "profile" && (
-              <ProfileInfo
-                fields={[
-                  { label: "Họ và tên", value: user?.name || "N/A" },
-                  { label: "Email liên hệ", value: user?.email || "N/A" },
-                  { label: "Số điện thoại", value: user?.phone || "Chưa cập nhật" },
-                  { label: "Giới tính", value: user?.gender || "Chưa cập nhật" },
-                ]}
-                onEdit={() => {
-                  // TODO: Implement edit profile
-                }}
+              <ProfileDashboard
+                user={user}
+                orders={orders || []}
+                onNavigateTab={(tab) => handleTabChange(tab)}
               />
             )}
 
@@ -246,11 +239,7 @@ function UserAccountContent() {
                 orders={orders}
                 meta={meta}
                 isLoading={ordersLoading}
-                error={
-                  ordersError instanceof Error
-                    ? ordersError.message
-                    : (ordersError as string | null)
-                }
+                error={ordersError?.message || (ordersError as string)}
                 currentPage={page}
                 onPageChange={setPage}
                 status={status}
@@ -265,6 +254,7 @@ function UserAccountContent() {
 
             {activeTab === "address" && <AddressSection />}
             {activeTab === "password" && <ChangePasswordForm />}
+            
           </div>
         </div>
       </main>

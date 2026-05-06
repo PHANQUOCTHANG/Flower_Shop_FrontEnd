@@ -16,8 +16,8 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Flower_Web",
-  description: "Hello , welcome to Flower_Web",
+  title: "Flower_QT",
+  description: "Hello , welcome to Flower_QT",
 };
 
 export default function RootLayout({

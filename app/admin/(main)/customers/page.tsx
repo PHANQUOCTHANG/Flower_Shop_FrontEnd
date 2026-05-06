@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { Users, Star } from "lucide-react";
 import { useCustomers } from "@/features/admin/customers/hooks/useCustomers";
 import {
@@ -22,9 +22,32 @@ export default function CustomersPage() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedTier, setSelectedTier] = useState("Tất cả");
   const [currentPage, setCurrentPage] = useState(1);
+  const debounceTimerRef = useRef<NodeJS.Timeout>();
+
+  // Debounce search onChange
+  const handleSearchChange = (val: string) => {
+    setSearchKeyword(val);
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      setCurrentPage(1);
+    }, 500);
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   // Lấy dữ liệu khách hàng từ hook
-  const { customers , meta , loading, error } = useCustomers({
+  const { customers, meta, loading, error } = useCustomers({
     page: currentPage,
     limit: 10,
     search: searchKeyword || undefined,
@@ -89,7 +112,7 @@ export default function CustomersPage() {
           <CustomerFilters
             searchKeyword={searchKeyword}
             selectedTier={selectedTier}
-            onSearchChange={setSearchKeyword}
+            onSearchChange={handleSearchChange}
             onTierChange={setSelectedTier}
           />
 

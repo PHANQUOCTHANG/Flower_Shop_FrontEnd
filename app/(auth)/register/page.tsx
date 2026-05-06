@@ -10,6 +10,7 @@ import {
   Lock,
   Flower2,
   ArrowRight,
+  ArrowLeft,
 } from "lucide-react";
 import { useRegister } from "@/features/auth/register/hooks/useRegister";
 import Alert from "@/components/ui/Alert";
@@ -68,123 +69,137 @@ export default function RegisterPage() {
   const [showAlert, setShowAlert] = useState(true);
 
   return (
-    <div className="flex min-h-screen w-full flex-col lg:flex-row bg-[#fcfbf9] text-[#1b0d11] transition-colors duration-300 font-sans antialiased">
-      {/* ── Cột trái: ảnh nền (ẩn trên mobile) ── */}
-      <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 hover:scale-105"
-          style={{
-            backgroundImage:
-              "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAlXxavdMIJRvU-B2Kxw7LUyDh_01f_yPiFmZcHADd7Q0mhOqSo63kdOkbgRf2TNCKT-ZSL572OL9XeF80dBfz_R8XKfhHizc8dFPnqHZ9FeG1cxliNy6ofJ12x043Cn-EAf_w5OF82V8Oqngyyfv4VAJMbzVArsH9q6IZzExZEWwY_K5_3qNBrJTfilFPfMTghkySoI7mpF24yn_SrraKPF-SAd8XBK_ZoVuMaLcdYw3uan-NJGgIS2ulQjbh7a6iFwny3OuvXH_GL')",
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(rgba(34,16,21,.2), rgba(34,16,21,.45))",
-          }}
-        />
-        <div className="relative z-10 p-12 text-white max-w-xl">
-          <div className="flex items-center gap-3 mb-8">
-            <Flower2 size={40} />
-            <h1 className="text-3xl font-bold tracking-tight">Flower Shop</h1>
+    <div className="min-h-screen bg-[#fcfbf9] font-sans text-[#1b0d11] flex items-center justify-center p-4 sm:p-8 transition-colors duration-300 selection:bg-[#EE2B5B]/20 selection:text-[#EE2B5B]">
+      
+      {/* ── Main Container (Central Card) ── */}
+      <div className="w-full max-w-[1000px] grid grid-cols-1 lg:grid-cols-2 bg-white shadow-[0_20px_50px_-12px_rgba(238,43,91,0.1)] rounded-[2rem] overflow-hidden border border-gray-100 animate-in fade-in zoom-in-95 duration-700">
+        
+        {/* ── Left Column: Image (Hidden on Mobile) ── */}
+        <div className="hidden lg:flex relative bg-black/5 flex-col items-center justify-center overflow-hidden">
+          {/* Lớp phủ & Hình nền */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
+          <div className="absolute inset-0 bg-[#EE2B5B]/10 mix-blend-multiply z-10" />
+          <div
+            className="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] hover:scale-110"
+            style={{
+              backgroundImage:
+                "url('https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=80&w=1887&auto=format&fit=crop')",
+            }}
+          />
+          
+          <div className="relative z-20 flex flex-col justify-end p-12 text-white w-full h-full text-center">
+            <div className="flex justify-center items-center gap-2 mb-4 opacity-90">
+              <Flower2 size={32} className="text-[#ffb3c6]" />
+            </div>
+            <h2 
+              className="text-[2.75rem] font-bold leading-[1.1] mb-4 tracking-tight text-white"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
+              Hương sắc thiên nhiên <br />
+              <span className="text-[#ffb3c6] italic font-medium">trong không gian của bạn</span>
+            </h2>
+            <p className="text-white/80 max-w-[300px] mx-auto font-light leading-relaxed">
+              Đăng ký thành viên ngay hôm nay để nhận ưu đãi 15% cho đơn hàng đầu tiên.
+            </p>
           </div>
-          <h2 className="text-5xl font-black leading-tight mb-6">
-            Mang hương sắc thiên nhiên vào không gian của bạn
-          </h2>
-          <p className="text-lg opacity-90 leading-relaxed">
-            Đăng ký thành viên ngay hôm nay để nhận ưu đãi 15% cho đơn hàng đầu
-            tiên và cập nhật những mẫu hoa mới nhất theo mùa.
-          </p>
         </div>
-      </div>
 
-      {/* ── Cột phải: form ── */}
-      <div className="flex flex-1 flex-col justify-center bg-white px-6 py-12 sm:px-12 lg:w-1/2 xl:w-2/5 shadow-2xl z-10">
-        <div className="mx-auto w-full max-w-md">
-          {/* Logo mobile */}
-          <div className="flex lg:hidden items-center justify-center gap-2 mb-8 text-[#EE2B5B]">
-            <Flower2 size={32} />
-            <span className="text-xl font-bold">Flower Shop</span>
-          </div>
+        {/* ── Right Column: Form ── */}
+        <div className="p-8 sm:p-12 flex flex-col justify-center relative bg-white overflow-y-auto max-h-[90vh]">
+          {/* Nút quay lại */}
+          <Link
+            href="/"
+            className="group absolute top-8 left-8 inline-flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-[#EE2B5B] transition-colors"
+          >
+            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+            <span>Trang chủ</span>
+          </Link>
 
-          {/* Tiêu đề */}
-          <div className="mb-10 text-center lg:text-left">
-            <h2 className="text-3xl font-black text-[#1b0d11] tracking-tight mb-2">
+          <div className="mt-8 lg:mt-0 mb-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* Logo Mobile */}
+            <div className="lg:hidden flex justify-center items-center gap-2 text-[#EE2B5B] mb-6">
+              <Flower2 size={28} />
+              <span className="text-xl font-bold tracking-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                Flower Shop
+              </span>
+            </div>
+
+            <h2 
+              className="text-3xl font-bold text-[#1b0d11] tracking-tight mb-2"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
               Tạo Tài Khoản
             </h2>
-            <p className="text-gray-500 ">
-              Tham gia cùng chúng tôi để bắt đầu trải nghiệm mua sắm tuyệt vời.
+            <p className="text-gray-500 font-medium text-sm">
+              Tham gia cùng chúng tôi để bắt đầu trải nghiệm mua sắm.
             </p>
           </div>
 
           {/* Error Alert */}
           {error && showAlert && (
-            <div className="mb-6">
-              <Alert
-                type="error"
-                message={error.message}
-                autoClose={true}
-                duration={5000}
-                onClose={() => setShowAlert(false)}
-              />
+            <div className="mb-6 animate-in fade-in zoom-in-95 duration-300">
+              <Alert type="error" message={error.message} autoClose duration={5000} onClose={() => setShowAlert(false)} />
             </div>
           )}
 
           {/* Form */}
           <form
-            className="space-y-5"
+            className="space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150"
             onSubmit={(e) => {
               setShowAlert(true);
               handleSubmit(e);
             }}
           >
-            <Field
-              label="Họ và tên"
-              id="fullName"
-              icon={<User size={20} />}
-              type="text"
-              placeholder="Nguyễn Văn A"
-              required
-              disabled={isLoading}
-              value={form.fullName}
-              onChange={(e) => updateForm("fullName", e.target.value)}
-            />
-
-            <Field
-              label="Số điện thoại (Tùy chọn)"
-              id="phone"
-              icon={<Phone size={20} />}
-              type="tel"
-              placeholder="0901 234 567"
-              disabled={isLoading}
-              value={form.phone}
-              onChange={(e) => updateForm("phone", e.target.value)}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field
+                label="Họ và tên"
+                id="fullName"
+                icon={<User size={16} />}
+                type="text"
+                placeholder="Nguyễn Văn A"
+                required
+                disabled={isLoading}
+                value={form.fullName}
+                onChange={(e) => updateForm("fullName", e.target.value)}
+                className="bg-gray-50/50 rounded-xl focus:bg-white border-2 border-gray-100 shadow-sm font-medium py-3 text-sm focus:ring-[#EE2B5B]/10 focus:border-[#EE2B5B]"
+              />
+              <Field
+                label="Số điện thoại"
+                id="phone"
+                icon={<Phone size={16} />}
+                type="tel"
+                placeholder="0901 234 567"
+                disabled={isLoading}
+                value={form.phone}
+                onChange={(e) => updateForm("phone", e.target.value)}
+                className="bg-gray-50/50 rounded-xl focus:bg-white border-2 border-gray-100 shadow-sm font-medium py-3 text-sm focus:ring-[#EE2B5B]/10 focus:border-[#EE2B5B]"
+              />
+            </div>
 
             <Field
               label="Email"
               id="email"
-              icon={<Mail size={20} />}
+              icon={<Mail size={16} />}
               type="email"
               placeholder="name@example.com"
               required
               disabled={isLoading}
               value={form.email}
               onChange={(e) => updateForm("email", e.target.value)}
+              className="bg-gray-50/50 rounded-xl focus:bg-white border-2 border-gray-100 shadow-sm font-medium py-3 text-sm focus:ring-[#EE2B5B]/10 focus:border-[#EE2B5B]"
             />
 
             <Field
               label="Mật khẩu"
               id="password"
-              icon={<Lock size={20} />}
+              icon={<Lock size={16} />}
               type={showPass ? "text" : "password"}
               placeholder="••••••••"
               required
               disabled={isLoading}
               value={form.password}
               onChange={(e) => updateForm("password", e.target.value)}
+              className="bg-gray-50/50 rounded-xl focus:bg-white border-2 border-gray-100 shadow-sm font-medium py-3 text-sm focus:ring-[#EE2B5B]/10 focus:border-[#EE2B5B]"
               rightSlot={
                 <button
                   type="button"
@@ -192,7 +207,7 @@ export default function RegisterPage() {
                   onClick={() => setShowPass(!showPass)}
                   className="text-gray-400 hover:text-[#EE2B5B] transition-colors disabled:opacity-50"
                 >
-                  {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               }
             />
@@ -200,38 +215,33 @@ export default function RegisterPage() {
             <Field
               label="Xác nhận mật khẩu"
               id="confirmPassword"
-              icon={<Lock size={20} />}
+              icon={<Lock size={16} />}
               type="password"
               placeholder="••••••••"
               required
               disabled={isLoading}
               value={form.confirmPassword}
               onChange={(e) => updateForm("confirmPassword", e.target.value)}
+              className="bg-gray-50/50 rounded-xl focus:bg-white border-2 border-gray-100 shadow-sm font-medium py-3 text-sm focus:ring-[#EE2B5B]/10 focus:border-[#EE2B5B]"
             />
 
             {/* Submit */}
-            <div className="pt-3">
+            <div className="pt-4">
               <button
                 type="submit"
                 disabled={isLoading}
-                className="group flex w-full justify-center items-center gap-2 rounded-lg
- bg-[#EE2B5B] hover:bg-[#B3163B] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
- px-4 py-4 text-sm font-bold text-white
- shadow-lg shadow-[#EE2B5B]/25 transition-all
- focus:outline-none focus:ring-2 focus:ring-[#EE2B5B] focus:ring-offset-2"
+                className="relative w-full overflow-hidden group bg-[#EE2B5B] hover:bg-[#d41e4a] disabled:bg-[#EE2B5B]/50 text-white font-bold py-3.5 rounded-xl transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] shadow-lg shadow-[#EE2B5B]/25"
               >
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
                 {isLoading ? (
                   <>
-                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                    ĐANG ĐĂNG KÝ
+                    <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                    <span className="tracking-wide text-sm">ĐANG XỬ LÝ...</span>
                   </>
                 ) : (
                   <>
-                    ĐĂNG KÝ NGAY
-                    <ArrowRight
-                      size={18}
-                      className="group-hover:translate-x-1 transition-transform"
-                    />
+                    <span className="tracking-wide text-sm">ĐĂNG KÝ THÀNH VIÊN</span>
+                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
               </button>
@@ -239,20 +249,20 @@ export default function RegisterPage() {
           </form>
 
           {/* Chuyển sang đăng nhập */}
-          <div className="mt-10 text-center border-t border-gray-200 pt-8">
-            <p className="text-sm text-gray-600 ">
+          <div className="mt-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+            <div className="relative mb-6 flex items-center">
+              <div className="flex-grow border-t border-gray-100" />
+            </div>
+            <p className="text-center text-sm text-gray-500 font-medium">
               Đã có tài khoản?{" "}
-              <Link
-                href="/login"
-                className="font-bold text-[#EE2B5B] hover:underline ml-1"
-              >
+              <Link href="/login" className="font-bold text-[#EE2B5B] hover:text-[#d41e4a] transition-colors relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1.5px] after:bottom-0 after:left-0 after:bg-[#EE2B5B] hover:after:scale-x-100 after:origin-bottom-right hover:after:origin-bottom-left after:transition-transform after:duration-300">
                 Đăng nhập ngay
               </Link>
             </p>
           </div>
-
-          <p className="mt-10 text-center text-[10px] uppercase tracking-widest text-gray-400 font-medium">
-            © 2024 Flower Shop. All Rights Reserved.
+          
+          <p className="mt-8 text-center text-[10px] uppercase tracking-widest text-gray-400 font-medium animate-in fade-in duration-1000 delay-500">
+            © 2024 Flower Shop
           </p>
         </div>
       </div>

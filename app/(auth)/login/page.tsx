@@ -57,111 +57,105 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-[#fcfbf9] text-[#1b0d11] transition-colors duration-300 font-sans antialiased">
-      {/* ───────── Cột trái – ảnh nền ───────── */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[#EE2B5B]/10 mix-blend-multiply z-10" />
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage:
-              "url('https://lh3.googleusercontent.com/aida-public/AB6AXuB5PyS2hfFIEL2wy78OZHdA9O_pW2V9cocTtlOK7-ijMMbDrukiOHmmnAOEMVnZOUKKl72ecQRy3gFTXZtwZqPHt-hWYJUJfu411isxQ1Ys318d9uBV6UijI38ZdXh-aC21hbS6VllPp731slsZSjD400YTX5ylIXoFAj2CMx4N8HjxI4Pdgdc-Zuw1TMoehEbNyM87uRCMxKBtrPLd3-NrEi55Vqow0FiyPjqfUbNoYi-3hJPUkT_dlcshkTzznrQoXh3i3MMI-BsO')",
-          }}
-        />
-        <div className="relative z-20 flex flex-col justify-end p-20 text-white w-full h-full bg-gradient-to-t from-black/60 to-transparent">
-          <div className="flex items-center gap-3 mb-6">
-            <Flower2 size={40} />
-            <h1 className="text-3xl font-bold tracking-tight">Flower Shop</h1>
-          </div>
-          <h2 className="text-5xl font-extrabold leading-tight mb-4">
-            Trao gửi yêu thương qua từng cánh hoa
-          </h2>
-          <p className="text-lg text-slate-200 max-w-md">
-            Khám phá bộ sưu tập hoa tươi nghệ thuật được thiết kế riêng cho mọi
-            khoảnh khắc đáng nhớ của bạn.
-          </p>
-        </div>
-      </div>
-
-      {/* ───────── Cột phải – form ───────── */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12 md:p-24 bg-white ">
-        <div className="w-full max-w-[440px]">
-          {/* Tiêu đề */}
-          <div className="mb-10 text-center lg:text-left">
-            {/* Nút quay lại */}
-            <button
-              onClick={() => router.push("/")}
-              className="mb-4 lg:mb-6 inline-flex items-center gap-2 text-[#EE2B5B] hover:text-[#B3163B] font-semibold transition-colors"
-            >
-              <ArrowLeft size={20} />
-              <span>Quay lại trang chủ</span>
-            </button>
-            {/* Logo hiện trên mobile */}
-            <div className="lg:hidden flex justify-center mb-6">
-              <div className="flex items-center gap-2 text-[#EE2B5B]">
-                <Flower2 size={32} />
-                <span className="text-xl font-bold tracking-tight">
-                  Flower Shop
-                </span>
-              </div>
+    <div className="min-h-screen bg-[#fcfbf9] font-sans text-[#1b0d11] flex items-center justify-center p-4 sm:p-8 transition-colors duration-300 selection:bg-[#EE2B5B]/20 selection:text-[#EE2B5B]">
+      
+      {/* ── Main Container (Central Card) ── */}
+      <div className="w-full max-w-[1000px] grid grid-cols-1 lg:grid-cols-2 bg-white shadow-[0_20px_50px_-12px_rgba(238,43,91,0.1)] rounded-[2rem] overflow-hidden border border-gray-100 animate-in fade-in zoom-in-95 duration-700">
+        
+        {/* ── Left Column: Image (Hidden on Mobile) ── */}
+        <div className="hidden lg:flex relative bg-black/5 flex-col items-center justify-center overflow-hidden">
+          {/* Lớp phủ & Hình nền */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
+          <div className="absolute inset-0 bg-[#EE2B5B]/10 mix-blend-multiply z-10" />
+          <div
+            className="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] hover:scale-110"
+            style={{
+              backgroundImage:
+                "url('https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=80&w=1887&auto=format&fit=crop')",
+            }}
+          />
+          
+          <div className="relative z-20 flex flex-col justify-end p-12 text-white w-full h-full text-center">
+            <div className="flex justify-center items-center gap-2 mb-4 opacity-90">
+              <Flower2 size={32} className="text-[#ffb3c6]" />
             </div>
-            <h2 className="text-3xl font-black text-[#1b0d11] tracking-tight mb-3 uppercase">
-              Đăng Nhập
+            <h2 
+              className="text-[2.75rem] font-bold leading-[1.1] mb-4 tracking-tight text-white"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
+              Trao gửi yêu thương <br />
+              <span className="text-[#ffb3c6] italic font-medium">qua từng cánh hoa</span>
             </h2>
-            <p className="text-gray-500 ">
-              Chào mừng bạn quay trở lại với cửa hàng hoa tươi.
+            <p className="text-white/80 max-w-[300px] mx-auto font-light leading-relaxed">
+              Khám phá bộ sưu tập hoa tươi nghệ thuật được thiết kế riêng cho mọi khoảnh khắc đáng nhớ.
+            </p>
+          </div>
+        </div>
+
+        {/* ── Right Column: Form ── */}
+        <div className="p-8 sm:p-12 md:p-16 flex flex-col justify-center relative bg-white">
+          {/* Nút quay lại */}
+          <button
+            onClick={() => router.push("/")}
+            className="group absolute top-8 left-8 inline-flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-[#EE2B5B] transition-colors"
+          >
+            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+            <span>Trang chủ</span>
+          </button>
+
+          <div className="mt-6 lg:mt-0 mb-10 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* Logo Mobile */}
+            <div className="lg:hidden flex justify-center items-center gap-2 text-[#EE2B5B] mb-6">
+              <Flower2 size={28} />
+              <span className="text-xl font-bold tracking-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                Flower Shop
+              </span>
+            </div>
+
+            <h2 
+              className="text-3xl font-bold text-[#1b0d11] tracking-tight mb-2"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
+              Mừng trở lại
+            </h2>
+            <p className="text-gray-500 font-medium text-sm">
+              Vui lòng đăng nhập để tiếp tục trải nghiệm mua sắm.
             </p>
           </div>
 
           {/* Alerts */}
           {error && (
-            <Alert
-              type="error"
-              message={error.message}
-              onClose={() => {}}
-              autoClose={true}
-              duration={5000}
-            />
+            <div className="mb-6 animate-in fade-in zoom-in-95 duration-300">
+              <Alert type="error" message={error.message} onClose={() => {}} autoClose duration={5000} />
+            </div>
           )}
           {successMessage && (
-            <Alert
-              type="success"
-              message={successMessage}
-              onClose={() => setSuccessMessage("")}
-              autoClose={true}
-              duration={10000}
-            />
+            <div className="mb-6 animate-in fade-in zoom-in-95 duration-300">
+              <Alert type="success" message={successMessage} onClose={() => setSuccessMessage("")} autoClose duration={10000} />
+            </div>
           )}
 
           {/* Form */}
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Email / SĐT */}
-            <div>
-              <label className="block text-sm font-semibold text-[#1b0d11] mb-2">
-                Email
-              </label>
+          <form className="space-y-5 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150" onSubmit={handleSubmit}>
+            {/* Email */}
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider ml-1">Email</label>
               <input
-                type="text"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Nhập email"
+                placeholder="name@example.com"
                 required
                 disabled={isLoading}
-                className="w-full px-4 py-3.5 rounded-lg border border-gray-200 bg-white text-[#1b0d11] placeholder:text-gray-400 
- focus:ring-2 focus:ring-[#EE2B5B]/20 focus:border-[#EE2B5B] outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-3.5 rounded-xl border-2 border-gray-100 bg-gray-50/50 text-[#1b0d11] placeholder:text-gray-400 focus:bg-white focus:ring-4 focus:ring-[#EE2B5B]/10 focus:border-[#EE2B5B] outline-none transition-all disabled:opacity-50 font-medium"
               />
             </div>
 
             {/* Mật khẩu */}
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-semibold text-[#1b0d11] ">
-                  Mật khẩu
-                </label>
-                <a
-                  href="/forgot-password"
-                  className="text-xs font-semibold text-[#EE2B5B] hover:underline"
-                >
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center ml-1">
+                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider">Mật khẩu</label>
+                <a href="/forgot-password" className="text-xs font-bold text-[#EE2B5B] hover:text-[#B3163B] transition-colors">
                   Quên mật khẩu?
                 </a>
               </div>
@@ -170,94 +164,81 @@ export default function LoginPage() {
                   type={showPass ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Nhập mật khẩu"
+                  placeholder="••••••••"
                   required
                   disabled={isLoading}
-                  className="w-full px-4 py-3.5 pr-12 rounded-lg border border-gray-200 bg-white text-[#1b0d11] placeholder:text-gray-400 
- focus:ring-2 focus:ring-[#EE2B5B]/20 focus:border-[#EE2B5B] outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-3.5 pr-12 rounded-xl border-2 border-gray-100 bg-gray-50/50 text-[#1b0d11] placeholder:text-gray-400 focus:bg-white focus:ring-4 focus:ring-[#EE2B5B]/10 focus:border-[#EE2B5B] outline-none transition-all disabled:opacity-50 font-medium"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#EE2B5B] transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#EE2B5B] transition-colors"
                 >
-                  {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
 
             {/* Ghi nhớ */}
-            <label className="flex items-center gap-2 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 accent-[#EE2B5B] cursor-pointer"
-              />
-              <span className="text-sm text-gray-600 ">Ghi nhớ đăng nhập</span>
+            <label className="flex items-center gap-3 cursor-pointer select-none group w-max pt-1 ml-1">
+              <div className="relative flex items-center justify-center">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="peer appearance-none h-4 w-4 rounded-md border-2 border-gray-300 checked:border-[#EE2B5B] checked:bg-[#EE2B5B] transition-colors cursor-pointer"
+                />
+                <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <span className="text-sm font-medium text-gray-500 group-hover:text-gray-800 transition-colors">Ghi nhớ đăng nhập</span>
             </label>
 
             {/* Nút submit */}
-            <button
-              disabled={isLoading}
-              className="w-full bg-[#EE2B5B] hover:bg-[#B3163B] disabled:bg-[#EE2B5B]/50 active:scale-[0.98]
- text-white font-bold py-4 rounded-lg shadow-lg shadow-[#EE2B5B]/25
- transition-all text-sm uppercase tracking-wider disabled:cursor-not-allowed
- flex items-center justify-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <Loader size={18} className="animate-spin" />
-                  <span>Đang đăng nhập...</span>
-                </>
-              ) : (
-                "Đăng Nhập"
-              )}
-            </button>
+            <div className="pt-2">
+              <button
+                disabled={isLoading}
+                className="relative w-full overflow-hidden group bg-[#EE2B5B] hover:bg-[#d41e4a] disabled:bg-[#EE2B5B]/50 text-white font-bold py-3.5 rounded-xl transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] shadow-lg shadow-[#EE2B5B]/25"
+              >
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                {isLoading ? (
+                  <>
+                    <Loader size={18} className="animate-spin text-white" />
+                    <span>Đang xử lý...</span>
+                  </>
+                ) : (
+                  <span className="tracking-wide text-sm uppercase">Đăng nhập</span>
+                )}
+              </button>
+            </div>
           </form>
 
           {/* Đăng nhập mạng xã hội */}
-          <div className="mt-10">
-            <div className="relative mb-8">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200 " />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-gray-500 ">
-                  Hoặc tiếp tục với
-                </span>
-              </div>
+          <div className="mt-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+            <div className="relative mb-6 flex items-center">
+              <div className="flex-grow border-t border-gray-100" />
+              <span className="flex-shrink-0 mx-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Hoặc tiếp tục với</span>
+              <div className="flex-grow border-t border-gray-100" />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                className="flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 
- rounded-lg bg-white hover:bg-gray-50 transition-colors"
-              >
+            
+            <div className="grid grid-cols-2 gap-3">
+              <button className="flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-100 rounded-xl bg-white hover:border-[#4285F4]/30 hover:bg-[#4285F4]/5 transition-colors group">
                 <GoogleIcon />
-                <span className="text-sm font-semibold text-[#1b0d11] ">
-                  Google
-                </span>
+                <span className="text-xs font-bold text-gray-600 group-hover:text-[#4285F4] transition-colors">Google</span>
               </button>
-              <button
-                className="flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 
- rounded-lg bg-white hover:bg-gray-50 transition-colors"
-              >
+              <button className="flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-100 rounded-xl bg-white hover:border-[#1877F2]/30 hover:bg-[#1877F2]/5 transition-colors group">
                 <FacebookIcon />
-                <span className="text-sm font-semibold text-[#1b0d11] ">
-                  Facebook
-                </span>
+                <span className="text-xs font-bold text-gray-600 group-hover:text-[#1877F2] transition-colors">Facebook</span>
               </button>
             </div>
           </div>
 
           {/* Chuyển sang đăng ký */}
-          <p className="mt-12 text-center text-sm text-gray-500 ">
-            Bạn chưa có tài khoản?{" "}
-            <Link
-              href="/register"
-              className="font-bold text-[#EE2B5B] hover:underline ml-1"
-            >
-              Đăng ký ngay
+          <p className="mt-10 text-center text-sm text-gray-500 font-medium animate-in fade-in duration-1000 delay-500">
+            Chưa có tài khoản?{" "}
+            <Link href="/register" className="font-bold text-[#EE2B5B] hover:text-[#d41e4a] transition-colors relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1.5px] after:bottom-0 after:left-0 after:bg-[#EE2B5B] hover:after:scale-x-100 after:origin-bottom-right hover:after:origin-bottom-left after:transition-transform after:duration-300">
+              Tạo tài khoản ngay
             </Link>
           </p>
         </div>

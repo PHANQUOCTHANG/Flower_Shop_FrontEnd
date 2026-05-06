@@ -3,7 +3,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { OrderResponse } from "@/types/order";
 import { StatusBadge } from "./StatusBadge";
-import { useOrderById, useCancelOrder } from "@/features/admin/orders/hooks/useOrder";
+import {
+  useOrderById,
+  useCancelOrder,
+} from "@/features/admin/orders/hooks/useOrder";
 import { Oregano } from "next/font/google";
 import { formatCurrency, formatDate } from "@/utils/format";
 import { useAuthStore } from "@/stores/auth.store";
@@ -122,7 +125,13 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   Ngày đặt
                 </p>
                 <p className="font-bold text-slate-900 ">
-                  {formatDate(order.createdAt)}
+                  <span>
+                    {new Date(order.createdAt).toLocaleTimeString("vi-VN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                  <span className="ml-2">{formatDate(order.createdAt)}</span>
                 </p>
               </div>
               <div>
@@ -141,7 +150,10 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
                   Phương thức thanh toán
                 </p>
-                <StatusBadge label={order.paymentMethod || "cod"} type="method" />
+                <StatusBadge
+                  label={order.paymentMethod || "cod"}
+                  type="method"
+                />
               </div>
               <div>
                 <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
@@ -295,7 +307,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
               cancelLabel="Quay lại"
               onConfirm={() => {
                 cancelOrder(order.id, {
-                  onSuccess: () => setShowConfirm(false)
+                  onSuccess: () => setShowConfirm(false),
                 });
               }}
               onCancel={() => setShowConfirm(false)}

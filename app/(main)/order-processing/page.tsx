@@ -13,7 +13,6 @@ function OrderProcessingContent() {
   const jobId = searchParams.get("jobId");
 
   useEffect(() => {
-    console.log("[OrderProcessing] Page loaded with jobId:", jobId);
     if (!jobId) {
       router.push("/checkout");
     }
@@ -23,7 +22,6 @@ function OrderProcessingContent() {
     jobId: jobId || undefined,
     enabled: !!jobId,
     onStatusChange: (event) => {
-      console.log("[OrderProcessing] Status changed:", event);
       if (event.status === "completed" && event.data?.orderId) {
         setTimeout(() => {
           router.push(`/order-completed?id=${event.data?.orderId}`);

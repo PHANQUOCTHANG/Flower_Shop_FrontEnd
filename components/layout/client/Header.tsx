@@ -6,7 +6,6 @@ import { useRouter, usePathname } from "next/navigation";
 import {
   Search,
   ShoppingCart,
-  Heart,
   Menu,
   X,
   User,
@@ -65,7 +64,6 @@ export default function Header() {
   const isLoggedIn = useAuthStore((s) => s.isAuthenticated);
   const userName = useAuthStore((s) => s.user?.name || "");
   const userAvatar = useAuthStore((s) => s.user?.avatar || "");
-  const [favoriteCount] = useState(0);
 
   const settings = useSettingStore((s) => s.settings);
   const shopName = settings?.shopConfig?.shopName || "FlowerShop";
@@ -78,6 +76,14 @@ export default function Header() {
     setDrawerOpen(false);
     setMobileSearchOpen(false);
   }, [pathname]);
+
+  // Reset search on logout
+  useEffect(() => {
+    if (!isLoggedIn && isSessionReady) {
+      setSearchQuery("");
+      setShowSuggestions(false);
+    }
+  }, [isLoggedIn, isSessionReady]);
 
   // Scroll detection
   useEffect(() => {
@@ -285,23 +291,6 @@ export default function Header() {
               )}
             </button>
 
-            {/* Favorite (desktop) */}
-            <button
-              onClick={() => router.push("/favorite")}
-              className={`hidden sm:flex relative p-2 rounded-xl transition-all ${
-                pathname === "/favorite"
-                  ? "bg-[#EE2B5B] text-white"
-                  : "hover:bg-[#FCE9ED] text-slate-600"
-              }`}
-              aria-label="Yêu thích"
-            >
-              <Heart size={21} />
-              {favoriteCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-[#EE2B5B] text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center ring-2 ring-white">
-                  {favoriteCount}
-                </span>
-              )}
-            </button>
 
             {/* Desktop User */}
             {!isSessionReady ? (
@@ -551,18 +540,6 @@ export default function Header() {
                       {cartCount}
                     </span>
                   )}
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => {
-                    router.push("/favorite");
-                    setDrawerOpen(false);
-                  }}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-[#FCE9ED] hover:text-[#EE2B5B] transition-all w-full text-left"
-                >
-                  <Heart size={18} />
-                  Yêu thích
                 </button>
               </li>
             </ul>

@@ -159,12 +159,23 @@ export const ProductCard = ({
   );
 
   // Nút thêm vào giỏ
-  const CartButton = ({ fullWidth = false }: { fullWidth?: boolean }) => {
+  const CartButton = ({
+    fullWidth = false,
+    isListView = false,
+  }: {
+    fullWidth?: boolean;
+    isListView?: boolean;
+  }) => {
+    const paddingClass = isListView ? "py-2 sm:py-2.5" : "py-3.5";
+    const roundedClass = isListView
+      ? "rounded-lg sm:rounded-xl"
+      : "rounded-[14px]";
+
     // Trạng thái: Đã thêm thành công
     if (cartState === "added") {
       return (
         <div
-          className={`${fullWidth ? "w-full" : ""} py-2 sm:py-3 px-3 sm:px-4 rounded-xl sm:rounded-2xl bg-[#13ec5b]/10 border-2 border-[#13ec5b] text-[#0d9e3e] text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap`}
+          className={`${fullWidth ? "w-full" : ""} ${paddingClass} px-3 sm:px-4 ${roundedClass} bg-[#13ec5b]/10 border-2 border-[#13ec5b] text-[#0d9e3e] text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap`}
         >
           <Check size={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           Đã thêm {quantity} vào giỏ!
@@ -177,7 +188,7 @@ export const ProductCard = ({
       <button
         disabled={isOutOfStock}
         onClick={handleOpenPicker}
-        className={`${fullWidth ? "w-full" : ""} p-2 sm:p-3.5 px-3 sm:px-4 rounded-xl sm:rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 border-2 border-[#13ec5b]/40 bg-white text-[#0d1b12] hover:border-[#13ec5b] hover:bg-[#13ec5b]/10 text-xs sm:text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap`}
+        className={`${fullWidth ? "w-full" : ""} ${paddingClass} px-3 sm:px-4 ${roundedClass} transition-all active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 border-2 border-[#13ec5b]/40 bg-white text-[#0d1b12] hover:border-[#13ec5b] hover:bg-[#13ec5b]/10 text-xs sm:text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap`}
       >
         <ShoppingCart size={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         Thêm vào giỏ
@@ -285,7 +296,7 @@ export const ProductCard = ({
               </div>
             ) : (
               <div className="flex-none">
-                <CartButton />
+                <CartButton isListView />
               </div>
             )}
           </div>
@@ -388,7 +399,7 @@ export const ProductCard = ({
               <QuantityPicker />
             </div>
           ) : (
-            <CartButton fullWidth />
+            <CartButton fullWidth isListView={false} />
           )}
         </div>
       </div>

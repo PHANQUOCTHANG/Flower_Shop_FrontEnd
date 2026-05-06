@@ -1,8 +1,6 @@
 // Export tất cả components từ thư mục profile
 
-export { ProfileHeader } from "./ProfileHeader";
 export { ProfileSidebar } from "./ProfileSidebar";
-export { ProfileInfo } from "./ProfileInfo";
 export { OrdersFilters } from "./OrdersFilters";
 export { OrdersTable } from "./OrdersTable";
 export { OrdersSection } from "./OrdersSection";
@@ -11,3 +9,4 @@ export { AddressForm } from "./AddressForm";
 export { AddressCard } from "./AddressCard";
 export { ChangePasswordForm } from "./ChangePasswordForm";
 export { ReviewFormModal } from "./ReviewFormModal";
+export { ProfileDashboard } from "./ProfileDashboard";
