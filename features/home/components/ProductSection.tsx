@@ -107,28 +107,28 @@ function HomeProductCard({ product }: { product: Product }) {
       </div>
 
       {/* Info */}
-      <div className="p-4 flex flex-col flex-1">
-        <h4 className="text-sm font-bold text-gray-800 line-clamp-1 mb-1 group-hover:text-[#13ec5b] transition-colors">
+      <div className="p-3 sm:p-4 flex flex-col flex-1 min-w-0">
+        <h4 className="text-xs sm:text-sm font-bold text-gray-800 line-clamp-1 mb-1 group-hover:text-[#13ec5b] transition-colors">
           {product.name}
         </h4>
         {product.sku && (
-          <p className="text-[10px] text-gray-400 font-mono mb-1">
+          <p className="text-[9px] sm:text-[10px] text-gray-400 font-mono mb-1 line-clamp-1">
             Mã sản phẩm: {product.sku}
           </p>
         )}
-        <div className="flex items-center gap-2 mb-3 mt-1">
-          <span className="text-[#1b0d11] font-black text-base">
+        <div className="flex items-center gap-1 sm:gap-2 mb-3 mt-1 flex-wrap">
+          <span className="text-[#1b0d11] font-black text-sm sm:text-base">
             {parseInt(String(product.price)).toLocaleString("vi-VN")}đ
           </span>
           {product.comparePrice && (
-            <span className="text-gray-400 text-xs line-through">
+            <span className="text-gray-400 text-[9px] sm:text-xs line-through">
               {parseInt(String(product.comparePrice)).toLocaleString("vi-VN")}đ
             </span>
           )}
         </div>
 
         {/* Nút hành động */}
-        <div className="mt-auto flex flex-col gap-2">
+        <div className="mt-auto flex flex-col gap-1.5 sm:gap-2">
           {/* MUA NGAY */}
           <button
             disabled={isOutOfStock}
@@ -136,49 +136,49 @@ function HomeProductCard({ product }: { product: Product }) {
               e.stopPropagation();
               router.push(`/products/${product.slug}`);
             }}
-            className="w-full bg-[#EE2B5B] hover:bg-[#B3163B] disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-xs font-bold py-2.5 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1.5"
+            className="w-full bg-[#EE2B5B] hover:bg-[#B3163B] disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-bold py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1 sm:gap-1.5 flex-shrink-0"
           >
-            <Bolt size={14} fill="currentColor" />
+            <Bolt size={13} fill="currentColor" />
             {isOutOfStock ? "HẾT HÀNG" : "MUA NGAY"}
           </button>
 
           {/* Thêm vào giỏ / picker */}
           {cartState === "added" ? (
-            <div className="w-full py-2 rounded-xl bg-[#13ec5b]/10 border border-[#13ec5b] text-[#0d9e3e] text-xs font-bold flex items-center justify-center gap-1">
-              <Check size={13} /> Đã thêm {quantity} vào giỏ!
+            <div className="w-full py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-[#13ec5b]/10 border border-[#13ec5b] text-[#0d9e3e] text-xs font-bold flex items-center justify-center gap-1 flex-shrink-0">
+              <Check size={12} /> Đã thêm {quantity} vào giỏ!
             </div>
           ) : cartState === "picking" ? (
             <div
               onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1"
+              className="flex items-center gap-0.5 sm:gap-1 min-w-0 w-full flex-shrink-0"
             >
               <button
                 onClick={(e) => changeQty(e, -1)}
                 disabled={quantity <= 1}
-                className="size-7 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-[#13ec5b]/20 disabled:opacity-30 transition-colors"
+                className="size-6 sm:size-7 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-[#13ec5b]/20 disabled:opacity-30 transition-colors flex-shrink-0"
               >
-                <Minus size={12} />
+                <Minus size={11} />
               </button>
-              <span className="w-7 text-center text-xs font-bold select-none">
+              <span className="w-5 sm:w-6 text-center text-xs font-bold select-none flex-shrink-0">
                 {quantity}
               </span>
               <button
                 onClick={(e) => changeQty(e, 1)}
                 disabled={quantity >= maxQty}
-                className="size-7 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-[#13ec5b]/20 disabled:opacity-30 transition-colors"
+                className="size-6 sm:size-7 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-[#13ec5b]/20 disabled:opacity-30 transition-colors flex-shrink-0"
               >
-                <Plus size={12} />
+                <Plus size={11} />
               </button>
               <button
                 onClick={handleConfirmAdd}
                 disabled={isPending}
-                className="flex-1 h-7 rounded-lg bg-[#13ec5b] hover:bg-[#0ecf50] disabled:opacity-50 text-[#0d1b12] text-xs font-bold flex items-center justify-center gap-1"
+                className="flex-1 min-w-0 h-6 sm:h-7 rounded-lg bg-[#13ec5b] hover:bg-[#0ecf50] disabled:opacity-50 text-[#0d1b12] text-xs font-bold flex items-center justify-center gap-1"
               >
-                <Check size={12} /> Thêm
+                <Check size={11} /> Thêm
               </button>
               <button
                 onClick={handleCancel}
-                className="size-7 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:text-red-400 transition-colors text-xs"
+                className="size-6 sm:size-7 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:text-red-400 transition-colors text-xs flex-shrink-0"
               >
                 ✕
               </button>
@@ -187,7 +187,7 @@ function HomeProductCard({ product }: { product: Product }) {
             <button
               disabled={isOutOfStock}
               onClick={handleOpenPicker}
-              className="w-full py-2 rounded-xl border-2 border-[#13ec5b]/40 bg-white text-[#0d1b12] hover:border-[#13ec5b] hover:bg-[#13ec5b]/10 text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 transition-all active:scale-95"
+              className="w-full py-2 sm:py-2.5 rounded-lg sm:rounded-xl border-2 border-[#13ec5b]/40 bg-white text-[#0d1b12] hover:border-[#13ec5b] hover:bg-[#13ec5b]/10 text-xs sm:text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 transition-all active:scale-95 flex-shrink-0"
             >
               <ShoppingCart size={13} /> Thêm vào giỏ
             </button>

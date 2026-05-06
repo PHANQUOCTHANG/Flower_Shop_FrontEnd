@@ -6,6 +6,7 @@ import React, { useState, useCallback, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import Alert from "@/components/ui/Alert";
+import { Loading } from "@/components/ui/Loading";
 import { useAuthStore } from "@/stores/auth.store";
 import { useLogout } from "@/features/auth/logout/hooks";
 import { useQueryClient } from "@tanstack/react-query";
@@ -57,6 +58,7 @@ function UserAccountContent() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
   const [sort, setSort] = useState("newest");
+  const [isTabLoading, setIsTabLoading] = useState(false);
 
   // Đọc orderId từ URL (để tải lại trang vẫn giữ nguyên popup)
   const urlOrderId = searchParams.get("orderId");
@@ -121,12 +123,15 @@ function UserAccountContent() {
 
   const handleTabChange = useCallback(
     (tab: ProfileTabType) => {
+      setIsTabLoading(true);
       setActiveTab(tab);
       if (tab === "profile") {
         router.replace(`/profile`);
       } else {
         router.replace(`/profile?tab=${tab}`);
       }
+      // Simulate loading time for smooth transition
+      setTimeout(() => setIsTabLoading(false), 300);
     },
     [router],
   );
@@ -235,35 +240,44 @@ function UserAccountContent() {
           />
 
           {/* Right Content Area */}
-          <div className="flex-1 min-w-0 min-h-150">
-            {activeTab === "profile" && (
-              <ProfileDashboard
-                user={user}
-                orders={orders || []}
-                onNavigateTab={(tab) => handleTabChange(tab)}
-              />
+          <div className="flex-1 min-w-0 min-h-150 relative">
+            {isTabLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-white/50 rounded-lg z-10 backdrop-blur-sm">
+                <Loading />
+              </div>
             )}
+            <div
+              className={`transition-opacity duration-300 ${isTabLoading ? "opacity-50" : "opacity-100"}`}
+            >
+              {activeTab === "profile" && (
+                <ProfileDashboard
+                  user={user}
+                  orders={orders || []}
+                  onNavigateTab={(tab) => handleTabChange(tab)}
+                />
+              )}
 
-            {activeTab === "orders" && (
-              <OrdersSection
-                orders={orders}
-                meta={meta}
-                isLoading={ordersLoading}
-                error={ordersError?.message || (ordersError as string | null)}
-                currentPage={page}
-                onPageChange={setPage}
-                status={status}
-                onStatusChange={handleStatusChange}
-                sort={sort}
-                onSortChange={handleSortChange}
-                onRefresh={handleRefresh}
-                isRefreshing={isRefreshing}
-                onViewOrder={handleViewOrder}
-              />
-            )}
+              {activeTab === "orders" && (
+                <OrdersSection
+                  orders={orders}
+                  meta={meta}
+                  isLoading={ordersLoading}
+                  error={ordersError?.message || (ordersError as string | null)}
+                  currentPage={page}
+                  onPageChange={setPage}
+                  status={status}
+                  onStatusChange={handleStatusChange}
+                  sort={sort}
+                  onSortChange={handleSortChange}
+                  onRefresh={handleRefresh}
+                  isRefreshing={isRefreshing}
+                  onViewOrder={handleViewOrder}
+                />
+              )}
 
-            {activeTab === "address" && <AddressSection />}
-            {activeTab === "password" && <ChangePasswordForm />}
+              {activeTab === "address" && <AddressSection />}
+              {activeTab === "password" && <ChangePasswordForm />}
+            </div>
           </div>
         </div>
       </main>
