@@ -22,7 +22,7 @@ export default function CustomersPage() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedTier, setSelectedTier] = useState("Tất cả");
   const [currentPage, setCurrentPage] = useState(1);
-  const debounceTimerRef = useRef<NodeJS.Timeout>();
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Debounce search onChange
   const handleSearchChange = (val: string) => {

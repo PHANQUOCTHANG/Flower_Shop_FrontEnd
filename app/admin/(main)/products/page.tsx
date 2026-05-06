@@ -160,7 +160,7 @@ function ProductsPageContent() {
   // Các hàm xử lý
 
   // Xử lý thay đổi search keyword
-  const debounceTimerRef = useRef<NodeJS.Timeout>();
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value;
     setSearchKeyword(keyword);

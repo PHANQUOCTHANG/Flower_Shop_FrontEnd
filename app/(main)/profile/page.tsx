@@ -50,17 +50,22 @@ function UserAccountContent() {
 
   // Đọc tab từ URL, mặc định là "profile"
   const urlTab = searchParams.get("tab") as ProfileTabType | null;
-  const [activeTab, setActiveTab] = useState<ProfileTabType>(urlTab || "profile");
+  const [activeTab, setActiveTab] = useState<ProfileTabType>(
+    urlTab || "profile",
+  );
   const [successMessage, setSuccessMessage] = useState("");
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
   const [sort, setSort] = useState("newest");
-  
+
   // Đọc orderId từ URL (để tải lại trang vẫn giữ nguyên popup)
   const urlOrderId = searchParams.get("orderId");
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(urlOrderId);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(
+    urlOrderId,
+  );
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [reviewModal, setReviewModal] = useState<ReviewModalState>(INITIAL_REVIEW_MODAL);
+  const [reviewModal, setReviewModal] =
+    useState<ReviewModalState>(INITIAL_REVIEW_MODAL);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const queryClient = useQueryClient();
 
@@ -69,14 +74,14 @@ function UserAccountContent() {
     if (urlTab && urlTab !== activeTab) {
       setActiveTab(urlTab);
     }
-  }, [urlTab]);
+  }, [urlTab, activeTab]);
 
   // Sync orderId từ URL khi user navigate bằng back/forward
   useEffect(() => {
     if (urlOrderId !== selectedOrderId) {
       setSelectedOrderId(urlOrderId);
     }
-  }, [urlOrderId]);
+  }, [urlOrderId, selectedOrderId]);
 
   // Lấy dữ liệu đơn hàng
   const {
@@ -178,11 +183,16 @@ function UserAccountContent() {
     const socket = getSocket();
     if (!socket) return;
 
-    const handleStatusUpdated = (payload: { orderId: string; status: string }) => {
+    const handleStatusUpdated = (payload: {
+      orderId: string;
+      status: string;
+    }) => {
       // Invalidate list orders và chi tiết đơn hàng
       queryClient.invalidateQueries({ queryKey: ["orders", "my-orders"] });
       if (selectedOrderId === payload.orderId) {
-        queryClient.invalidateQueries({ queryKey: ["admin", "orders", "detail", payload.orderId] });
+        queryClient.invalidateQueries({
+          queryKey: ["admin", "orders", "detail", payload.orderId],
+        });
       }
     };
 
@@ -194,7 +204,7 @@ function UserAccountContent() {
   }, [user?.id, queryClient, selectedOrderId]);
 
   return (
-    <div className="min-h-screen bg-slate-50 font-['Inter',_sans-serif] text-slate-900 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 font-['Inter',sans-serif] text-slate-900 transition-colors duration-300">
       {/* Thông báo thành công */}
       {successMessage && (
         <div className="fixed bottom-4 right-4 left-4 sm:bottom-6 sm:right-6 sm:left-auto sm:max-w-sm z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -207,7 +217,7 @@ function UserAccountContent() {
         </div>
       )}
 
-      <main className="mx-auto w-full max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 animate-in fade-in duration-700">
+      <main className="mx-auto w-full max-w-350 px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 animate-in fade-in duration-700">
         <Breadcrumbs
           items={[
             { label: "Trang chủ", href: "/" },
@@ -225,7 +235,7 @@ function UserAccountContent() {
           />
 
           {/* Right Content Area */}
-          <div className="flex-1 min-w-0 min-h-[600px]">
+          <div className="flex-1 min-w-0 min-h-150">
             {activeTab === "profile" && (
               <ProfileDashboard
                 user={user}
@@ -239,7 +249,7 @@ function UserAccountContent() {
                 orders={orders}
                 meta={meta}
                 isLoading={ordersLoading}
-                error={ordersError?.message || (ordersError as string)}
+                error={ordersError?.message || (ordersError as string | null)}
                 currentPage={page}
                 onPageChange={setPage}
                 status={status}
@@ -254,7 +264,6 @@ function UserAccountContent() {
 
             {activeTab === "address" && <AddressSection />}
             {activeTab === "password" && <ChangePasswordForm />}
-            
           </div>
         </div>
       </main>

@@ -132,7 +132,7 @@ function FlowerCollectionContent() {
   };
 
   // Debounce search onChange - tự động tìm kiếm sau khi người dùng dừng gõ
-  const debounceTimerRef = useRef<NodeJS.Timeout>();
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const handleSearchChange = useCallback(
     (value: string) => {
       setSearchInput(value);
@@ -170,7 +170,7 @@ function FlowerCollectionContent() {
 
   return (
     <div className="min-h-screen bg-[#fcfbf9] text-[#1b0d11] transition-colors duration-300 font-sans antialiased">
-      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-6 sm:py-8 lg:py-10">
+      <main className="max-w-360 mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-6 sm:py-8 lg:py-10">
         {/* Điều hướng breadcrumb */}
         <div className="mb-4 sm:mb-6">
           <Breadcrumbs

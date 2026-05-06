@@ -6,12 +6,13 @@ import { ArrowRight, Camera } from "lucide-react";
 import { User } from "@/stores/auth.store";
 import { useAddresses } from "../hooks/useAddresses";
 import { AddressCard } from "./AddressCard";
-import type { Order } from "@/types/admin/order";
+
 import { ORDER_STATUS_MAP } from "../constants/profile.constants";
+import { MyOrder } from "@/types/profile";
 
 interface ProfileDashboardProps {
   user: User | null;
-  orders: Order[];
+  orders: MyOrder[];
   onNavigateTab: (tab: "orders" | "address") => void;
 }
 
@@ -20,15 +21,15 @@ export const ProfileDashboard: FC<ProfileDashboardProps> = ({
   orders,
   onNavigateTab,
 }) => {
-  const { addresses, isLoading: isAddressesLoading } = useAddresses({limit : 2});
+  const { addresses, isLoading: isAddressesLoading } = useAddresses({
+    limit: 2,
+  });
 
   const avatarSrc =
     user?.avatar ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      user?.name || "User"
+      user?.name || "User",
     )}&background=ec4899&color=ffffff`;
-
-
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -89,7 +90,8 @@ export const ProfileDashboard: FC<ProfileDashboardProps> = ({
               Thông tin cá nhân
             </h2>
             <button className="text-[#EE2B5B] text-sm font-semibold flex items-center gap-1 hover:underline">
-              <Camera size={14} className="invisible" /> {/* Spacer icon or use edit */}
+              <Camera size={14} className="invisible" />{" "}
+              {/* Spacer icon or use edit */}
               Lưu thay đổi
             </button>
           </div>
@@ -153,16 +155,16 @@ export const ProfileDashboard: FC<ProfileDashboardProps> = ({
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {addresses.slice(0,2).map((address) => (
-                <AddressCard
-                  key={address.id}
-                  address={address}
-                  isLoading={false}
-                  onEdit={() => onNavigateTab("address")}
-                  onDelete={() => {}}
-                  onSetDefault={() => {}}
-                />
-              ))}
+            {addresses.slice(0, 2).map((address) => (
+              <AddressCard
+                key={address.id}
+                address={address}
+                isLoading={false}
+                onEdit={() => onNavigateTab("address")}
+                onDelete={() => {}}
+                onSetDefault={() => {}}
+              />
+            ))}
             {addresses.length === 0 && (
               <div className="col-span-2 text-center py-8 bg-white rounded-2xl border border-slate-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
                 <p className="text-slate-500 mb-2">Chưa có địa chỉ nào.</p>
@@ -176,7 +178,9 @@ export const ProfileDashboard: FC<ProfileDashboardProps> = ({
       <div>
         <div className="flex justify-between items-end mb-4">
           <div>
-            <h2 className="font-bold text-lg text-slate-900">Đơn hàng gần đây</h2>
+            <h2 className="font-bold text-lg text-slate-900">
+              Đơn hàng gần đây
+            </h2>
             <p className="text-slate-500 text-sm">
               Lịch sử các thiết kế hoa đã đặt.
             </p>
@@ -209,7 +213,11 @@ export const ProfileDashboard: FC<ProfileDashboardProps> = ({
                     };
 
                     return (
-                      <tr key={order.id} className="hover:bg-slate-50/50 transition-colors cursor-pointer" onClick={() => onNavigateTab("orders")}>
+                      <tr
+                        key={order.id}
+                        className="hover:bg-slate-50/50 transition-colors cursor-pointer"
+                        onClick={() => onNavigateTab("orders")}
+                      >
                         <td className="px-6 py-4 text-sm font-bold text-slate-900">
                           #{order.id.slice(-8).toUpperCase()}
                         </td>
@@ -225,14 +233,17 @@ export const ProfileDashboard: FC<ProfileDashboardProps> = ({
                           </span>
                         </td>
                         <td className="px-6 py-4 text-sm font-bold text-slate-900 text-right">
-                          {formatPrice(order.totalAmount || order.totalPrice)}
+                          {formatPrice(order.totalPrice)}
                         </td>
                       </tr>
                     );
                   })
                 ) : (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
+                    <td
+                      colSpan={4}
+                      className="px-6 py-8 text-center text-slate-500"
+                    >
                       Chưa có đơn hàng nào
                     </td>
                   </tr>
