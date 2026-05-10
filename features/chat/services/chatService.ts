@@ -14,7 +14,20 @@ export interface GetMessagesResponse {
 }
 
 export interface SendMessageRequest {
-  content: string;
+  content?: string;
+  mediaUrl?: string;
+  mediaPublicId?: string;
+  mediaType?: string;
+  mediaName?: string;
+  mediaSize?: number;
+}
+
+export interface UploadMediaResponse {
+  url: string;
+  publicId: string;
+  mediaType: "image" | "video" | "file";
+  originalName: string;
+  size: number;
 }
 
 interface GetChatMessagesParams {
@@ -66,6 +79,20 @@ export const chatService = {
       throw new Error(res.data.message || "Gửi tin nhắn thất bại");
     }
     return res.data.data;
+  },
+
+  async uploadMedia(file: File): Promise<UploadMediaResponse> {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await api.post<ApiResponse<UploadMediaResponse>>(
+      "/chats/upload",
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
+    if (res.data.status !== "success") {
+      throw new Error(res.data.message || "Upload file thất bại");
+    }
+    return res.data.data as UploadMediaResponse;
   },
 
   async initializeChat() {

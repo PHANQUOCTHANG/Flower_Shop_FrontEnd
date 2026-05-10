@@ -60,14 +60,14 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
         </div>
 
         {/* Order now — primary CTA */}
-        <button
+        {/* <button
           disabled={isLoading}
           className="hidden sm:flex w-full h-14 items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#13ec5b] to-[#0ecf50] text-[#0d1b12] font-black text-[15px] shadow-lg shadow-[#13ec5b]/30 hover:shadow-[#13ec5b]/50 hover:from-[#0ecf50] hover:to-[#0bbf48] transition-all duration-200 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
           onClick={() => onAddToCart(quantity)}
         >
           <Zap className="w-5 h-5 fill-current" />
           ĐẶT HOA NGAY
-        </button>
+        </button> */}
 
         {/* Divider */}
         <div className="flex items-center gap-3 py-1">

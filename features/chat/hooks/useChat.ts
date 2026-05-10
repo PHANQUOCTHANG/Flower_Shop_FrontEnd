@@ -22,7 +22,7 @@ export interface UseChatState {
 
 export interface UseChatActions {
   openChat: () => Promise<void>;
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (content: string, mediaUrl?: string, mediaType?: string, mediaName?: string, mediaSize?: number) => Promise<void>;
   loadMoreMessages: () => Promise<void>;
   closeChat: () => void;
   clearError: () => void;
@@ -103,9 +103,8 @@ export const useChat = () => {
   }, [state.chat]);
 
   // Gửi tin nhắn
-  const sendMessage = useCallback(async (content: string) => {
+  const sendMessage = useCallback(async (content: string, mediaUrl?: string, mediaType?: string, mediaName?: string, mediaSize?: number) => {
     try {
-      // Check if chat exists before sending
       setState((prev) => {
         if (!prev.chat) {
           throw new Error("Không có chat để gửi tin nhắn");
@@ -114,8 +113,7 @@ export const useChat = () => {
       });
 
       // Chỉ gửi API, message sẽ được thêm vào state từ socket listener
-      // Để tránh duplicate message
-      await chatService.sendUserMessage({ content });
+      await chatService.sendUserMessage({ content: content || undefined, mediaUrl, mediaType, mediaName, mediaSize });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Không thể gửi tin nhắn, vui lòng thử lại sau!";

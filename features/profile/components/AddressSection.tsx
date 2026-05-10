@@ -3,15 +3,21 @@
 
 import React, { FC, useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { createPortal } from "react-dom";
 import { Plus, AlertCircle, Loader, Trash2 } from "lucide-react";
 import type { Address, CreateAddressRequest } from "@/types/profile";
+import { Pagination } from "@/components/ui/Pagination";
 import { useAddresses } from "../hooks/useAddresses";
 import { AddressForm } from "./AddressForm";
 import { AddressCard } from "./AddressCard";
 
+const LIMIT = 6;
+
 export const AddressSection: FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [mounted, setMounted] = useState(false);
+  const [page, setPage] = useState(searchParams.get("page") ? parseInt(searchParams.get("page")!, 10) : 1);
 
   // State quản lý form modal
   const [showForm, setShowForm] = useState(false);
@@ -22,16 +28,21 @@ export const AddressSection: FC = () => {
   // Lấy dữ liệu và mutations từ hook
   const {
     addresses,
+    meta,
     isLoading,
     error,
     createMutation,
     updateMutation,
     deleteMutation,
     setDefaultMutation,
-  } = useAddresses();
+  } = useAddresses({ page, limit: LIMIT });
 
   const urlAction = searchParams.get("action");
   const urlAddressId = searchParams.get("addressId");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Đồng bộ URL -> State khi tải trang hoặc URL thay đổi
   useEffect(() => {
@@ -125,137 +136,158 @@ export const AddressSection: FC = () => {
     setDefaultMutation.isPending;
 
   return (
-    <section className="animate-in fade-in duration-500 relative w-full">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 sm:mb-8 md:mb-10">
-        <div className="min-w-0 flex-1">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-1">
-            Sổ địa chỉ
-          </h2>
-          <p className="text-sm text-slate-500">
-            Quản lý các địa chỉ giao hàng của bạn
-          </p>
-        </div>
-        <button
-          onClick={handleOpenAddForm}
-          disabled={isLoading || isAnyMutationLoading}
-          className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 bg-[#EE2B5B] text-white rounded-lg font-bold text-sm hover:bg-[#B3163B] transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shrink-0"
-          type="button"
-        >
-          <Plus size={18} />
-          Thêm địa chỉ
-        </button>
-      </div>
-
-      {/* Error alert */}
-      {error && (
-        <div className="mb-6 p-4 sm:p-5 bg-red-50 border border-red-200 rounded-lg sm:rounded-xl flex items-start gap-3 text-sm">
-          <AlertCircle size={20} className="text-red-500 shrink-0 mt-0.5" />
+    <>
+      <section className="animate-in fade-in duration-500 w-full">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 sm:mb-8 md:mb-10">
           <div className="min-w-0 flex-1">
-            <p className="font-semibold text-red-900 text-sm">Lỗi</p>
-            <p className="text-red-700 line-clamp-2">{error}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Loading state */}
-      {isLoading ? (
-        <div className="flex items-center justify-center py-12 sm:py-16 md:py-20">
-          <div className="text-center">
-            <Loader
-              className="animate-spin text-[#EE2B5B] mx-auto mb-3 sm:mb-4"
-              size={32}
-            />
-            <p className="text-slate-600 text-sm font-medium">
-              Đang tải địa chỉ...
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-1">
+              Sổ địa chỉ
+            </h2>
+            <p className="text-sm text-slate-500">
+              Quản lý các địa chỉ giao hàng của bạn
             </p>
           </div>
-        </div>
-      ) : addresses.length === 0 ? (
-        // Empty state
-        <div className="text-center py-12 sm:py-16 md:py-20">
-          <div className="inline-flex items-center justify-center w-12 sm:w-16 h-12 sm:h-16 bg-slate-100 rounded-full mb-3 sm:mb-4">
-            <Plus className="text-slate-400" size={28} />
-          </div>
-          <p className="text-slate-700 font-semibold mb-1 sm:mb-2">
-            Chưa có địa chỉ nào
-          </p>
-          <p className="text-slate-600 text-sm mb-4 sm:mb-6">
-            Thêm địa chỉ giao hàng để bắt đầu đặt hàng
-          </p>
           <button
             onClick={handleOpenAddForm}
-            className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 bg-[#EE2B5B]/10 text-[#D11E48] rounded-lg sm:rounded-lg font-bold hover:bg-[#EE2B5B] hover:text-white transition-colors"
+            disabled={isLoading || isAnyMutationLoading}
+            className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 bg-[#EE2B5B] text-white rounded-lg font-bold text-sm hover:bg-[#B3163B] transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shrink-0"
             type="button"
           >
             <Plus size={18} />
-            Thêm địa chỉ ngay
+            Thêm địa chỉ
           </button>
         </div>
-      ) : (
-        // Address list
-        <div className="max-h-[900px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent hover:scrollbar-thumb-slate-400">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-5 pr-2">
-            {addresses.map((address) => (
-              <AddressCard
-                key={address.id}
-                address={address}
-                isLoading={isAnyMutationLoading}
-                onEdit={handleEditAddress}
-                onDelete={(id) => setDeleteTarget(id)}
-                onSetDefault={handleSetDefault}
+
+        {/* Error alert */}
+        {error && (
+          <div className="mb-6 p-4 sm:p-5 bg-red-50 border border-red-200 rounded-lg sm:rounded-xl flex items-start gap-3 text-sm">
+            <AlertCircle size={20} className="text-red-500 shrink-0 mt-0.5" />
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-red-900 text-sm">Lỗi</p>
+              <p className="text-red-700 line-clamp-2">{error}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Loading state */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12 sm:py-16 md:py-20">
+            <div className="text-center">
+              <Loader
+                className="animate-spin text-[#EE2B5B] mx-auto mb-3 sm:mb-4"
+                size={32}
               />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Form modal */}
-      {showForm && (
-        <AddressForm
-          address={selectedAddress}
-          isLoading={isAnyMutationLoading}
-          onSubmit={handleSubmitForm}
-          onCancel={handleCloseForm}
-        />
-      )}
-
-      {/* Delete confirmation modal */}
-      {deleteTarget && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="shrink-0 flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
-                <Trash2 size={22} className="text-red-600" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">
-                Xóa địa chỉ này?
-              </h3>
+              <p className="text-slate-600 text-sm font-medium">
+                Đang tải địa chỉ...
+              </p>
             </div>
-            <p className="text-slate-600 text-sm mb-6">
-              Hành động này không thể hoàn tác. Địa chỉ sẽ bị xóa vĩnh viễn.
+          </div>
+        ) : addresses.length === 0 ? (
+          // Empty state
+          <div className="text-center py-12 sm:py-16 md:py-20">
+            <div className="inline-flex items-center justify-center w-12 sm:w-16 h-12 sm:h-16 bg-slate-100 rounded-full mb-3 sm:mb-4">
+              <Plus className="text-slate-400" size={28} />
+            </div>
+            <p className="text-slate-700 font-semibold mb-1 sm:mb-2">
+              Chưa có địa chỉ nào
             </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setDeleteTarget(null)}
-                disabled={isAnyMutationLoading}
-                className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-900 rounded-lg font-semibold text-sm hover:bg-slate-200 transition-colors disabled:opacity-50"
-                type="button"
-              >
-                Hủy
-              </button>
-              <button
-                onClick={handleConfirmDelete}
-                disabled={isAnyMutationLoading}
-                className="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-lg font-semibold text-sm hover:bg-red-600 transition-colors disabled:opacity-50"
-                type="button"
-              >
-                {isAnyMutationLoading ? "Đang xóa..." : "Xóa"}
-              </button>
-            </div>
+            <p className="text-slate-600 text-sm mb-4 sm:mb-6">
+              Thêm địa chỉ giao hàng để bắt đầu đặt hàng
+            </p>
+            <button
+              onClick={handleOpenAddForm}
+              className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 bg-[#EE2B5B]/10 text-[#D11E48] rounded-lg sm:rounded-lg font-bold hover:bg-[#EE2B5B] hover:text-white transition-colors"
+              type="button"
+            >
+              <Plus size={18} />
+              Thêm địa chỉ ngay
+            </button>
           </div>
-        </div>
-      )}
-    </section>
+        ) : (
+          // Address list with pagination
+          <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-5">
+              {addresses.map((address) => (
+                <AddressCard
+                  key={address.id}
+                  address={address}
+                  isLoading={isAnyMutationLoading}
+                  onEdit={handleEditAddress}
+                  onDelete={(id) => setDeleteTarget(id)}
+                  onSetDefault={handleSetDefault}
+                />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {meta.totalPages > 1 && (
+              <div className="mt-8 border-t border-slate-200 pt-8">
+                <Pagination
+                  currentPage={meta.page}
+                  totalPages={meta.totalPages}
+                  onPageChange={setPage}
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </section>
+
+      {/* Modals using Portal to escape stacking context */}
+      {mounted &&
+        createPortal(
+          <>
+            {/* Form modal */}
+            {showForm && (
+              <AddressForm
+                address={selectedAddress}
+                isLoading={isAnyMutationLoading}
+                onSubmit={handleSubmitForm}
+                onCancel={handleCloseForm}
+              />
+            )}
+
+            {/* Delete confirmation modal */}
+            {deleteTarget && (
+              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="shrink-0 flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
+                      <Trash2 size={22} className="text-red-600" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900">
+                      Xóa địa chỉ này?
+                    </h3>
+                  </div>
+                  <p className="text-slate-600 text-sm mb-6">
+                    Hành động này không thể hoàn tác. Địa chỉ sẽ bị xóa vĩnh
+                    viễn.
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setDeleteTarget(null)}
+                      disabled={isAnyMutationLoading}
+                      className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-900 rounded-lg font-semibold text-sm hover:bg-slate-200 transition-colors disabled:opacity-50"
+                      type="button"
+                    >
+                      Hủy
+                    </button>
+                    <button
+                      onClick={handleConfirmDelete}
+                      disabled={isAnyMutationLoading}
+                      className="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-lg font-semibold text-sm hover:bg-red-600 transition-colors disabled:opacity-50"
+                      type="button"
+                    >
+                      {isAnyMutationLoading ? "Đang xóa..." : "Xóa"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>,
+          document.body,
+        )}
+    </>
   );
 };

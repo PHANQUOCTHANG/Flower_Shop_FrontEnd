@@ -1,146 +1,54 @@
-"use client";
+import { Metadata } from "next";
+import ProductDetailClient from "./page.client";
+import { productDetailService } from "@/features/product-detail/services/productDetailService";
 
-import { useState } from "react";
-import { useParams, notFound } from "next/navigation";
-import {
-  Gallery,
-  ProductInfo,
-  ActionButtons,
-  TrustBadges,
-  SimilarProducts,
-  TabNavigation,
-  TabContent,
-} from "@/features/product-detail/components";
-import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { Loading } from "@/components/ui/Loading";
-import Alert from "@/components/ui/Alert";
-import { useProductDetail } from "@/features/product-detail/hooks/useProductDetail";
-import { useAuthStore } from "@/stores/auth.store";
+interface Props {
+  params: Promise<{ slug: string }>;
+}
 
-type TabType = "description" | "reviews";
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
 
-const ALERT_POSITION = "fixed top-24 right-6 z-50 max-w-md";
+  let title = "Sản phẩm không tồn tại | Flower_QT";
+  let description = "Sản phẩm bạn tìm kiếm không tồn tại hoặc đã bị xóa.";
+  let imageUrl = "";
 
-export default function ProductDetail() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const isLogin = useAuthStore((state) => state.isAuthenticated);
+  try {
+    if (slug) {
+      const response = await productDetailService.getProductDetail({ slug });
+      const product = response.product;
 
-  const {
-    product,
-    similarProducts,
-    error,
-    loading,
-    addToCart,
-    isAddingToCart,
-  } = useProductDetail({ slug });
-
-  const [activeImage, setActiveImage] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState<TabType>("description");
-  const [alert, setAlert] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
-
-  const showAlert = (type: "success" | "error", message: string) => {
-    setAlert({ type, message });
-  };
-
-  const handleQuantityChange = (type: "inc" | "dec") => {
-    setQuantity((prev) => {
-      if (type === "inc") return prev + 1;
-      if (type === "dec" && prev > 1) return prev - 1;
-      return prev;
-    });
-  };
-
-  const handleAddToCart = async (qty: number) => {
-    if (!isLogin) {
-      showAlert("error", "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
-      return;
+      if (product) {
+        title = `${product.name} | Flower_QT`;
+        
+        // Tạo mô tả ngắn từ nội dung HTML (loại bỏ thẻ)
+        const plainTextDesc = product.description 
+          ? product.description.replace(/<[^>]*>?/gm, '').substring(0, 160) + "..."
+          : `Mua ${product.name} chính hãng tại Flower_QT với giá ưu đãi.`;
+          
+        description = plainTextDesc;
+        imageUrl = product.thumbnailUrl || "";
+      }
     }
-    try {
-      await addToCart(qty);
-      showAlert("success", "Thêm vào giỏ hàng thành công!");
-      setQuantity(1);
-    } catch {
-      showAlert("error", "Có lỗi xảy ra khi thêm vào giỏ hàng");
-    }
+  } catch (error) {
+    console.error("Error fetching product metadata:", error);
+  }
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: imageUrl ? [{ url: imageUrl }] : [],
+      type: "website",
+      locale: "vi_VN",
+      siteName: "Flower_QT",
+    },
   };
+}
 
-  if (loading) return <Loading />;
-  if (error || !product) notFound();
-
-  return (
-    <>
-      {/* Alert thông báo */}
-      {alert && (
-        <div className={ALERT_POSITION}>
-          <Alert
-            type={alert.type}
-            message={alert.message}
-            onClose={() => setAlert(null)}
-            autoClose
-            duration={4000}
-          />
-        </div>
-      )}
-
-      <div className="min-h-screen bg-[#fcfbf9] text-[#1b0d11] transition-colors duration-300">
-        <main className="max-w-360 mx-auto px-4 sm:px-10 lg:px-20 py-10">
-          {/* Breadcrumb */}
-          <Breadcrumbs
-            items={[
-              { label: "Trang chủ", href: "/" },
-              { label: "Sản phẩm", href: "/products" },
-              { label: product.name },
-            ]}
-          />
-
-          {/* Hình ảnh + Thông tin — sticky sidebar on desktop */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-16 mt-8 mb-20">
-            {/* Gallery — sticky on desktop */}
-            <div className="lg:sticky lg:top-28 lg:self-start">
-              <Gallery
-                product={product}
-                activeImage={activeImage}
-                onImageChange={setActiveImage}
-              />
-            </div>
-
-            {/* Info panel */}
-            <div className="flex flex-col">
-              <ProductInfo product={product} />
-              <ActionButtons
-                quantity={quantity}
-                onQuantityChange={handleQuantityChange}
-                onAddToCart={handleAddToCart}
-                isLoading={isAddingToCart}
-              />
-              <TrustBadges />
-            </div>
-          </div>
-
-          {/* Tabs: Mô tả & Đánh giá */}
-          <section className="mb-20 border-t border-gray-100 pt-12">
-            <TabNavigation
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              slug={slug}
-            />
-            <TabContent activeTab={activeTab} product={product} slug={slug} />
-          </section>
-
-          {/* Sản phẩm tương tự */}
-          {similarProducts && similarProducts.length > 0 && (
-            <SimilarProducts
-              category={product.categories[0]?.slug}
-              products={similarProducts}
-            />
-          )}
-        </main>
-      </div>
-    </>
-  );
+export default function ProductDetailPage() {
+  return <ProductDetailClient />;
 }

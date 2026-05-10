@@ -7,11 +7,15 @@ import {
   useMarkAllAsRead,
 } from "@/features/admin/activity-log/hooks/useActivityLog";
 import { Loading } from "@/components/ui/Loading";
-import { Check, CheckCheck, Bell, Package, ChevronLeft, ChevronRight } from "lucide-react";
+import { Check, CheckCheck, Bell, Package } from "lucide-react";
+import { Pagination } from "@/components/ui/Pagination";
 
 export default function ActivityLogsPage() {
   const [page, setPage] = useState(1);
-  const { logs, meta, isLoading, isFetching } = useActivityLogs({ page, limit: 15 });
+  const { logs, meta, isLoading, isFetching } = useActivityLogs({
+    page,
+    limit: 15,
+  });
   const { mutate: markAsRead, isPending: isMarking } = useMarkAsRead();
   const { mutate: markAllAsRead, isPending: isMarkingAll } = useMarkAllAsRead();
 
@@ -60,8 +64,8 @@ export default function ActivityLogsPage() {
                 <li
                   key={log.id}
                   className={`p-5 sm:p-6 flex items-start gap-4 transition-all group ${
-                    !log.isRead 
-                      ? "bg-[#13ec5b]/[0.02] border-l-4 border-l-[#13ec5b]" 
+                    !log.isRead
+                      ? "bg-[#13ec5b]/[0.02] border-l-4 border-l-[#13ec5b]"
                       : "border-l-4 border-l-transparent hover:bg-slate-50/80"
                   }`}
                 >
@@ -78,13 +82,19 @@ export default function ActivityLogsPage() {
                       <Bell size={20} />
                     )}
                   </div>
-                  
+
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wide ${
-                        log.type === "ORDER_CREATED" ? "bg-[#13ec5b]/10 text-[#13ec5b]" : "bg-slate-100 text-slate-500"
-                      }`}>
-                        {log.type === "ORDER_CREATED" ? "Đơn hàng mới" : log.type}
+                      <span
+                        className={`text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wide ${
+                          log.type === "ORDER_CREATED"
+                            ? "bg-[#13ec5b]/10 text-[#13ec5b]"
+                            : "bg-slate-100 text-slate-500"
+                        }`}
+                      >
+                        {log.type === "ORDER_CREATED"
+                          ? "Đơn hàng mới"
+                          : log.type}
                       </span>
                       <span className="text-xs text-slate-400 font-medium">
                         {new Intl.DateTimeFormat("vi-VN", {
@@ -96,15 +106,20 @@ export default function ActivityLogsPage() {
                         }).format(new Date(log.createdAt))}
                       </span>
                     </div>
-                    
-                    <p className={`text-[15px] leading-relaxed mb-3 mt-1.5 ${!log.isRead ? "font-bold text-slate-900" : "text-slate-600"}`}>
+
+                    <p
+                      className={`text-[15px] leading-relaxed mb-3 mt-1.5 ${!log.isRead ? "font-bold text-slate-900" : "text-slate-600"}`}
+                    >
                       {log.message}
                     </p>
-                    
+
                     {log.data?.orderId && (
                       <div className="flex gap-2">
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-600">
-                          ID: <span className="font-mono">{log.data.orderId.substring(0, 8)}...</span>
+                          ID:{" "}
+                          <span className="font-mono">
+                            {log.data.orderId.substring(0, 8)}...
+                          </span>
                         </span>
                         {log.data.totalPrice && (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-200">
@@ -132,47 +147,22 @@ export default function ActivityLogsPage() {
               ))}
             </ul>
           )}
-          
+
           {/* Pagination */}
           {meta.totalPages > 1 && (
             <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
               <span className="text-sm text-slate-500 font-medium">
-                Hiển thị trang <span className="text-slate-900 font-bold">{page}</span> trên <span className="text-slate-900 font-bold">{meta.totalPages}</span>
+                Hiển thị trang{" "}
+                <span className="text-slate-900 font-bold">{page}</span> trên{" "}
+                <span className="text-slate-900 font-bold">
+                  {meta.totalPages}
+                </span>
               </span>
-              <div className="flex gap-2">
-                <button
-                  disabled={page === 1 || isFetching}
-                  onClick={() => setPage(p => p - 1)}
-                  className="p-2 border border-slate-200 rounded-xl bg-white text-slate-600 hover:bg-[#13ec5b]/10 hover:text-[#13ec5b] hover:border-[#13ec5b]/30 disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-slate-600 disabled:hover:border-slate-200 transition-all shadow-sm"
-                  aria-label="Trang trước"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <div className="flex items-center gap-1 px-2">
-                  {Array.from({ length: meta.totalPages }, (_, i) => i + 1).map(p => (
-                    <button
-                      key={p}
-                      onClick={() => setPage(p)}
-                      disabled={isFetching}
-                      className={`size-9 rounded-xl text-sm font-bold transition-all ${
-                        page === p 
-                          ? "bg-[#13ec5b] text-white shadow-md shadow-[#13ec5b]/20" 
-                          : "text-slate-600 hover:bg-slate-200"
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
-                <button
-                  disabled={page === meta.totalPages || isFetching}
-                  onClick={() => setPage(p => p + 1)}
-                  className="p-2 border border-slate-200 rounded-xl bg-white text-slate-600 hover:bg-[#13ec5b]/10 hover:text-[#13ec5b] hover:border-[#13ec5b]/30 disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-slate-600 disabled:hover:border-slate-200 transition-all shadow-sm"
-                  aria-label="Trang sau"
-                >
-                  <ChevronRight size={20} />
-                </button>
-              </div>
+              <Pagination
+                currentPage={page}
+                totalPages={meta.totalPages}
+                onPageChange={setPage}
+              />
             </div>
           )}
         </div>

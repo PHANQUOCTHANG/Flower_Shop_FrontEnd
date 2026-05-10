@@ -1,99 +1,21 @@
-"use client";
+import { Metadata } from "next";
+import { Suspense } from "react";
+import OrderProcessingPageClient from "./page.client";
 
-import React, { useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Home } from "lucide-react";
-import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { OrderStatusTracker } from "@/features/checkout/components";
-import { useOrderStatus } from "@/features/checkout/hooks/useOrderStatus";
-
-function OrderProcessingContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const jobId = searchParams.get("jobId");
-
-  useEffect(() => {
-    if (!jobId) {
-      router.push("/checkout");
-    }
-  }, [jobId, router]);
-
-  const { status: socketStatus } = useOrderStatus({
-    jobId: jobId || undefined,
-    enabled: !!jobId,
-    onStatusChange: (event) => {
-      if (event.status === "completed" && event.data?.orderId) {
-        setTimeout(() => {
-          router.push(`/order-completed?id=${event.data?.orderId}`);
-        }, 2000);
-      }
-    },
-  });
-
-  const handleRetry = () => {
-    router.push("/checkout");
-  };
-
-  if (!jobId) {
-    return null; // Đang redirect
+export const metadata: Metadata = {
+  title: "Đang xử lý đơn hàng | Flower_QT",
+  description: "Hệ thống đang xử lý đơn đặt hàng của bạn. Vui lòng giữ kết nối trong giây lát để hoàn tất giao dịch tại Flower_QT.",
+  openGraph: {
+    title: "Đang xử lý | Flower_QT",
+    description: "Đang xử lý đơn hàng của bạn tại Flower_QT",
+    type: "website",
   }
-
-  return (
-    <div
-      className="min-h-screen text-[#1b0d11] font-sans antialiased transition-all duration-300"
-      style={{ backgroundColor: "#fcfbf9" }}
-    >
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-8 py-6 sm:py-8 md:py-10 lg:py-12">
-        {/* Breadcrumbs */}
-        <Breadcrumbs
-          items={[
-            { label: "Trang chủ", href: "/" },
-            { label: "Giỏ hàng", href: "/cart" },
-            { label: "Thanh toán", href: "/checkout" },
-            { label: "Đang xử lý đơn hàng" },
-          ]}
-        />
-
-        {/* Content */}
-        <div className="flex flex-col items-center justify-center py-8">
-          <div className="w-full max-w-2xl">
-            {/* Tracker Card */}
-            <OrderStatusTracker
-              status={socketStatus}
-              isLoading={!socketStatus}
-              onRetry={handleRetry}
-            />
-
-            {/* Navigation buttons — chỉ hiện khi thất bại */}
-            {socketStatus?.status === "failed" && (
-              <div className="mt-6 grid sm:grid-cols-2 gap-3">
-                <button
-                  onClick={handleRetry}
-                  className="w-full border-2 border-[#EE2B5B] text-[#EE2B5B] hover:bg-[#EE2B5B] hover:text-white font-bold py-3.5 px-6 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 group"
-                >
-                  <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                  Quay lại thanh toán
-                </button>
-                <button
-                  onClick={() => router.push("/")}
-                  className="w-full border-2 border-dashed border-[#FCE9ED] text-[#D11E48] hover:border-[#D11E48] hover:bg-[#D11E48]/5 font-bold py-3.5 px-6 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 group"
-                >
-                  <Home className="w-4 h-4" />
-                  Về trang chủ
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </main>
-    </div>
-  );
-}
+};
 
 export default function OrderProcessingPage() {
   return (
     <Suspense fallback={null}>
-      <OrderProcessingContent />
+      <OrderProcessingPageClient />
     </Suspense>
   );
 }

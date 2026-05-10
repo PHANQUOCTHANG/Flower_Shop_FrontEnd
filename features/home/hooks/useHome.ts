@@ -38,12 +38,20 @@ export const useHome = () => {
   const groupedData = (groupedQuery.data || []) as any[];
   
   // Format lại data đúng cấu trúc UI đang chờ
-  const productsByCategory: HomeCategoryGroup[] = groupedData.map((group) => ({
-    category: group.category,
-    products: group.products,
-    loading: false,
-    isEmpty: group.products.length === 0,
-  }));
+  const isGroupedLoading = groupedQuery.isPending;
+  const productsByCategory: HomeCategoryGroup[] = isGroupedLoading
+    ? Array.from({ length: 3 }).map((_, i) => ({
+        category: { id: `mock-${i}`, name: 'Đang tải...', slug: '' },
+        products: [],
+        loading: true,
+        isEmpty: false,
+      }))
+    : groupedData.map((group) => ({
+        category: group.category,
+        products: group.products,
+        loading: false,
+        isEmpty: group.products.length === 0,
+      }));
 
   return {
     categories,

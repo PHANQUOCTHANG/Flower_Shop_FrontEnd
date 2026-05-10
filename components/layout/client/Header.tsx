@@ -41,9 +41,57 @@ function LogoIcon() {
         fill="currentColor"
         fillRule="evenodd"
       />
+
     </svg>
   );
 }
+
+const AvatarEl = ({ size = "md", userName, userAvatar }: { size?: "sm" | "md" | "lg"; userName: string; userAvatar: string; }) => {
+  const initial = userName ? userName[0].toUpperCase() : "U";
+  const cls = size === "lg" ? "size-12 text-lg" : size === "sm" ? "size-8 text-sm" : "size-9 text-sm";
+  if (userAvatar) {
+    return (
+      <img
+        src={userAvatar}
+        alt={userName}
+        className={`${cls} rounded-full object-cover border-2 border-[#EE2B5B]/30`}
+        onError={(e) => {
+          (e.currentTarget as HTMLImageElement).style.display = "none";
+        }}
+      />
+    );
+  }
+  return (
+    <div className={`${cls} rounded-full bg-[#EE2B5B] flex items-center justify-center text-white font-black shrink-0`}>
+      {initial}
+    </div>
+  );
+};
+
+const SearchDropdown = ({ results, loading, onSelect }: { results: any[]; loading: boolean; onSelect: (slug: string) => void; }) => (
+  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 overflow-hidden max-h-72 overflow-y-auto">
+    {loading ? (
+      <p className="p-4 text-center text-sm text-slate-400">Đang tìm...</p>
+    ) : results.length > 0 ? (
+      results.map((p) => (
+        <div
+          key={p.id}
+          onClick={() => onSelect(p.slug)}
+          className="flex items-center gap-3 p-3 hover:bg-[#FCE9ED] cursor-pointer border-b border-slate-50 last:border-0 transition-colors"
+        >
+          <OptimizedImage src={p.thumbnailUrl} alt={p.name} width={44} height={44} className="rounded-xl" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-slate-800 truncate">{p.name}</p>
+            <p className="text-xs font-bold text-[#EE2B5B]">{formatCurrency(p.price)}</p>
+          </div>
+          <ArrowRight size={14} className="text-slate-300 shrink-0" />
+        </div>
+      ))
+    ) : (
+      <p className="p-4 text-center text-sm text-slate-400">Không tìm thấy sản phẩm</p>
+    )}
+  </div>
+);
 
 export default function Header() {
   const router = useRouter();
@@ -64,6 +112,7 @@ export default function Header() {
   const { products: searchResults, loading: searchLoading } = useProducts({
     search: searchQuery.trim() ? searchQuery : undefined,
     limit: 5,
+    enabled: !!searchQuery.trim(), // Chỉ gọi API khi có từ khóa
   });
 
   const cartCount = useCartStore((s) => s.getItemCount());
@@ -158,71 +207,6 @@ export default function Header() {
 
   const initial = userName ? userName[0].toUpperCase() : "U";
 
-  const AvatarEl = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
-    const cls =
-      size === "lg"
-        ? "size-12 text-lg"
-        : size === "sm"
-          ? "size-8 text-sm"
-          : "size-9 text-sm";
-    if (userAvatar) {
-      return (
-        <img
-          src={userAvatar}
-          alt={userName}
-          className={`${cls} rounded-full object-cover border-2 border-[#EE2B5B]/30`}
-          onError={(e) => {
-            (e.currentTarget as HTMLImageElement).style.display = "none";
-          }}
-        />
-      );
-    }
-    return (
-      <div
-        className={`${cls} rounded-full bg-[#EE2B5B] flex items-center justify-center text-white font-black shrink-0`}
-      >
-        {initial}
-      </div>
-    );
-  };
-
-  const SearchDropdown = ({ results }: { results: typeof searchResults }) => (
-    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 overflow-hidden max-h-72 overflow-y-auto">
-      {searchLoading ? (
-        <p className="p-4 text-center text-sm text-slate-400">Đang tìm...</p>
-      ) : results.length > 0 ? (
-        results.map((p) => (
-          <div
-            key={p.id}
-            onClick={() => handleSelectProduct(p.slug)}
-            className="flex items-center gap-3 p-3 hover:bg-[#FCE9ED] cursor-pointer border-b border-slate-50 last:border-0 transition-colors"
-          >
-            <OptimizedImage
-              src={p.thumbnailUrl}
-              alt={p.name}
-              width={44}
-              height={44}
-              className="rounded-xl"
-            />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-800 truncate">
-                {p.name}
-              </p>
-              <p className="text-xs font-bold text-[#EE2B5B]">
-                {formatCurrency(p.price)}
-              </p>
-            </div>
-            <ArrowRight size={14} className="text-slate-300 shrink-0" />
-          </div>
-        ))
-      ) : (
-        <p className="p-4 text-center text-sm text-slate-400">
-          Không tìm thấy sản phẩm
-        </p>
-      )}
-    </div>
-  );
-
   return (
     <>
       {/* ══ HEADER ══ */}
@@ -268,7 +252,7 @@ export default function Header() {
           {/* Desktop Search */}
           <div
             ref={searchRef}
-            className="hidden md:block relative flex-1 max-w-sm ml-auto"
+            className="hidden md:block relative flex-1 max-w-sm ml-auto border focus-within:border-[#EE2B5B]/30 rounded-xl transition-all"
           >
             <form onSubmit={handleSearch}>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 size-4 pointer-events-none" />
@@ -284,7 +268,7 @@ export default function Header() {
               />
             </form>
             {showSuggestions && searchQuery && (
-              <SearchDropdown results={searchResults} />
+              <SearchDropdown results={searchResults} loading={searchLoading} onSelect={handleSelectProduct} />
             )}
           </div>
 
@@ -338,7 +322,7 @@ export default function Header() {
                   }`}
                   aria-label="Tài khoản"
                 >
-                  <AvatarEl size="sm" />
+                  <AvatarEl size="sm" userName={userName} userAvatar={userAvatar} />
                   <span className="text-sm font-semibold truncate text-[#0d1b12]">
                     {userName}
                   </span>
@@ -524,7 +508,7 @@ export default function Header() {
           >
             {isLoggedIn ? (
               <>
-                <AvatarEl size="lg" />
+                <AvatarEl size="lg" userName={userName} userAvatar={userAvatar} />
                 <div>
                   <p className="font-bold text-[#0d1b12] truncate max-w-[190px]">
                     {userName}

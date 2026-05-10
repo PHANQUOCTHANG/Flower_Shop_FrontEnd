@@ -1,5 +1,5 @@
 import { Edit, Trash2, ChevronRight, Package } from "lucide-react";
-import { Pagination } from "@/components/ui/admin/Pagination";
+import { Pagination } from "@/components/ui/Pagination";
 import { Product } from "@/features/admin/products/types";
 import { useRouter } from "next/navigation";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
@@ -15,14 +15,34 @@ interface ProductTableProps {
 
 // Badge trạng thái sản phẩm
 const StatusDot = ({ status }: { status: string }) => {
-  const map: Record<string, { dot: string; label: string; bg: string; text: string }> = {
-    active:  { dot: "bg-[#13ec5b] animate-pulse", label: "Hoạt động", bg: "bg-[#13ec5b]/10", text: "text-green-700" },
-    hidden:  { dot: "bg-yellow-400",              label: "Đang ẩn",   bg: "bg-yellow-50",    text: "text-yellow-700" },
-    draft:   { dot: "bg-slate-400",               label: "Nháp",      bg: "bg-slate-100",    text: "text-slate-500" },
+  const map: Record<
+    string,
+    { dot: string; label: string; bg: string; text: string }
+  > = {
+    active: {
+      dot: "bg-[#13ec5b] animate-pulse",
+      label: "Hoạt động",
+      bg: "bg-[#13ec5b]/10",
+      text: "text-green-700",
+    },
+    hidden: {
+      dot: "bg-yellow-400",
+      label: "Đang ẩn",
+      bg: "bg-yellow-50",
+      text: "text-yellow-700",
+    },
+    draft: {
+      dot: "bg-slate-400",
+      label: "Nháp",
+      bg: "bg-slate-100",
+      text: "text-slate-500",
+    },
   };
   const s = map[status] ?? map.draft;
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${s.bg} ${s.text}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${s.bg} ${s.text}`}
+    >
       <span className={`size-1.5 rounded-full shrink-0 ${s.dot}`} />
       {s.label}
     </span>
@@ -76,7 +96,10 @@ export const ProductTable = ({
           <tbody className="divide-y divide-slate-100">
             {products.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-14 text-center text-slate-400 text-sm font-medium">
+                <td
+                  colSpan={6}
+                  className="px-6 py-14 text-center text-slate-400 text-sm font-medium"
+                >
                   Không có sản phẩm nào
                 </td>
               </tr>
@@ -173,7 +196,10 @@ export const ProductTable = ({
           </div>
         ) : (
           products.map((product) => (
-            <div key={product.id} className="flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 active:bg-slate-100 transition-colors">
+            <div
+              key={product.id}
+              className="flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 active:bg-slate-100 transition-colors"
+            >
               {/* Thumbnail */}
               <div className="relative size-14 rounded-xl bg-slate-100 overflow-hidden border border-slate-100 shrink-0">
                 {product.thumbnailUrl ? (
@@ -192,7 +218,9 @@ export const ProductTable = ({
 
               {/* Info */}
               <div className="flex-1 min-w-0 flex flex-col gap-1">
-                <p className="text-sm font-bold text-slate-900 truncate">{product.name}</p>
+                <p className="text-sm font-bold text-slate-900 truncate">
+                  {product.name}
+                </p>
                 <div className="flex items-center gap-2 flex-wrap">
                   <StatusDot status={product.status} />
                   <span className="text-xs font-black text-[#13ec5b]">
@@ -200,7 +228,8 @@ export const ProductTable = ({
                   </span>
                 </div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase">
-                  {product.categories[0]?.name || "Chưa phân loại"} · SKU: {product.sku || "N/A"}
+                  {product.categories[0]?.name || "Chưa phân loại"} · SKU:{" "}
+                  {product.sku || "N/A"}
                 </p>
               </div>
 
@@ -227,13 +256,13 @@ export const ProductTable = ({
       </div>
 
       {/* Phân trang */}
-      <Pagination
-        products={products}
-        totalPages={totalPages}
-        currentPage={currentPage}
-        totalItems={products.length}
-        onPageChange={onPageChange}
-      />
+      <div className="px-8 py-5 border-t border-slate-200 bg-slate-50">
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={onPageChange}
+        />
+      </div>
     </div>
   );
 };

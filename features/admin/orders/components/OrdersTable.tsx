@@ -2,7 +2,7 @@ import React from "react";
 import { Eye, ChevronRight } from "lucide-react";
 import { OrderResponse } from "@/types/order";
 import { StatusBadge } from "./StatusBadge";
-import { Pagination } from "@/components/ui/admin/Pagination";
+import { Pagination } from "@/components/ui/Pagination";
 import { formatCurrency, formatDate } from "@/utils/format";
 
 interface OrdersTableProps {
@@ -239,13 +239,13 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
       </div>
 
       {/* Phân trang */}
-      <Pagination
-        products={orders}
-        totalPages={totalPages}
-        currentPage={currentPage}
-        totalItems={totalOrders}
-        onPageChange={onPageChange}
-      />
+      <div className="px-8 py-5 border-t border-slate-200 bg-slate-50">
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={onPageChange}
+        />
+      </div>
     </div>
   );
 };

@@ -129,11 +129,11 @@ export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
       </div>
 
       {/* Support Banner */}
-      <div className="bg-[#EE2B5B]/10 rounded-xl p-4 text-center">
+      {/* <div className="bg-[#EE2B5B]/10 rounded-xl p-4 text-center">
         <p className="text-[13px] text-[#EE2B5B]">
           Cần hỗ trợ? Gọi ngay <span className="font-bold">1900 1234</span>
         </p>
-      </div>
+      </div> */}
     </div>
   );
 };

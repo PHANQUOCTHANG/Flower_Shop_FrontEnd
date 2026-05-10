@@ -8,8 +8,13 @@ import { useSettingStore } from "@/stores/setting.store";
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const settings = useSettingStore((state) => state.settings);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
-  const slides = settings?.homeBanners || [
+  const slides = (mounted && settings?.homeBanners) || [
     {
       image: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1920",
       badgeText: "GIAO HỎA TỐC 2 GIỜ",

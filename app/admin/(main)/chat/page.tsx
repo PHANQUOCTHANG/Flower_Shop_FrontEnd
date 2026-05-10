@@ -15,10 +15,13 @@ import {
   Loader,
   AlertCircle,
   MessageSquare,
+  FileText,
+  X as XIcon,
 } from "lucide-react";
 import { useAdminChat } from "@/features/admin/chat/hooks";
 import { useAuthStore } from "@/stores/auth.store";
 import { formatTimeAgo } from "@/utils/format";
+import { adminChatService } from "@/features/admin/chat/services/adminChatService";
 
 // ============ Avatar Component ============
 
@@ -86,6 +89,67 @@ function MessagesSkeleton() {
   );
 }
 
+const formatFileSize = (bytes?: number | null) => {
+  if (!bytes) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+function MediaContent({ msg, isAdmin }: { msg: any; isAdmin: boolean }) {
+  const { mediaUrl, mediaType, mediaName, mediaSize, content } = msg;
+
+  if (!mediaUrl) return <span className="whitespace-pre-wrap">{content}</span>;
+
+  if (mediaType === "image") {
+    return (
+      <div className="flex flex-col gap-2">
+        <img
+          src={mediaUrl}
+          alt="Hình ảnh"
+          className="max-w-[280px] rounded-xl object-cover cursor-pointer hover:opacity-95 transition-opacity"
+          onClick={(e) => { e.stopPropagation(); window.open(mediaUrl, "_blank"); }}
+        />
+        {content && <span className={`text-sm px-1 ${isAdmin ? "text-slate-900" : "text-slate-900"}`}>{content}</span>}
+      </div>
+    );
+  }
+
+  if (mediaType === "video") {
+    return (
+      <div className="flex flex-col gap-2">
+        <video src={mediaUrl} controls className="max-w-[280px] rounded-xl" />
+        {content && <span className={`text-sm px-1 ${isAdmin ? "text-slate-900" : "text-slate-900"}`}>{content}</span>}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-2 min-w-[220px]">
+      <a
+        href={mediaUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl hover:bg-slate-50 transition-all shadow-sm group"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform flex-shrink-0">
+          <FileText size={20} />
+        </div>
+        <div className="flex flex-col overflow-hidden">
+          <span className="text-sm font-bold text-slate-700 truncate max-w-[140px]">
+            {mediaName || "Tập tin"}
+          </span>
+          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+            {mediaType} • {formatFileSize(mediaSize)}
+          </span>
+        </div>
+      </a>
+      {content && <span className={`text-sm px-1 font-medium text-slate-900`}>{content}</span>}
+    </div>
+  );
+}
+
 // ============ Component chính ============
 
 function AdminChatContent() {
@@ -112,6 +176,10 @@ function AdminChatContent() {
   const [messageInput, setMessageInput] = useState("");
   const [searchInput, setSearchInput] = useState(() => searchKeyword);
   const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [pendingPreview, setPendingPreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -203,13 +271,45 @@ function AdminChatContent() {
 
   const handleSelectChat = (chatId: string) => selectChat(chatId);
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
+      setPendingPreview(URL.createObjectURL(file));
+    } else {
+      setPendingPreview(null);
+    }
+    setPendingFile(file);
+    e.target.value = "";
+  };
+
+  const clearPendingFile = useCallback(() => {
+    if (pendingPreview) URL.revokeObjectURL(pendingPreview);
+    setPendingFile(null);
+    setPendingPreview(null);
+  }, [pendingPreview]);
+
   const handleSendMessage = async (e?: React.KeyboardEvent) => {
     if (e && (e.key !== "Enter" || e.shiftKey)) return;
     e?.preventDefault();
-    if (!messageInput.trim()) return;
+    if (!messageInput.trim() && !pendingFile) return;
     const content = messageInput.trim();
     setMessageInput("");
-    await sendMessage(content);
+
+    if (pendingFile) {
+      setIsUploading(true);
+      try {
+        const uploaded = await adminChatService.uploadMedia(pendingFile);
+        clearPendingFile();
+        await sendMessage(content, uploaded.url, uploaded.mediaType, uploaded.originalName, uploaded.size);
+      } catch (err) {
+        console.error("Upload lỗi:", err);
+      } finally {
+        setIsUploading(false);
+      }
+    } else {
+      await sendMessage(content);
+    }
   };
 
   // ============ Render Helpers ============
@@ -326,7 +426,11 @@ function AdminChatContent() {
                           </div>
                         </div>
                         <p className={`text-xs truncate ${isUnread ? "font-semibold text-slate-800" : "text-slate-500"}`}>
-                          {chat.lastMessage?.senderRole === "admin"
+                          {chat.lastMessage?.mediaUrl && !chat.lastMessage?.content
+                            ? (chat.lastMessage.senderRole === "admin" 
+                                ? `Bạn: [${chat.lastMessage.mediaType === "image" ? "Hình ảnh" : chat.lastMessage.mediaType === "video" ? "Video" : "Tập tin"}]` 
+                                : `[${chat.lastMessage.mediaType === "image" ? "Hình ảnh" : chat.lastMessage.mediaType === "video" ? "Video" : "Tập tin"}]`)
+                            : chat.lastMessage?.senderRole === "admin"
                             ? `Bạn: ${chat.lastMessage.content}`
                             : chat.lastMessage?.content || "Không có tin nhắn"}
                         </p>
@@ -455,19 +559,20 @@ function AdminChatContent() {
                             )}
 
                             <div className={`max-w-[60%] flex flex-col ${isAdmin ? "items-end" : "items-start"}`}>
-                              <div
-                                id={`msg-${msg.id}`}
-                                onClick={() => setActiveMessageId(prev => prev === msg.id ? null : msg.id)}
-                                className={`px-4 py-2.5 text-sm font-medium cursor-pointer select-none transition-all
-                                  ${isAdmin
-                                    ? `bg-[#13ec5b] text-[#102216] rounded-2xl rounded-br-sm ${isFirstInGroup ? "rounded-tr-2xl" : ""} ${isOptimistic ? "opacity-60" : ""}`
-                                    : "bg-white text-slate-900 rounded-2xl rounded-bl-sm border border-slate-100 shadow-sm"
-                                  }
-                                  hover:opacity-90 active:scale-[0.98]`}
-                              >
-                                {msg.content}
-                                {isOptimistic && <span className="ml-1 text-[10px] opacity-60">✓</span>}
-                              </div>
+                                <div
+                                  id={`msg-${msg.id}`}
+                                  onClick={() => setActiveMessageId(prev => prev === msg.id ? null : msg.id)}
+                                  className={`px-4 py-2.5 text-sm font-medium cursor-pointer select-none transition-all
+                                    ${isAdmin
+                                      ? `bg-[#13ec5b] text-[#102216] rounded-2xl rounded-br-sm ${isFirstInGroup ? "rounded-tr-2xl" : ""} ${isOptimistic ? "opacity-60" : ""}`
+                                      : "bg-white text-slate-900 rounded-2xl rounded-bl-sm border border-slate-100 shadow-sm"
+                                    }
+                                    ${msg.mediaUrl ? "!bg-transparent !p-0 !border-none !shadow-none" : "hover:opacity-90"}
+                                    active:scale-[0.98]`}
+                                >
+                                  <MediaContent msg={msg} isAdmin={isAdmin} />
+                                  {isOptimistic && <span className="ml-1 text-[10px] opacity-60">✓</span>}
+                                </div>
 
                               {/* Thời gian (show khi click) */}
                               <div className={`flex items-center gap-1 px-1 overflow-hidden transition-all duration-200 ${
@@ -495,11 +600,50 @@ function AdminChatContent() {
 
               {/* Input tin nhắn */}
               <div className="p-4 bg-white border-t border-slate-200">
+                {/* File preview */}
+                {pendingFile && (
+                  <div className="mb-3 p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-3">
+                    {pendingFile.type.startsWith("image/") && pendingPreview ? (
+                      <img src={pendingPreview} alt="preview" className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                    ) : pendingFile.type.startsWith("video/") && pendingPreview ? (
+                      <video src={pendingPreview} className="w-12 h-12 rounded-lg object-cover shrink-0" muted />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-slate-200 flex items-center justify-center shrink-0">
+                        <FileText size={20} className="text-slate-500" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-slate-700 truncate">{pendingFile.name}</p>
+                      <p className="text-[10px] text-slate-400">{(pendingFile.size / 1024).toFixed(0)} KB</p>
+                    </div>
+                    <button onClick={clearPendingFile} className="w-6 h-6 bg-slate-200 hover:bg-slate-300 rounded-full flex items-center justify-center shrink-0 transition-colors">
+                      <XIcon size={12} />
+                    </button>
+                  </div>
+                )}
+
+                {isUploading && (
+                  <div className="mb-2 flex items-center gap-2 text-xs text-slate-500 px-1">
+                    <Loader size={12} className="animate-spin text-[#13ec5b]" />
+                    <span>Đang tải file lên Cloudinary...</span>
+                  </div>
+                )}
+
                 <div className="flex items-center gap-2 bg-slate-50 px-3 py-2.5 rounded-2xl border border-slate-200 focus-within:border-[#13ec5b] focus-within:shadow-lg focus-within:shadow-[#13ec5b]/20 transition-all">
-                  <button className="p-1.5 text-slate-400 hover:text-[#13ec5b] rounded-lg transition-all shrink-0">
+                  <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileSelect}
+                    accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar" />
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="p-1.5 text-slate-400 hover:text-[#13ec5b] rounded-lg transition-all shrink-0"
+                    title="Đính kèm file"
+                  >
                     <Paperclip size={16} />
                   </button>
-                  <button className="hidden sm:flex p-1.5 text-slate-400 hover:text-[#13ec5b] rounded-lg transition-all shrink-0">
+                  <button
+                    onClick={() => { if (fileInputRef.current) { fileInputRef.current.accept = "image/*"; fileInputRef.current.click(); fileInputRef.current.accept = "image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar"; } }}
+                    className="hidden sm:flex p-1.5 text-slate-400 hover:text-[#13ec5b] rounded-lg transition-all shrink-0"
+                    title="Gửi ảnh"
+                  >
                     <ImageIcon size={16} />
                   </button>
 
@@ -509,8 +653,8 @@ function AdminChatContent() {
                     onChange={e => setMessageInput(e.target.value)}
                     onKeyDown={handleSendMessage}
                     className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-medium placeholder:text-slate-400 text-slate-900 outline-none"
-                    placeholder="Nhập nội dung..."
-                    disabled={isMessageLoading}
+                    placeholder={pendingFile ? "Thêm chú thích (tuỳ chọn)..." : "Nhập nội dung..."}
+                    disabled={isMessageLoading || isUploading}
                     autoComplete="off"
                   />
 
@@ -521,10 +665,10 @@ function AdminChatContent() {
                   <button
                     id="chat-send-button"
                     onClick={() => handleSendMessage()}
-                    disabled={!messageInput.trim() || isMessageLoading}
+                    disabled={(!messageInput.trim() && !pendingFile) || isMessageLoading || isUploading}
                     className="bg-[#13ec5b] text-[#102216] p-2 rounded-xl shadow-md shadow-[#13ec5b]/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 shrink-0 flex items-center justify-center"
                   >
-                    <Send size={15} />
+                    {isUploading ? <Loader size={15} className="animate-spin" /> : <Send size={15} />}
                   </button>
                 </div>
                 <p className="hidden sm:block text-[10px] text-center text-slate-400 font-medium mt-2 uppercase tracking-widest">

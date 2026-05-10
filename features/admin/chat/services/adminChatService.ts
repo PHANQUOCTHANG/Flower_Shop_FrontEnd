@@ -38,7 +38,20 @@ interface ChatMessagesResponse {
 
 // Request gửi tin nhắn
 interface SendMessageRequest {
-  content: string;
+  content?: string;
+  mediaUrl?: string;
+  mediaPublicId?: string;
+  mediaType?: string;
+  mediaName?: string;
+  mediaSize?: number;
+}
+
+export interface UploadMediaResponse {
+  url: string;
+  publicId: string;
+  mediaType: "image" | "video" | "file";
+  originalName: string;
+  size: number;
 }
 
 export const adminChatService = {
@@ -164,6 +177,26 @@ export const adminChatService = {
       await api.patch(`/chats/${chatId}/read`);
     } catch (error) {
       console.error("[Admin Chat Service] Lỗi đánh dấu đã đọc", error);
+      throw error;
+    }
+  },
+
+  // Upload media cho chat (admin sử dụng)
+  async uploadMedia(file: File): Promise<UploadMediaResponse> {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const response = await api.post<ApiResponse<UploadMediaResponse>>(
+        "/chats/upload",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } },
+      );
+      if (response.data.status !== "success" || !response.data.data) {
+        throw new Error(response.data.message || "Upload thất bại");
+      }
+      return response.data.data;
+    } catch (error) {
+      console.error("[Admin Chat Service] Lỗi upload media", error);
       throw error;
     }
   },

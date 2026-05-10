@@ -1,4 +1,4 @@
-import { getSocket } from "@/lib/socket";
+  import { getSocket } from "@/lib/socket";
 import { Message } from "./chatService";
 
 // Tránh collision khi switch chat
@@ -130,4 +130,25 @@ export const removeInboxUpdateListener = () => {
   if (!socket) return;
 
   socket.off("chat:inbox_update");
+};
+
+// Lắng nghe lỗi từ AI
+export const listenForAIError = (
+  chatId: string,
+  callback: (data: { chatId: string; message: string }) => void,
+) => {
+  const socket = getSocket();
+  if (!socket) return;
+  socket.off('chat:ai_error');
+  socket.on('chat:ai_error', (data) => {
+    if (data.chatId === chatId) {
+      console.error('[Socket] AI Error:', data.message);
+      callback(data);
+    }
+  });
+};
+export const removeAIErrorListener = () => {
+  const socket = getSocket();
+  if (!socket) return;
+  socket.off('chat:ai_error');
 };

@@ -24,6 +24,104 @@ interface ProductCardProps {
   viewMode?: "grid" | "list";
 }
 
+interface QuantityPickerProps {
+  compact?: boolean;
+  quantity: number;
+  maxQuantity: number;
+  isPending: boolean;
+  onChangeQuantity: (e: React.MouseEvent, delta: number) => void;
+  onConfirmAdd: (e: React.MouseEvent) => void;
+  onCancel: (e: React.MouseEvent) => void;
+}
+
+const QuantityPicker = ({ compact = false, quantity, maxQuantity, isPending, onChangeQuantity, onConfirmAdd, onCancel }: QuantityPickerProps) => (
+  <div
+    onClick={(e) => e.stopPropagation()}
+    className={`flex items-center gap-2 ${compact ? "" : "w-full"}`}
+  >
+    <button
+      onClick={(e) => onChangeQuantity(e, -1)}
+      disabled={quantity <= INITIAL_QUANTITY}
+      className="size-8 rounded-xl bg-gray-100 flex items-center justify-center text-[#0d1b12] hover:bg-[#13ec5b]/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+    >
+      <Minus size={DROPDOWN_SIZE_COMPACT} />
+    </button>
+    <span className="w-6 sm:w-8 text-center text-xs sm:text-sm text-[#0d1b12] font-bold select-none">
+      {quantity}
+    </span>
+    <button
+      onClick={(e) => onChangeQuantity(e, 1)}
+      disabled={quantity >= maxQuantity}
+      className="size-8 rounded-xl bg-gray-100 flex items-center justify-center text-[#0d1b12] hover:bg-[#13ec5b]/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+    >
+      <Plus size={DROPDOWN_SIZE_COMPACT} />
+    </button>
+    <button
+      onClick={onConfirmAdd}
+      disabled={isPending}
+      className="flex-1 h-8 px-2 sm:px-3 rounded-xl bg-[#13ec5b] hover:bg-[#0ecf50] disabled:opacity-50 text-[#0d1b12] text-xs sm:text-sm font-bold transition-colors flex items-center justify-center gap-1 whitespace-nowrap"
+    >
+      {isPending ? (
+        <span className="animate-spin text-xs sm:text-sm">⏳</span>
+      ) : (
+        <Check size={DROPDOWN_SIZE_COMPACT} />
+      )}
+      Thêm
+    </button>
+    <button
+      onClick={onCancel}
+      className="size-8 rounded-xl border border-gray-200 flex items-center justify-center text-gray-400 hover:text-red-400 hover:border-red-300 transition-colors"
+    >
+      ✕
+    </button>
+  </div>
+);
+
+interface CartButtonProps {
+  fullWidth?: boolean;
+  isListView?: boolean;
+  cartState: CartState;
+  quantity: number;
+  isOutOfStock: boolean;
+  onOpenPicker: (e: React.MouseEvent) => void;
+}
+
+const CartButton = ({
+  fullWidth = false,
+  isListView = false,
+  cartState,
+  quantity,
+  isOutOfStock,
+  onOpenPicker
+}: CartButtonProps) => {
+  const paddingClass = isListView ? "py-2 sm:py-2.5" : "py-3.5";
+  const roundedClass = isListView
+    ? "rounded-lg sm:rounded-xl"
+    : "rounded-[14px]";
+
+  if (cartState === "added") {
+    return (
+      <div
+        className={`${fullWidth ? "w-full" : ""} ${paddingClass} px-3 sm:px-4 ${roundedClass} bg-[#13ec5b]/10 border-2 border-[#13ec5b] text-[#0d9e3e] text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap`}
+      >
+        <Check size={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        Đã thêm {quantity} vào giỏ!
+      </div>
+    );
+  }
+
+  return (
+    <button
+      disabled={isOutOfStock}
+      onClick={onOpenPicker}
+      className={`${fullWidth ? "w-full" : ""} ${paddingClass} px-3 sm:px-4 ${roundedClass} transition-all active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 border-2 border-[#13ec5b]/40 bg-white text-[#0d1b12] hover:border-[#13ec5b] hover:bg-[#13ec5b]/10 text-xs sm:text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap`}
+    >
+      <ShoppingCart size={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+      Thêm vào giỏ
+    </button>
+  );
+};
+
 // Thẻ sản phẩm (Lưới / Danh sách)
 export const ProductCard = ({
   product,
@@ -105,96 +203,7 @@ export const ProductCard = ({
     );
   };
 
-  // Bộ chọn số lượng
-  const QuantityPicker = ({ compact = false }: { compact?: boolean }) => (
-    <div
-      onClick={(e) => e.stopPropagation()}
-      className={`flex items-center gap-2 ${compact ? "" : "w-full"}`}
-    >
-      {/* Nút giảm */}
-      <button
-        onClick={(e) => changeQuantity(e, -1)}
-        disabled={quantity <= INITIAL_QUANTITY}
-        className="size-8 rounded-xl bg-gray-100 flex items-center justify-center text-[#0d1b12] hover:bg-[#13ec5b]/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-      >
-        <Minus size={DROPDOWN_SIZE_COMPACT} />
-      </button>
 
-      {/* Hiển thị số lượng */}
-      <span className="w-6 sm:w-8 text-center text-xs sm:text-sm text-[#0d1b12] font-bold select-none">
-        {quantity}
-      </span>
-
-      {/* Nút tăng */}
-      <button
-        onClick={(e) => changeQuantity(e, 1)}
-        disabled={quantity >= maxQuantity}
-        className="size-8 rounded-xl bg-gray-100 flex items-center justify-center text-[#0d1b12] hover:bg-[#13ec5b]/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-      >
-        <Plus size={DROPDOWN_SIZE_COMPACT} />
-      </button>
-
-      {/* Nút xác nhận */}
-      <button
-        onClick={handleConfirmAdd}
-        disabled={isPending}
-        className="flex-1 h-8 px-2 sm:px-3 rounded-xl bg-[#13ec5b] hover:bg-[#0ecf50] disabled:opacity-50 text-[#0d1b12] text-xs sm:text-sm font-bold transition-colors flex items-center justify-center gap-1 whitespace-nowrap"
-      >
-        {isPending ? (
-          <span className="animate-spin text-xs sm:text-sm">⏳</span>
-        ) : (
-          <Check size={DROPDOWN_SIZE_COMPACT} />
-        )}
-        Thêm
-      </button>
-
-      {/* Nút huỷ */}
-      <button
-        onClick={handleCancel}
-        className="size-8 rounded-xl border border-gray-200 flex items-center justify-center text-gray-400 hover:text-red-400 hover:border-red-300 transition-colors"
-      >
-        ✕
-      </button>
-    </div>
-  );
-
-  // Nút thêm vào giỏ
-  const CartButton = ({
-    fullWidth = false,
-    isListView = false,
-  }: {
-    fullWidth?: boolean;
-    isListView?: boolean;
-  }) => {
-    const paddingClass = isListView ? "py-2 sm:py-2.5" : "py-3.5";
-    const roundedClass = isListView
-      ? "rounded-lg sm:rounded-xl"
-      : "rounded-[14px]";
-
-    // Trạng thái: Đã thêm thành công
-    if (cartState === "added") {
-      return (
-        <div
-          className={`${fullWidth ? "w-full" : ""} ${paddingClass} px-3 sm:px-4 ${roundedClass} bg-[#13ec5b]/10 border-2 border-[#13ec5b] text-[#0d9e3e] text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap`}
-        >
-          <Check size={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          Đã thêm {quantity} vào giỏ!
-        </div>
-      );
-    }
-
-    // Trạng thái: Bình thường
-    return (
-      <button
-        disabled={isOutOfStock}
-        onClick={handleOpenPicker}
-        className={`${fullWidth ? "w-full" : ""} ${paddingClass} px-3 sm:px-4 ${roundedClass} transition-all active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 border-2 border-[#13ec5b]/40 bg-white text-[#0d1b12] hover:border-[#13ec5b] hover:bg-[#13ec5b]/10 text-xs sm:text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap`}
-      >
-        <ShoppingCart size={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-        Thêm vào giỏ
-      </button>
-    );
-  };
 
   // Chế độ Danh sách (List View)
   if (viewMode === "list") {
@@ -292,11 +301,11 @@ export const ProductCard = ({
             {/* Giỏ hàng: Bộ chọn hoặc Nút thêm */}
             {cartState === "picking" ? (
               <div className="w-full sm:w-auto mt-2 sm:mt-0">
-                <QuantityPicker compact />
+                <QuantityPicker compact quantity={quantity} maxQuantity={maxQuantity} isPending={isPending} onChangeQuantity={changeQuantity} onConfirmAdd={handleConfirmAdd} onCancel={handleCancel} />
               </div>
             ) : (
               <div className="flex-none">
-                <CartButton isListView />
+                <CartButton isListView cartState={cartState} quantity={quantity} isOutOfStock={isOutOfStock} onOpenPicker={handleOpenPicker} />
               </div>
             )}
           </div>
@@ -396,10 +405,10 @@ export const ProductCard = ({
           {/* Giỏ hàng: Bộ chọn hoặc Nút thêm */}
           {cartState === "picking" ? (
             <div onClick={(e) => e.stopPropagation()} className="w-full">
-              <QuantityPicker />
+              <QuantityPicker quantity={quantity} maxQuantity={maxQuantity} isPending={isPending} onChangeQuantity={changeQuantity} onConfirmAdd={handleConfirmAdd} onCancel={handleCancel} />
             </div>
           ) : (
-            <CartButton fullWidth isListView={false} />
+            <CartButton fullWidth isListView={false} cartState={cartState} quantity={quantity} isOutOfStock={isOutOfStock} onOpenPicker={handleOpenPicker} />
           )}
         </div>
       </div>

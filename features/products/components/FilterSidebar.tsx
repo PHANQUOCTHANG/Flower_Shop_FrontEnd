@@ -29,82 +29,54 @@ export function FilterSidebar({
   return (
     <>
       {/* Mobile Backdrop */}
-      <div 
-        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity md:hidden ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
+      <div
+        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity md:hidden ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         onClick={onClose}
       />
 
       {/* Sidebar / Drawer */}
-      <aside className={`fixed md:sticky top-0 right-0 md:top-28 h-full md:h-auto w-[280px] md:w-72 lg:w-72 bg-white md:bg-transparent z-50 md:z-0 shrink-0 transform transition-transform duration-300 md:transform-none shadow-2xl md:shadow-none overflow-y-auto md:overflow-visible ${isOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}`}>
+      <aside
+        className={`fixed md:relative top-0 right-0 h-full md:h-auto w-[280px] md:w-72 lg:w-72 bg-white md:bg-transparent z-50 md:z-0 shrink-0 transform transition-transform duration-300 md:transform-none shadow-2xl md:shadow-none overflow-y-auto md:overflow-visible ${isOpen ? "translate-x-0" : "translate-x-full md:translate-x-0"}`}
+      >
         <div className="p-6 md:p-0 space-y-2">
           {/* Mobile Header */}
           <div className="flex items-center justify-between md:hidden mb-6 pb-4 border-b border-slate-100">
             <h3 className="typo-heading-md text-[#0d1b12]">Bộ lọc</h3>
-            <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 text-slate-500">
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full hover:bg-slate-100 text-slate-500"
+            >
               <X size={20} />
             </button>
           </div>
 
           {/* Desktop Header */}
           <div className="mb-8 hidden md:block">
-          <div className="flex items-center gap-2 mb-2">
-            <Filter size={20} className="text-[#13ec5b]" />
-            <h3 className="typo-heading-md text-[#0d1b12]">Bộ lọc</h3>
+            <div className="flex items-center gap-2 mb-2">
+              <Filter size={20} className="text-[#13ec5b]" />
+              <h3 className="typo-heading-md text-[#0d1b12]">Bộ lọc</h3>
+            </div>
+            <p className="typo-caption-xs text-[#4c9a66]">
+              Tinh chỉnh lựa chọn
+            </p>
           </div>
-          <p className="typo-caption-xs text-[#4c9a66]">Tinh chỉnh lựa chọn</p>
-        </div>
 
-        {/* Lọc theo giá */}
-        <FilterSection title="Khoảng giá">
-          {PRICE_RANGES.map((range) => (
-            <label
-              key={range.value}
-              className="flex items-center gap-3 cursor-pointer group/item"
-            >
-              <div className="relative flex items-center">
-                <input
-                  type="checkbox"
-                  checked={minPrice === range.min && maxPrice === range.max}
-                  onChange={(e) =>
-                    onPriceChange(
-                      e.target.checked ? range.min : null,
-                      e.target.checked ? range.max : null,
-                    )
-                  }
-                  className="peer appearance-none size-5 border-2 border-[#ccc] rounded-md checked:bg-[#13ec5b] checked:border-[#13ec5b] transition-all"
-                />
-                <CheckCircle
-                  size={12}
-                  className="absolute left-1 text-[#0d1b12] opacity-0 peer-checked:opacity-100 transition-opacity"
-                />
-              </div>
-              <span className="typo-body-sm text-[#4c9a66] group-hover/item:text-[#13ec5b] transition-colors">
-                {range.label}
-              </span>
-            </label>
-          ))}
-        </FilterSection>
-
-        {/* Lọc theo danh mục */}
-        <FilterSection title="Danh mục">
-          <div
-            className={
-              categories.length > 5
-                ? "max-h-80 overflow-y-auto space-y-3 pr-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#ccc] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#13ec5b]"
-                : "space-y-3"
-            }
-          >
-            {categories.map((category) => (
+          {/* Lọc theo giá */}
+          <FilterSection title="Khoảng giá">
+            {PRICE_RANGES.map((range) => (
               <label
-                key={category.id}
+                key={range.value}
                 className="flex items-center gap-3 cursor-pointer group/item"
               >
                 <div className="relative flex items-center">
                   <input
                     type="checkbox"
-                    checked={selectedCategory === category.slug}
+                    checked={minPrice === range.min && maxPrice === range.max}
                     onChange={(e) =>
-                      onCategoryChange(category.slug, e.target.checked)
+                      onPriceChange(
+                        e.target.checked ? range.min : null,
+                        e.target.checked ? range.max : null,
+                      )
                     }
                     className="peer appearance-none size-5 border-2 border-[#ccc] rounded-md checked:bg-[#13ec5b] checked:border-[#13ec5b] transition-all"
                   />
@@ -114,12 +86,47 @@ export function FilterSidebar({
                   />
                 </div>
                 <span className="typo-body-sm text-[#4c9a66] group-hover/item:text-[#13ec5b] transition-colors">
-                  {category.name}
+                  {range.label}
                 </span>
               </label>
             ))}
-          </div>
-        </FilterSection>
+          </FilterSection>
+
+          {/* Lọc theo danh mục */}
+          <FilterSection title="Danh mục">
+            <div
+              className={
+                categories.length > 5
+                  ? "max-h-80 overflow-y-auto space-y-3 pr-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#ccc] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#13ec5b]"
+                  : "space-y-3"
+              }
+            >
+              {categories.map((category) => (
+                <label
+                  key={category.id}
+                  className="flex items-center gap-3 cursor-pointer group/item"
+                >
+                  <div className="relative flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedCategory === category.slug}
+                      onChange={(e) =>
+                        onCategoryChange(category.slug, e.target.checked)
+                      }
+                      className="peer appearance-none size-5 border-2 border-[#ccc] rounded-md checked:bg-[#13ec5b] checked:border-[#13ec5b] transition-all"
+                    />
+                    <CheckCircle
+                      size={12}
+                      className="absolute left-1 text-[#0d1b12] opacity-0 peer-checked:opacity-100 transition-opacity"
+                    />
+                  </div>
+                  <span className="typo-body-sm text-[#4c9a66] group-hover/item:text-[#13ec5b] transition-colors">
+                    {category.name}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </FilterSection>
         </div>
       </aside>
     </>

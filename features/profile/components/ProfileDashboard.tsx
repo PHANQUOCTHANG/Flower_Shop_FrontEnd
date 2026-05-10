@@ -216,7 +216,7 @@ export const ProfileDashboard: FC<ProfileDashboardProps> = ({
                       <tr
                         key={order.id}
                         className="hover:bg-slate-50/50 transition-colors cursor-pointer"
-                        onClick={() => onNavigateTab("orders")}
+                        // onClick={() => onNavigateTab("orders")}
                       >
                         <td className="px-6 py-4 text-sm font-bold text-slate-900">
                           #{order.id.slice(-8).toUpperCase()}

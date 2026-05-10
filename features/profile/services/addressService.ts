@@ -9,9 +9,15 @@ import type {
 const API_BASE = "/addresses";
 
 // Lấy danh sách tất cả địa chỉ của người dùng
-export const fetchAddresses = async (limit?:number): Promise<Address[]> => {
-  const response = await axiosInstance.get<AddressesResponse>(API_BASE , { params: { limit } });
-  return response.data.data || [];
+export const fetchAddresses = async (
+  page: number = 1,
+  limit: number = 6,
+): Promise<any> => {
+  const response = await axiosInstance.get<AddressesResponse>(API_BASE, {
+    params: { page, limit },
+  });
+
+  return response.data || {};
 };
 
 // Lấy thông tin chi tiết một địa chỉ

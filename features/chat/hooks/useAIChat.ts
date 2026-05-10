@@ -21,7 +21,7 @@ export interface UseAIChatState {
 
 export interface UseAIChatActions {
   openChat: () => Promise<void>;
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (content: string, mediaUrl?: string, mediaType?: string, mediaName?: string, mediaSize?: number) => Promise<void>;
   loadMoreMessages: () => Promise<void>;
   closeChat: () => void;
   clearError: () => void;
@@ -94,14 +94,14 @@ export const useAIChat = () => {
     };
   }, [state.chat]);
 
-  // Gửi tin nhắn đến AI
+  // Gửi tin nhắn đến AI (có thể kèm media)
   const sendMessage = useCallback(
-    async (content: string) => {
+    async (content: string, mediaUrl?: string, mediaType?: string, mediaName?: string, mediaSize?: number) => {
       if (!state.chat) return;
       try {
         // Bật typing indicator ngay khi gửi
         setState((prev) => ({ ...prev, isAITyping: true }));
-        await chatService.sendAIMessage({ content });
+        await chatService.sendAIMessage({ content: content || undefined, mediaUrl, mediaType, mediaName, mediaSize });
         // Message user + AI response sẽ đến qua socket
       } catch (err) {
         const msg =

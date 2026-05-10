@@ -163,7 +163,7 @@ export default function AddNewProductPage() {
 
   return (
     <div
-      className="min-h-screen font-sans text-slate-900 overflow-y-auto"
+      className="min-h-full flex flex-col font-sans text-slate-900"
       style={{ backgroundColor: PRODUCT_CONFIG.BACKGROUND_COLOR }}
     >
       {/* Alert */}
@@ -183,7 +183,7 @@ export default function AddNewProductPage() {
       <ProductDetailHeader isEdit={false} />
 
       {/* Form container */}
-      <div className="px-4 sm:px-6 md:px-8 py-6 md:py-8 pb-28 max-w-[1400px] mx-auto">
+      <div className="flex-1 px-4 sm:px-6 md:px-8 py-6 md:py-8 max-w-[1400px] mx-auto w-full">
         <form
           id="product-form"
           className="grid grid-cols-1 lg:grid-cols-3 gap-8"

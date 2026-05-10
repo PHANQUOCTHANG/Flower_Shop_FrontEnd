@@ -8,6 +8,8 @@ export interface ChatLastMessage {
   createdAt: string;
   senderRole?: "user" | "admin" | string;
   isRead?: boolean;
+  mediaUrl?: string | null;
+  mediaType?: "image" | "video" | "file" | string | null;
 }
 
 export interface Chat {
@@ -29,7 +31,12 @@ export interface Message {
   chatId: string;
   senderId: string;
   senderRole: "user" | "admin" | string;
-  content: string;
+  content: string | null;
+  mediaUrl?: string | null;
+  mediaPublicId?: string | null;
+  mediaType?: "image" | "video" | "file" | string | null;
+  mediaName?: string | null;
+  mediaSize?: number | null;
   createdAt: string;
   isRead?: boolean;
 }

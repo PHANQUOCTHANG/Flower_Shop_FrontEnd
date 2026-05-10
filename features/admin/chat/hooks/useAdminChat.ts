@@ -292,10 +292,12 @@ export const useAdminChat = () => {
             ? {
                 ...chat,
                 lastMessage: {
-                  content: message.content,
+                  content: message.content ?? chat.lastMessage?.content ?? "",
                   createdAt: message.createdAt,
                   senderRole: message.senderRole,
                   isRead: message.isRead ?? false,
+                  mediaUrl: message.mediaUrl,
+                  mediaType: message.mediaType,
                 },
                 lastMessageAt: message.createdAt,
               }
@@ -346,8 +348,9 @@ export const useAdminChat = () => {
   }, []); // stable - dùng refs
 
   // Gửi tin nhắn + Optimistic UI
-  const sendMessage = useCallback(async (content: string) => {
-    if (!content.trim() || !selectedChatRef.current) return;
+  const sendMessage = useCallback(async (content: string, mediaUrl?: string, mediaType?: string, mediaName?: string, mediaSize?: number) => {
+    if (!content.trim() && !mediaUrl) return;
+    if (!selectedChatRef.current) return;
 
     const chatId = selectedChatRef.current.id;
     const optimisticId = `optimistic-${Date.now()}`;
@@ -360,7 +363,11 @@ export const useAdminChat = () => {
         {
           id: optimisticId,
           chatId,
-          content,
+          content: content || null,
+          mediaUrl: mediaUrl || null,
+          mediaType: mediaType || null,
+          mediaName: mediaName || null,
+          mediaSize: mediaSize || null,
           senderRole: "admin",
           createdAt: new Date().toISOString(),
           isRead: false,
@@ -370,7 +377,7 @@ export const useAdminChat = () => {
     }));
 
     try {
-      await adminChatService.sendMessage(chatId, { content });
+      await adminChatService.sendMessage(chatId, { content: content || undefined, mediaUrl, mediaType, mediaName, mediaSize });
       // Socket listener sẽ thêm tin thật và xóa optimistic
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Lỗi khi gửi tin nhắn";
@@ -416,7 +423,12 @@ export const useAdminChat = () => {
 
     const handleInboxUpdate = (data: {
       chatId: string;
-      lastMessage: { content: string; createdAt: string };
+      lastMessage: { 
+        content: string; 
+        createdAt: string;
+        mediaUrl?: string | null;
+        mediaType?: string | null;
+      };
       fromUserId: string;
     }) => {
       setState((prev) => {
@@ -432,6 +444,8 @@ export const useAdminChat = () => {
               createdAt: data.lastMessage.createdAt,
               senderRole: "user",
               isRead: false,
+              mediaUrl: data.lastMessage.mediaUrl,
+              mediaType: data.lastMessage.mediaType,
             },
             lastMessageAt: data.lastMessage.createdAt,
           });

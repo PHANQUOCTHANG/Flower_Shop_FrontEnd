@@ -4,9 +4,33 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Address, CreateAddressRequest } from "@/types/profile";
 import * as addressService from "../services/addressService";
 
-export const useAddresses = ({ limit }: { limit?: number } = {}) => {
+interface PaginationParams {
+  page?: number;
+  limit?: number;
+}
+
+interface AddressesResult {
+  data: Address[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  results?: number;
+}
+
+export const useAddresses = ({
+  page = 1,
+  limit = 6,
+}: PaginationParams = {}) => {
   // State: Danh sách địa chỉ (quản lý cục bộ)
   const [addresses, setAddresses] = useState<Address[]>([]);
+  // State: Metadata phân trang
+  const [meta, setMeta] = useState({
+    total: 0,
+    page: 1,
+    limit: 6,
+    totalPages: 0,
+  });
   // State: Lỗi từ API
   const [error, setError] = useState<string | null>(null);
   // Hook: React Query client để invalidate cache
@@ -14,14 +38,15 @@ export const useAddresses = ({ limit }: { limit?: number } = {}) => {
 
   // Query: Fetch danh sách địa chỉ từ API
   const {
-    data: fetchedAddresses = [],
+    data: result,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["addresses"],
+    queryKey: ["addresses", { page, limit }],
     queryFn: async () => {
       try {
-        const data = await addressService.fetchAddresses(limit);
+        const data = await addressService.fetchAddresses(page, limit);
+        console.log("Fetched addresses data:", data); // Debug log
         return data;
       } catch (err) {
         const message =
@@ -35,18 +60,25 @@ export const useAddresses = ({ limit }: { limit?: number } = {}) => {
 
   // Effect: Sync dữ liệu từ React Query vào state
   useEffect(() => {
-    if (fetchedAddresses.length > 0) {
-      setAddresses(fetchedAddresses);
+    if (result?.data) {
+      setAddresses(result.data);
+      setMeta({
+        total: result.total,
+        page: result.page,
+        limit: result.limit,
+        totalPages: result.totalPages,
+      });
     }
-  }, [fetchedAddresses]);
+  }, [result]);
 
   // Mutation: Tạo mới địa chỉ
   const createMutation = useMutation({
     mutationFn: (payload: CreateAddressRequest) =>
       addressService.createAddress(payload),
-    onSuccess: (newAddress) => {
-      setAddresses((prev) => [...prev, newAddress]);
-      queryClient.invalidateQueries({ queryKey: ["addresses"] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["addresses", { page, limit }],
+      });
       setError(null);
     },
     onError: (err) => {
@@ -64,13 +96,10 @@ export const useAddresses = ({ limit }: { limit?: number } = {}) => {
       id: string;
       payload: CreateAddressRequest;
     }) => addressService.updateAddress(id, payload),
-    onSuccess: (updatedAddress) => {
-      setAddresses((prev) =>
-        prev.map((addr) =>
-          addr.id === updatedAddress.id ? updatedAddress : addr,
-        ),
-      );
-      queryClient.invalidateQueries({ queryKey: ["addresses"] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["addresses", { page, limit }],
+      });
       setError(null);
     },
     onError: (err) => {
@@ -83,9 +112,10 @@ export const useAddresses = ({ limit }: { limit?: number } = {}) => {
   // Mutation: Xóa địa chỉ
   const deleteMutation = useMutation({
     mutationFn: (id: string) => addressService.deleteAddress(id),
-    onSuccess: (_, id) => {
-      setAddresses((prev) => prev.filter((addr) => addr.id !== id));
-      queryClient.invalidateQueries({ queryKey: ["addresses"] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["addresses", { page, limit }],
+      });
       setError(null);
     },
     onError: (err) => {
@@ -97,15 +127,10 @@ export const useAddresses = ({ limit }: { limit?: number } = {}) => {
   // Mutation: Đặt địa chỉ mặc định
   const setDefaultMutation = useMutation({
     mutationFn: (id: string) => addressService.setDefaultAddress(id),
-    onSuccess: (updatedAddress) => {
-      setAddresses((prev) =>
-        prev.map((addr) =>
-          addr.id === updatedAddress.id
-            ? { ...addr, isDefault: true }
-            : { ...addr, isDefault: false },
-        ),
-      );
-      queryClient.invalidateQueries({ queryKey: ["addresses"] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["addresses", { page, limit }],
+      });
       setError(null);
     },
     onError: (err) => {
@@ -117,6 +142,7 @@ export const useAddresses = ({ limit }: { limit?: number } = {}) => {
 
   return {
     addresses,
+    meta,
     isLoading,
     error,
     refetch,

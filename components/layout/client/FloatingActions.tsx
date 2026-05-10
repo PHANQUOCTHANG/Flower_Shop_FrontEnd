@@ -16,6 +16,9 @@ import {
   ChevronDown,
   Loader2,
   Sparkles,
+  Paperclip,
+  FileText,
+  AlertCircle,
 } from "lucide-react";
 import { useChat } from "@/features/chat/hooks/useChat";
 import { useAIChat } from "@/features/chat/hooks/useAIChat";
@@ -23,6 +26,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useSettingStore } from "@/stores/setting.store";
 import Image from "next/image";
 import { Message } from "@/features/chat/services/chatService";
+import { chatService } from "@/features/chat/services/chatService";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type ChatMode = "admin" | "ai";
@@ -74,6 +78,69 @@ function TypingDots() {
   );
 }
 
+const formatFileSize = (bytes?: number | null) => {
+  if (!bytes) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+// ─── Media Content Renderer ───────────────────────────────────────────────────
+function MediaContent({ msg, isUser }: { msg: Message; isUser: boolean }) {
+  const { mediaUrl, mediaType, mediaName, mediaSize, content } = msg;
+
+  if (!mediaUrl) return <span className="whitespace-pre-wrap leading-relaxed">{content}</span>;
+
+  if (mediaType === "image") {
+    return (
+      <div className="flex flex-col gap-2">
+        <img
+          src={mediaUrl}
+          alt="Hình ảnh"
+          className="max-w-full rounded-xl object-cover cursor-pointer hover:opacity-95 transition-opacity"
+          onClick={(e) => { e.stopPropagation(); window.open(mediaUrl, "_blank"); }}
+        />
+        {content && <span className={`text-sm px-1 ${isUser ? "text-white" : "text-gray-800"}`}>{content}</span>}
+      </div>
+    );
+  }
+
+  if (mediaType === "video") {
+    return (
+      <div className="flex flex-col gap-2">
+        <video src={mediaUrl} controls className="max-w-full rounded-xl" />
+        {content && <span className={`text-sm px-1 ${isUser ? "text-white" : "text-gray-800"}`}>{content}</span>}
+      </div>
+    );
+  }
+
+  // File Zalo-style card
+  return (
+    <div className="flex flex-col gap-2 min-w-[200px]">
+      <a
+        href={mediaUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3 p-3 bg-white border border-gray-100 rounded-xl hover:bg-gray-50 transition-all shadow-sm group"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform flex-shrink-0">
+          <FileText size={20} />
+        </div>
+        <div className="flex flex-col overflow-hidden">
+          <span className="text-sm font-bold text-gray-700 truncate max-w-[140px]">
+            {mediaName || "Tập tin"}
+          </span>
+          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+            {mediaType} • {formatFileSize(mediaSize)}
+          </span>
+        </div>
+      </a>
+      {content && <span className={`text-sm px-1 font-medium ${isUser ? "text-white" : "text-gray-800"}`}>{content}</span>}
+    </div>
+  );
+}
+
 // ─── Message Bubble (shared) ──────────────────────────────────────────────────
 interface MessageBubbleProps {
   msg: Message;
@@ -95,46 +162,41 @@ function MessageBubble({ msg, isUser, mode, isActive, onClick }: MessageBubblePr
           <div className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0 mb-0.5 shadow-sm">
             <Bot size={11} className="text-white" />
           </div>
-          <div
-            onClick={onClick}
-            className="max-w-[78%] px-3.5 py-2.5 text-sm rounded-2xl rounded-bl-sm bg-white border border-gray-100 text-gray-800 shadow-sm cursor-pointer hover:shadow-md transition-all duration-150 active:scale-[0.98] leading-relaxed"
-          >
-            {msg.content}
+          <div onClick={onClick} className={`max-w-[85%] px-3.5 py-2.5 text-sm rounded-2xl rounded-bl-sm transition-all duration-150 active:scale-[0.98] leading-relaxed shadow-sm hover:shadow-md
+            ${msg.mediaUrl ? "bg-transparent !p-0 border-none !shadow-none" : "bg-white border border-gray-100 text-gray-800"}
+          `}>
+            <MediaContent msg={msg} isUser={false} />
           </div>
         </div>
       )}
 
       {!isUser && !isAI && (
-        <div
-          onClick={onClick}
-          className="max-w-[78%] px-3.5 py-2.5 text-sm rounded-2xl rounded-bl-sm bg-white border border-gray-100 text-gray-800 shadow-sm cursor-pointer hover:shadow-md transition-all duration-150 active:scale-[0.98] leading-relaxed"
-        >
-          {msg.content}
+        <div onClick={onClick} className={`max-w-[85%] px-3.5 py-2.5 text-sm rounded-2xl rounded-bl-sm transition-all duration-150 active:scale-[0.98] leading-relaxed shadow-sm hover:shadow-md
+          ${msg.mediaUrl ? "bg-transparent !p-0 border-none !shadow-none" : "bg-white border border-gray-100 text-gray-800"}
+        `}>
+          <MediaContent msg={msg} isUser={false} />
         </div>
       )}
 
       {isUser && (
-        <div
-          onClick={onClick}
-          className={`max-w-[78%] px-3.5 py-2.5 text-sm rounded-2xl rounded-br-sm cursor-pointer transition-all duration-150 active:scale-[0.98] leading-relaxed font-medium shadow-sm ${
-            isAI
-              ? "bg-gradient-to-br from-violet-500 to-purple-600 text-white hover:opacity-90"
-              : "bg-gradient-to-br from-emerald-400 to-green-500 text-white hover:opacity-90"
-          }`}
-        >
-          {msg.content}
+        <div onClick={onClick} className={`max-w-[85%] px-3.5 py-2.5 text-sm rounded-2xl rounded-br-sm cursor-pointer transition-all duration-150 active:scale-[0.98] leading-relaxed shadow-sm hover:shadow-md
+          ${msg.mediaUrl 
+            ? "bg-transparent !p-0 border-none !shadow-none" 
+            : (isAI
+                ? "bg-gradient-to-br from-violet-500 to-purple-600 text-white font-medium"
+                : "bg-gradient-to-br from-emerald-400 to-green-500 text-white font-medium"
+              )
+          }
+        `}>
+          <MediaContent msg={msg} isUser={true} />
         </div>
       )}
 
       {/* Timestamp */}
-      <div
-        className={`overflow-hidden transition-all duration-200 px-1 ${
-          isActive ? "max-h-5 opacity-100" : "max-h-0 opacity-0"
-        }`}
-      >
-        <span className="text-[10px] text-gray-400 font-medium">
-          {formatTime(date)}
-        </span>
+      <div className={`overflow-hidden transition-all duration-200 px-1 ${
+        isActive ? "max-h-5 opacity-100" : "max-h-0 opacity-0"
+      }`}>
+        <span className="text-[10px] text-gray-400 font-medium">{formatTime(date)}</span>
       </div>
     </div>
   );
@@ -149,7 +211,7 @@ interface ChatPanelProps {
   error: string | null;
   onClose: () => void;
   onRetry: () => void;
-  onSend: (content: string) => Promise<void>;
+  onSend: (content: string, mediaUrl?: string, mediaType?: string, mediaName?: string, mediaSize?: number) => Promise<void>;
   onLoadMore: () => Promise<void>;
   clearError: () => void;
   inputPlaceholder: string;
@@ -175,6 +237,10 @@ function ChatPanel({
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [pendingPreview, setPendingPreview] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const prevScrollHeightRef = useRef(0);
@@ -232,16 +298,51 @@ function ChatPanel({
     };
   }, [isLoading]);
 
+  // Cleanup preview URL on unmount
+  useEffect(() => {
+    return () => { if (pendingPreview) URL.revokeObjectURL(pendingPreview); };
+  }, [pendingPreview]);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // Tạo preview URL nếu là ảnh/video
+    if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
+      setPendingPreview(URL.createObjectURL(file));
+    } else {
+      setPendingPreview(null);
+    }
+    setPendingFile(file);
+    // Reset input để có thể chọn lại file cũ
+    e.target.value = "";
+  };
+
+  const clearPendingFile = () => {
+    if (pendingPreview) URL.revokeObjectURL(pendingPreview);
+    setPendingFile(null);
+    setPendingPreview(null);
+  };
+
   const handleSend = async () => {
-    if (!input.trim() || isSending) return;
+    if ((!input.trim() && !pendingFile) || isSending) return;
     const content = input.trim();
     setInput("");
     setIsSending(true);
+
     try {
-      await onSend(content);
+      if (pendingFile) {
+        // Upload file trước, gửi tin nhắn kèm media (cả admin và AI chat)
+        setUploadProgress(true);
+        const uploaded = await chatService.uploadMedia(pendingFile);
+        clearPendingFile();
+        setUploadProgress(false);
+        await onSend(content, uploaded.url, uploaded.mediaType, uploaded.originalName, uploaded.size);
+      } else {
+        await onSend(content);
+      }
       clearError();
     } catch {
-      // error handled in hook
+      setUploadProgress(false);
     } finally {
       setIsSending(false);
     }
@@ -392,7 +493,54 @@ function ChatPanel({
 
           {/* Input area */}
           <div className="border-t border-gray-100 px-3 py-3 bg-white rounded-b-2xl">
+            {/* File preview */}
+            {pendingFile && (
+              <div className="mb-2 p-2 bg-gray-100 rounded-xl flex items-center gap-2 relative">
+                {pendingFile.type.startsWith("image/") && pendingPreview ? (
+                  <img src={pendingPreview} alt="preview" className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                ) : pendingFile.type.startsWith("video/") && pendingPreview ? (
+                  <video src={pendingPreview} className="w-12 h-12 rounded-lg object-cover shrink-0" muted />
+                ) : (
+                  <div className="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center shrink-0">
+                    <FileText size={20} className="text-gray-500" />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-gray-700 truncate">{pendingFile.name}</p>
+                  <p className="text-[10px] text-gray-400">{(pendingFile.size / 1024).toFixed(0)} KB</p>
+                </div>
+                <button onClick={clearPendingFile} className="w-5 h-5 bg-gray-300 hover:bg-gray-400 rounded-full flex items-center justify-center shrink-0 transition-colors">
+                  <X size={10} />
+                </button>
+              </div>
+            )}
+
+            {/* Upload progress */}
+            {uploadProgress && (
+              <div className="mb-2 flex items-center gap-2 text-xs text-gray-500 px-1">
+                <Loader2 size={12} className={`animate-spin ${isAI ? "text-violet-500" : "text-emerald-500"}`} />
+                <span>Đang tải file lên...</span>
+              </div>
+            )}
+
             <div className="flex items-end gap-2">
+              {/* File attachment (cả admin và AI chat) */}
+              <>
+                <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileSelect}
+                  accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar" />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isSending}
+                  title="Đính kèm file"
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-40 flex-shrink-0 ${
+                    isAI
+                      ? "text-gray-400 hover:text-violet-500 hover:bg-violet-50"
+                      : "text-gray-400 hover:text-emerald-500 hover:bg-emerald-50"
+                  }`}
+                >
+                  <Paperclip size={16} />
+                </button>
+              </>
               <textarea
                 rows={1}
                 value={input}
@@ -402,14 +550,14 @@ function ChatPanel({
                   e.target.style.height = Math.min(e.target.scrollHeight, 80) + "px";
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder={inputPlaceholder}
+                placeholder={pendingFile ? "Thêm chú thích (tuỳ chọn)..." : inputPlaceholder}
                 disabled={isSending}
                 className="flex-1 resize-none bg-gray-100 rounded-xl px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:bg-white transition-all disabled:opacity-50 leading-relaxed max-h-20 overflow-y-auto"
                 style={{ height: "40px" }}
               />
               <button
                 onClick={handleSend}
-                disabled={!input.trim() || isSending}
+                disabled={(!input.trim() && !pendingFile) || isSending}
                 className={`w-10 h-10 rounded-xl flex items-center justify-center text-white transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm ${
                   isAI
                     ? "bg-gradient-to-br from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
@@ -434,6 +582,7 @@ function ChatPanel({
     </div>
   );
 }
+
 
 // ─── Main FloatingActions ─────────────────────────────────────────────────────
 export default function FloatingActions() {

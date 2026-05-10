@@ -10,6 +10,7 @@ interface UseProductsParams {
   priceMax?: number | null;
   category?: string;
   sort?: string;
+  enabled?: boolean;
 }
 
 export const useProducts = (params?: UseProductsParams) => {
@@ -30,6 +31,7 @@ export const useProducts = (params?: UseProductsParams) => {
       );
       return productService.getProducts(apiParams);
     },
+    enabled: params?.enabled !== false,
     placeholderData: (prev) => prev, // giữ data cũ khi đổi filter/trang → không bị flash trắng
     staleTime: 30_000,               // 30 giây — tránh refetch liên tục khi user navigate
   });

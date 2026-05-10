@@ -1,59 +1,18 @@
-"use client";
+import type { Metadata } from "next";
+import HomePageClient from "./page.client";
 
-import { useEffect, useState } from "react";
-import Hero from "@/features/home/components/Hero";
-import Features from "@/features/home/components/Features";
-import Categories from "@/features/home/components/Categories";
-import ProductSection from "@/features/home/components/ProductSection";
-import Consultation from "@/features/home/components/Consultation";
-import LazySection from "@/features/home/components/LazySection";
-import { Loading } from "@/components/ui/Loading";
-import { useHome, type HomeCategoryGroup } from "@/features/home/hooks/useHome";
+export const metadata: Metadata = {
+  title: "Trang chủ | Flower_QT",
+  description: "Khám phá thế giới hoa tươi tuyệt đẹp tại Flower_QT. Giao hàng hỏa tốc trong 2 giờ, mẫu mã đa dạng, chất lượng đỉnh cao.",
+  openGraph: {
+    title: "Flower_QT - Đặt Hoa Online, Giao Nhanh 2h",
+    description: "Khám phá thế giới hoa tươi tuyệt đẹp tại Flower_QT. Đặt hoa ngay!",
+    type: "website",
+    locale: "vi_VN",
+    siteName: "Flower_QT",
+  },
+};
 
 export default function HomePage() {
-  const { categories, categoriesLoading, productsByCategory, loading } =
-    useHome();
-  const [isClient, setIsClient] = useState(false);
-
-  // Fix hydration mismatch: chỉ render khi client ready
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) return null;
-  if (loading) return <Loading />;
-
-  return (
-    <div className="min-h-screen bg-[#fcfbf9] text-[#1b0d11] transition-colors duration-300 font-sans antialiased overflow-x-hidden">
-      <Hero />
-
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-10 lg:px-20">
-        <Features />
-
-        {/* Danh mục — load ngay vì near top */}
-        <Categories categories={categories} loading={categoriesLoading} />
-
-        {/* Sản phẩm theo từng danh mục — lazy load khi scroll tới */}
-        {productsByCategory.map(({ category, products, loading }: HomeCategoryGroup, idx: number) => {
-          if (!category) return null;
-          return (
-            <LazySection
-              key={category.id}
-              placeholderHeight="500px"
-              rootMargin={idx === 0 ? "0px" : "150px"}
-            >
-              <ProductSection
-                title={category.name}
-                products={products}
-                loading={loading}
-                categorySlug={category.slug}
-              />
-            </LazySection>
-          );
-        })}
-
-        <Consultation />
-      </div>
-    </div>
-  );
+  return <HomePageClient />;
 }
