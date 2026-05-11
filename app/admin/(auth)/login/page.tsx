@@ -6,12 +6,11 @@ import {
   Lock,
   Eye,
   EyeOff,
+  LayoutDashboard,
   ShieldCheck,
-  Fingerprint,
+  Key,
   HelpCircle,
   Settings,
-  Flower2,
-  ChevronRight,
 } from "lucide-react";
 import { useLogin } from "@/features/auth/login/hooks/useLogin";
 
@@ -46,12 +45,6 @@ export default function LoginPage() {
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      console.log({
-        email: credentials.email,
-        password: credentials.password,
-        role: "ADMIN",
-        rememberMe: credentials.rememberMe,
-      });
       await login({
         email: credentials.email,
         password: credentials.password,
@@ -65,167 +58,175 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-slate-300 font-sans flex items-center justify-center p-4 selection:bg-[#1152d4]/40 selection:text-white relative overflow-hidden">
-      {/* ── Background Effects ── */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#1152d4]/10 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[300px] bg-purple-600/5 blur-[100px] rounded-full pointer-events-none" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
-      </div>
-
+    <div className="min-h-screen bg-[#6366F1]/10 flex items-center justify-center p-4 md:p-8">
       {/* ── Main Container ── */}
-      <div className="relative z-10 w-full max-w-[1000px] grid grid-cols-1 md:grid-cols-5 bg-[#121212]/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-700">
+      <div className="w-full max-w-[1000px] flex flex-col md:flex-row bg-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden min-h-[600px]">
         
-        {/* ── Left Column: Intro ── */}
-        <div className="hidden md:flex md:col-span-2 relative p-10 flex-col justify-between border-r border-white/5 bg-gradient-to-b from-white/[0.02] to-transparent">
-          <div>
-            <div className="inline-flex items-center justify-center p-2.5 bg-[#1152d4]/20 border border-[#1152d4]/30 rounded-xl text-[#3b82f6] shadow-[0_0_20px_rgba(17,82,212,0.3)] mb-8">
-              <Flower2 size={24} />
+        {/* ── Left Column: Intro (Visible on MD+) ── */}
+        <div className="hidden md:flex w-[45%] bg-[#F1F5F9] flex-col items-center justify-center p-12 text-center border-r border-gray-100 relative">
+          {/* Decorative Elements */}
+          <div className="absolute top-10 left-10 w-2 h-2 rounded-full bg-blue-200" />
+          <div className="absolute bottom-20 right-10 w-3 h-3 rounded-full bg-blue-100" />
+          
+          {/* Circle Image Container */}
+          <div className="relative mb-10">
+            <div className="w-64 h-64 rounded-full overflow-hidden border-8 border-white shadow-xl relative z-10">
+              <img 
+                src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=800&auto=format&fit=crop" 
+                alt="Flower Shop CMS" 
+                className="w-full h-full object-cover grayscale-[0.2] contrast-[1.1]"
+              />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2 tracking-tight">Flower Shop OS</h1>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Hệ thống quản trị trung tâm. Quản lý đơn hàng, theo dõi doanh thu và cấu hình cửa hàng theo thời gian thực.
-            </p>
+            <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl z-0" />
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 text-xs font-medium text-slate-400 bg-white/5 p-3 rounded-xl border border-white/5">
-              <ShieldCheck size={18} className="text-[#3b82f6]" />
-              <span>Kết nối mã hóa an toàn</span>
+          <h1 className="text-3xl font-extrabold text-[#1E293B] mb-4 tracking-tight">Flower Shop CMS</h1>
+          <p className="text-[#64748B] text-sm leading-relaxed max-w-[280px]">
+            Hệ thống quản lý cửa hàng hoa chuyên nghiệp. Theo dõi đơn hàng, quản lý kho và báo cáo doanh thu thời gian thực.
+          </p>
+
+          {/* Badges */}
+          <div className="mt-12 flex gap-3">
+            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100">
+              <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Bảo mật SSL</span>
             </div>
-            <div className="flex items-center gap-3 text-xs font-medium text-slate-400 bg-white/5 p-3 rounded-xl border border-white/5">
-              <Fingerprint size={18} className="text-[#3b82f6]" />
-              <span>Xác thực đa lớp</span>
+            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100">
+              <Key className="w-3.5 h-3.5 text-blue-600" />
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Mã hóa AES-256</span>
             </div>
           </div>
         </div>
 
         {/* ── Right Column: Form ── */}
-        <div className="md:col-span-3 p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-[#0a0a0a]/50">
-          <div className="md:hidden flex items-center gap-2 text-white mb-8">
-            <div className="p-2 bg-[#1152d4]/20 border border-[#1152d4]/30 rounded-lg text-[#3b82f6]">
-              <Flower2 size={20} />
+        <div className="flex-1 p-8 md:p-14 lg:p-20 flex flex-col justify-between">
+          <div>
+            {/* Header: Admin Portal */}
+            <div className="flex items-center gap-3 mb-10">
+              <div className="p-2.5 bg-blue-600 rounded-lg shadow-lg shadow-blue-600/20">
+                <LayoutDashboard className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-sm font-bold text-gray-700 tracking-tight">Admin Portal</span>
             </div>
-            <span className="text-lg font-bold tracking-tight">Flower Shop OS</span>
-          </div>
 
-          <div className="mb-10">
-            <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Đăng nhập hệ thống</h2>
-            <p className="text-sm text-slate-400">
-              Vui lòng cung cấp thông tin xác thực quản trị viên.
-            </p>
-          </div>
-
-          {/* Alerts */}
-          {error && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl animate-in slide-in-from-top-2">
-              <p className="text-sm font-medium text-red-400">{error.message || "Xác thực thất bại. Vui lòng thử lại."}</p>
+            <div className="mb-10">
+              <h2 className="text-2xl font-extrabold text-gray-900 mb-2">Quản trị hệ thống</h2>
+              <p className="text-sm text-gray-400">
+                Vui lòng đăng nhập để tiếp tục quản lý cửa hàng
+              </p>
             </div>
-          )}
-          {successMessage && (
-            <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl animate-in slide-in-from-top-2">
-              <p className="text-sm font-medium text-emerald-400">{successMessage}</p>
-            </div>
-          )}
 
-          {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-5">
-            {/* Email */}
-            <div className="space-y-2">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">Email quản trị</label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within:text-[#3b82f6] transition-colors">
-                  <User size={18} />
+            {/* Alerts */}
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl">
+                <p className="text-xs font-semibold text-red-600">{error.message || "Xác thực thất bại. Vui lòng thử lại."}</p>
+              </div>
+            )}
+            {successMessage && (
+              <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
+                <p className="text-xs font-semibold text-emerald-600">{successMessage}</p>
+              </div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleLogin} className="space-y-6">
+              {/* Email */}
+              <div className="space-y-2">
+                <label className="block text-[13px] font-bold text-gray-600">Email/Tên đăng nhập</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-600 transition-colors">
+                    <User size={18} />
+                  </div>
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    disabled={isLoading}
+                    value={credentials.email}
+                    onChange={handleInputChange}
+                    className="w-full pl-11 pr-4 py-3 bg-[#F8FAFC] border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none transition-all text-sm text-gray-800 placeholder:text-gray-300 disabled:opacity-50"
+                    placeholder="admin@flowershop.vn"
+                  />
                 </div>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  disabled={isLoading}
-                  value={credentials.email}
-                  onChange={handleInputChange}
-                  className="w-full pl-11 pr-4 py-3.5 bg-black/40 border border-white/10 rounded-xl focus:ring-2 focus:ring-[#1152d4]/50 focus:border-[#3b82f6] outline-none transition-all text-white placeholder:text-slate-600 disabled:opacity-50 text-sm shadow-inner"
-                  placeholder="admin@flowershop.vn"
-                />
               </div>
-            </div>
 
-            {/* Password */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">Mật khẩu</label>
-                <a className="text-xs font-medium text-[#3b82f6] hover:text-[#60a5fa] transition-colors" href="#">
-                  Cần hỗ trợ?
-                </a>
-              </div>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within:text-[#3b82f6] transition-colors">
-                  <Lock size={18} />
+              {/* Password */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[13px] font-bold text-gray-600">Mật khẩu</label>
+                  <a className="text-[12px] font-bold text-blue-600 hover:text-blue-700 transition-colors" href="#">
+                    Quên mật khẩu?
+                  </a>
                 </div>
-                <input
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  disabled={isLoading}
-                  value={credentials.password}
-                  onChange={handleInputChange}
-                  className="w-full pl-11 pr-11 py-3.5 bg-black/40 border border-white/10 rounded-xl focus:ring-2 focus:ring-[#1152d4]/50 focus:border-[#3b82f6] outline-none transition-all text-white placeholder:text-slate-600 disabled:opacity-50 text-sm shadow-inner"
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-500 hover:text-white transition-colors outline-none"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-600 transition-colors">
+                    <Lock size={18} />
+                  </div>
+                  <input
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    disabled={isLoading}
+                    value={credentials.password}
+                    onChange={handleInputChange}
+                    className="w-full pl-11 pr-11 py-3 bg-[#F8FAFC] border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none transition-all text-sm text-gray-800 placeholder:text-gray-300 disabled:opacity-50"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-300 hover:text-gray-500 transition-colors outline-none"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {/* Remember Me */}
-            <label className="flex items-center gap-3 cursor-pointer group w-max pt-1">
-              <div className="relative flex items-center justify-center">
+              {/* Remember Me */}
+              <label className="flex items-center gap-3 cursor-pointer group w-max">
                 <input
                   name="rememberMe"
                   type="checkbox"
                   checked={credentials.rememberMe}
                   onChange={handleInputChange}
-                  className="peer appearance-none h-4 w-4 rounded border border-slate-600 bg-black/40 checked:border-[#3b82f6] checked:bg-[#3b82f6] transition-colors cursor-pointer"
+                  className="w-4 h-4 rounded border-gray-200 text-blue-600 focus:ring-blue-100 transition-all cursor-pointer"
                 />
-                <svg className="absolute w-2.5 h-2.5 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-              </div>
-              <span className="text-sm font-medium text-slate-400 group-hover:text-slate-300 transition-colors">Duy trì phiên đăng nhập</span>
-            </label>
+                <span className="text-[13px] font-medium text-gray-500 group-hover:text-gray-700 transition-colors">Duy trì đăng nhập</span>
+              </label>
 
-            {/* Submit */}
-            <div className="pt-4">
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="relative w-full overflow-hidden group bg-[#1152d4] hover:bg-[#0f46b8] disabled:bg-[#1152d4]/50 text-white font-bold py-3.5 rounded-xl transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] shadow-[0_0_20px_rgba(17,82,212,0.4)]"
-              >
-                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-                {isLoading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white"></div>
-                    <span className="text-sm tracking-wide">Đang xác thực...</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-sm tracking-wide">TRUY CẬP HỆ THỐNG</span>
-                    <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
+              {/* Submit */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-600/25 active:scale-[0.98] text-sm tracking-wide"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white"></div>
+                      <span>ĐANG XỬ LÝ...</span>
+                    </div>
+                  ) : (
+                    "ĐĂNG NHẬP"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-12 flex items-center justify-between border-t border-gray-50 pt-6">
+            <span className="text-[11px] text-gray-400 font-bold tracking-widest uppercase">
+              © 2024 FLOWERSHOP CMS
+            </span>
+            <div className="flex gap-4">
+              <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                <HelpCircle size={18} />
+              </button>
+              <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                <Settings size={18} />
               </button>
             </div>
-          </form>
-          
-          <div className="mt-12 text-center">
-            <span className="text-[10px] text-slate-600 uppercase font-bold tracking-widest">
-              © 2024 FlowerShop OS
-            </span>
           </div>
         </div>
       </div>

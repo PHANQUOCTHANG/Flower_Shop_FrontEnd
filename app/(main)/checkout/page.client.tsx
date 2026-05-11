@@ -18,10 +18,9 @@ import {
 export default function CheckoutPageClient() {
   const { state, actions } = useCheckoutPageLogic();
 
-  // --- Render giao diện ---
   return (
     <div
-      className="min-h-screen transition-all duration-500 font-sans antialiased"
+      className="min-h-screen transition-all duration-500 font-sans antialiased pb-20"
       style={{
         backgroundColor: CHECKOUT_COLORS.BACKGROUND,
         color: CHECKOUT_COLORS.TEXT,
@@ -29,7 +28,7 @@ export default function CheckoutPageClient() {
         pointerEvents: state.isNavigating ? "none" : "auto",
       }}
     >
-      {/* Khối thông báo (Alert) */}
+      {/* Alert Component */}
       {state.showAlert && (
         <div className="fixed top-24 right-6 z-50 max-w-md">
           <Alert
@@ -46,23 +45,22 @@ export default function CheckoutPageClient() {
         </div>
       )}
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-8 py-6 sm:py-8 md:py-10 lg:py-12">
-        {/* Điều hướng đường dẫn (Breadcrumb) */}
-        <Breadcrumbs
-          items={[
-            { label: "Trang chủ", href: CHECKOUT_CONFIG.HOME_ROUTE },
-            { label: "Giỏ hàng", href: CHECKOUT_CONFIG.CART_ROUTE },
-            { label: "Thanh toán" },
-          ]}
-        />
+      <main className="max-w-[1200px] mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        {/* Navigation Breadcrumbs */}
+        <div className="mb-6">
+          <Breadcrumbs
+            items={[
+              { label: "Trang chủ", href: CHECKOUT_CONFIG.HOME_ROUTE },
+              { label: "Giỏ hàng", href: CHECKOUT_CONFIG.CART_ROUTE },
+              { label: "Thanh toán" },
+            ]}
+          />
+        </div>
 
-        {/* Thanh tiến trình (Progress Tracker) */}
-        <ProgressTracker currentStep="checkout" />
-
-        <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 md:gap-8 lg:gap-8 items-start">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
           
-          {/* Cột trái: Form thông tin người nhận và thanh toán */}
-          <div className="flex-1 w-full">
+          {/* Left Column: Form & Payment */}
+          <div className="flex-1 w-full space-y-8">
             <CheckoutForm
               name={state.name}
               shippingPhone={state.shippingPhone}
@@ -80,19 +78,21 @@ export default function CheckoutPageClient() {
             />
           </div>
 
-          {/* Cột phải: Thanh tóm tắt đơn hàng (Sidebar) */}
-          <CheckoutSidebar
-            cartItems={state.cartItems || []}
-            subtotal={state.cartTotal}
-            total={state.cartTotal}
-            isLoading={state.isCreatingOrder}
-            onConfirmOrder={actions.handleConfirmOrder}
-            socketStatus={null}
-          />
+          {/* Right Column: Order Summary Sidebar */}
+          <div className="w-full lg:w-[400px]">
+            <CheckoutSidebar
+              cartItems={state.cartItems || []}
+              subtotal={state.cartTotal}
+              total={state.cartTotal}
+              isLoading={state.isCreatingOrder}
+              onConfirmOrder={actions.handleConfirmOrder}
+              socketStatus={null}
+            />
+          </div>
         </div>
       </main>
 
-      {/* Chân trang thanh toán (Footer) */}
+      {/* Footer */}
       <CheckoutFooter />
     </div>
   );
