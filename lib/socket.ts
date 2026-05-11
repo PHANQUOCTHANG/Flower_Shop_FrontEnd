@@ -11,7 +11,7 @@ export const initializeSocket = (token: string): Socket => {
   // Socket.io cần kết nối TRỰC TIẾP đến Render backend (không qua proxy Vercel)
   const baseUrl =
     process.env.NEXT_PUBLIC_SOCKET_URL ||
-    process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ||
+    process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") ||
     "http://localhost:5000";
 
   console.log("[Socket] Initializing new connection to:", baseUrl);

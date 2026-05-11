@@ -14,12 +14,12 @@ const nextConfig: NextConfig = {
   // Proxy API qua Vercel để tránh lỗi Third-party cookies (Bị chặn bởi Safari/Chrome)
   async rewrites() {
     // URL Backend thực tế (Render) được lấy từ env
-    const backendUrl = process.env.BACKEND_URL || "http://localhost:5000/api";
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:5000/api/v1";
     
     return [
       {
-        source: "/api/:path*",
-        destination: `${backendUrl}/:path*`, // Forward toàn bộ request /api/... sang backend
+        source: "/api/v1/:path*",
+        destination: `${backendUrl}/:path*`, // Forward toàn bộ request /api/v1/... sang backend
       },
     ];
   },

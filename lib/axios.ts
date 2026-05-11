@@ -36,8 +36,8 @@ interface RefreshTokenResponse {
 
 const isServer = typeof window === "undefined";
 const BASE_URL = isServer
-  ? process.env.BACKEND_URL || "http://localhost:5000/api"
-  : process.env.NEXT_PUBLIC_API_URL || "/api";
+  ? process.env.BACKEND_URL || "http://localhost:5000/api/v1"
+  : process.env.NEXT_PUBLIC_API_URL || "/api/v1";
 
 const REFRESH_ENDPOINT = "/auth/refresh-token";
 

@@ -348,46 +348,61 @@ export const useAdminChat = () => {
   }, []); // stable - dùng refs
 
   // Gửi tin nhắn + Optimistic UI
-  const sendMessage = useCallback(async (content: string, mediaUrl?: string, mediaType?: string, mediaName?: string, mediaSize?: number) => {
-    if (!content.trim() && !mediaUrl) return;
-    if (!selectedChatRef.current) return;
+  const sendMessage = useCallback(
+    async (
+      content: string,
+      mediaUrl?: string,
+      mediaType?: string,
+      mediaName?: string,
+      mediaSize?: number,
+    ) => {
+      if (!content.trim() && !mediaUrl) return;
+      if (!selectedChatRef.current) return;
 
-    const chatId = selectedChatRef.current.id;
-    const optimisticId = `optimistic-${Date.now()}`;
+      const chatId = selectedChatRef.current.id;
+      const optimisticId = `optimistic-${Date.now()}`;
 
-    // Thêm tin nhắn optimistic ngay lập tức
-    setState((prev) => ({
-      ...prev,
-      messages: [
-        ...prev.messages,
-        {
-          id: optimisticId,
-          chatId,
-          content: content || null,
-          mediaUrl: mediaUrl || null,
-          mediaType: mediaType || null,
-          mediaName: mediaName || null,
-          mediaSize: mediaSize || null,
-          senderRole: "admin",
-          createdAt: new Date().toISOString(),
-          isRead: false,
-          senderId: "",
-        } as Message,
-      ],
-    }));
-
-    try {
-      await adminChatService.sendMessage(chatId, { content: content || undefined, mediaUrl, mediaType, mediaName, mediaSize });
-      // Socket listener sẽ thêm tin thật và xóa optimistic
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Lỗi khi gửi tin nhắn";
+      // Thêm tin nhắn optimistic ngay lập tức
       setState((prev) => ({
         ...prev,
-        messages: prev.messages.filter((m) => m.id !== optimisticId),
-        error: msg,
+        messages: [
+          ...prev.messages,
+          {
+            id: optimisticId,
+            chatId,
+            content: content || null,
+            mediaUrl: mediaUrl || null,
+            mediaType: mediaType || null,
+            mediaName: mediaName || null,
+            mediaSize: mediaSize || null,
+            senderRole: "admin",
+            createdAt: new Date().toISOString(),
+            isRead: false,
+            senderId: "",
+          } as Message,
+        ],
       }));
-    }
-  }, []);
+
+      try {
+        await adminChatService.sendMessage(chatId, {
+          content: content || undefined,
+          mediaUrl,
+          mediaType,
+          mediaName,
+          mediaSize,
+        });
+        // Socket listener sẽ thêm tin thật và xóa optimistic
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Lỗi khi gửi tin nhắn";
+        setState((prev) => ({
+          ...prev,
+          messages: prev.messages.filter((m) => m.id !== optimisticId),
+          error: msg,
+        }));
+      }
+    },
+    [],
+  );
 
   const clearError = useCallback(() => {
     setState((prev) => ({ ...prev, error: null }));
@@ -423,8 +438,8 @@ export const useAdminChat = () => {
 
     const handleInboxUpdate = (data: {
       chatId: string;
-      lastMessage: { 
-        content: string; 
+      lastMessage: {
+        content: string;
         createdAt: string;
         mediaUrl?: string | null;
         mediaType?: string | null;
