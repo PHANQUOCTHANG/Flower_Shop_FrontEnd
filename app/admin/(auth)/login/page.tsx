@@ -144,6 +144,7 @@ export default function LoginPage() {
                     disabled={isLoading}
                     value={credentials.email}
                     onChange={handleInputChange}
+                    suppressHydrationWarning={true}
                     className="w-full pl-11 pr-4 py-3 bg-[#F8FAFC] border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none transition-all text-sm text-gray-800 placeholder:text-gray-300 disabled:opacity-50"
                     placeholder="admin@flowershop.vn"
                   />
@@ -169,12 +170,14 @@ export default function LoginPage() {
                     disabled={isLoading}
                     value={credentials.password}
                     onChange={handleInputChange}
+                    suppressHydrationWarning={true}
                     className="w-full pl-11 pr-11 py-3 bg-[#F8FAFC] border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-600 outline-none transition-all text-sm text-gray-800 placeholder:text-gray-300 disabled:opacity-50"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
+                    suppressHydrationWarning={true}
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-300 hover:text-gray-500 transition-colors outline-none"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -199,6 +202,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
+                  suppressHydrationWarning={true}
                   className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-600/25 active:scale-[0.98] text-sm tracking-wide"
                 >
                   {isLoading ? (
@@ -220,10 +224,10 @@ export default function LoginPage() {
               © 2024 FLOWERSHOP CMS
             </span>
             <div className="flex gap-4">
-              <button className="text-gray-400 hover:text-gray-600 transition-colors">
+              <button suppressHydrationWarning={true} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <HelpCircle size={18} />
               </button>
-              <button className="text-gray-400 hover:text-gray-600 transition-colors">
+              <button suppressHydrationWarning={true} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <Settings size={18} />
               </button>
             </div>

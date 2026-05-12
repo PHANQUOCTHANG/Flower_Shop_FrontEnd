@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "ui-avatars.com" },
       { protocol: "https", hostname: "freepnglogo.com" },
       { protocol: "https", hostname: "placehold.co" },
+      { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
   // Proxy API qua Vercel để tránh lỗi Third-party cookies (Bị chặn bởi Safari/Chrome)

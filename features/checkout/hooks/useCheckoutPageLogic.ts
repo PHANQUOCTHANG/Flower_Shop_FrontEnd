@@ -17,6 +17,7 @@ import {
   VALIDATION_MESSAGES,
 } from "@/features/checkout/constants/checkoutConfig";
 import type { Address } from "@/types/profile";
+import { useAuthStore } from "@/stores/auth.store";
 
 export function useCheckoutPageLogic() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export function useCheckoutPageLogic() {
   // --- Dữ liệu giỏ hàng & Địa chỉ ---
   const { items: cartItems, total: cartTotal } = useCart();
   const defaultAddress = useDefaultAddress();
+  const user = useAuthStore((s) => s.user);
 
   // --- Trạng thái Form (Form State) ---
   const [name, setName] = useState("");
@@ -78,8 +80,12 @@ export function useCheckoutPageLogic() {
       setName(defaultAddress.name);
       setShippingPhone(defaultAddress.phone);
       setShippingAddress(formatFullAddress(defaultAddress));
+    } else if (user && !name && !shippingPhone && !selectedAddress) {
+      // Nếu không có địa chỉ mặc định, thử lấy từ profile User
+      setName(user.fullName || "");
+      setShippingPhone(user.phone || "");
     }
-  }, [defaultAddress, selectedAddress]);
+  }, [defaultAddress, selectedAddress, user, name, shippingPhone]);
 
   // --- Các hàm xử lý (Handlers) ---
 

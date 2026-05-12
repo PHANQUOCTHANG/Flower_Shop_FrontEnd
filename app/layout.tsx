@@ -29,7 +29,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.className} ${playfairDisplay.className}`}
-      // style={{ colorScheme: 'light' }} // <--- Dòng này khóa chế độ sáng
+      suppressHydrationWarning
     >
       <body>
         <Providers>

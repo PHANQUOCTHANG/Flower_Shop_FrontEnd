@@ -46,10 +46,23 @@ export interface CoreValue {
   iconName: string;
 }
 
+export interface BankTransfer {
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+  branch: string;
+  qrCodeUrl: string;
+}
+
+export interface PaymentConfig {
+  bankTransfer: BankTransfer;
+}
+
 export interface SystemSettings {
   shopConfig: ShopConfig;
   socialLinks: SocialLinks;
   chatSettings: ChatSettings;
   homeBanners: HomeBanner[];
   aboutPage: AboutPage;
+  paymentConfig: PaymentConfig;
 }

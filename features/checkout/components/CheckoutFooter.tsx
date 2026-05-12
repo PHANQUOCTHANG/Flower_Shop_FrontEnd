@@ -1,9 +1,14 @@
+import { useSettingStore } from "@/stores/setting.store";
+
 // Footer cho trang checkout
 export function CheckoutFooter() {
+  const settings = useSettingStore((s) => s.settings)
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="mt-16 py-12 border-t border-gray-100 text-center px-4 bg-white">
       <p className="typo-caption-xs text-gray-400">
-        © 2024 Flower Shop • Trao gửi yêu thương trên từng đóa hoa
+        © {currentYear} • Trao gửi yêu thương trên từng đóa hoa
       </p>
 
       {/* Thanh toán hỗ trợ */}

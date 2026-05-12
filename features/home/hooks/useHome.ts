@@ -16,7 +16,7 @@ export interface HomeCategoryGroup {
 }
 
 export const useHome = () => {
-  const limit = 20;
+  const limit = 4;
 
   // Lấy categories dùng riêng cho danh mục top (vì API trả categories theo group chỉ lấy những mục có sản phẩm)
   const categoryQuery = useQuery({

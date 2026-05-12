@@ -7,9 +7,11 @@ import GeneralSettings from "@/features/admin/settings/components/GeneralSetting
 import SocialSettings from "@/features/admin/settings/components/SocialSettings";
 import BannerSettings from "@/features/admin/settings/components/BannerSettings";
 import AboutSettings from "@/features/admin/settings/components/AboutSettings";
+import PaymentSettings from "@/features/admin/settings/components/PaymentSettings";
 import { Loading } from "@/components/ui/Loading";
+import { CreditCard } from "lucide-react";
 
-type TabType = "general" | "social" | "banners" | "about";
+type TabType = "general" | "social" | "banners" | "about" | "payment";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<TabType>("general");
@@ -35,6 +37,7 @@ export default function SettingsPage() {
     { id: "social", label: "Mạng xã hội & Chat", icon: Share2 },
     { id: "banners", label: "Banner Trang chủ", icon: ImageIcon },
     { id: "about", label: "Trang giới thiệu", icon: Layout },
+    { id: "payment", label: "Thanh toán", icon: CreditCard },
   ];
 
   return (
@@ -116,6 +119,13 @@ export default function SettingsPage() {
             <AboutSettings
               data={settings.aboutPage}
               onSave={(data) => handleUpdate("aboutPage", data)}
+              saving={saving}
+            />
+          )}
+          {activeTab === "payment" && (
+            <PaymentSettings
+              data={settings.paymentConfig}
+              onSave={(data) => handleUpdate("paymentConfig", data)}
               saving={saving}
             />
           )}

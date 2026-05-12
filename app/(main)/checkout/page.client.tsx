@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { ProgressTracker } from "@/components/ui/ProgressTracker";
 import Alert from "@/components/ui/Alert";
 import {
   CheckoutForm,
@@ -10,25 +9,24 @@ import {
   CheckoutFooter,
 } from "@/features/checkout/components";
 import { useCheckoutPageLogic } from "@/features/checkout/hooks/useCheckoutPageLogic";
-import {
-  CHECKOUT_CONFIG,
-  CHECKOUT_COLORS,
-} from "@/features/checkout/constants/checkoutConfig";
+import { CHECKOUT_CONFIG } from "@/features/checkout/constants/checkoutConfig";
 
+/**
+ * CheckoutPageClient: Trang Checkout chính
+ * Hiển thị form thanh toán, sidebar tóm tắt đơn hàng
+ */
 export default function CheckoutPageClient() {
   const { state, actions } = useCheckoutPageLogic();
 
   return (
     <div
-      className="min-h-screen transition-all duration-500 font-sans antialiased pb-20"
+      className="min-h-screen bg-[#fcfbf9] text-[#1b0d11] font-sans antialiased pb-20 transition-opacity duration-300"
       style={{
-        backgroundColor: CHECKOUT_COLORS.BACKGROUND,
-        color: CHECKOUT_COLORS.TEXT,
         opacity: state.isNavigating ? 0.5 : 1,
         pointerEvents: state.isNavigating ? "none" : "auto",
       }}
     >
-      {/* Alert Component */}
+      {/* Alert Notification */}
       {state.showAlert && (
         <div className="fixed top-24 right-6 z-50 max-w-md">
           <Alert
@@ -46,7 +44,7 @@ export default function CheckoutPageClient() {
       )}
 
       <main className="max-w-[1200px] mx-auto px-4 sm:px-6 py-6 sm:py-10">
-        {/* Navigation Breadcrumbs */}
+        {/* Breadcrumbs Navigation */}
         <div className="mb-6">
           <Breadcrumbs
             items={[
@@ -57,9 +55,9 @@ export default function CheckoutPageClient() {
           />
         </div>
 
+        {/* Main Layout: Form + Sidebar */}
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-          
-          {/* Left Column: Form & Payment */}
+          {/* Left: Checkout Form */}
           <div className="flex-1 w-full space-y-8">
             <CheckoutForm
               name={state.name}
@@ -78,15 +76,15 @@ export default function CheckoutPageClient() {
             />
           </div>
 
-          {/* Right Column: Order Summary Sidebar */}
-          <div className="w-full lg:w-[400px]">
+          {/* Right: Order Summary Sidebar */}
+          <div className="w-full lg:w-[420px]">
             <CheckoutSidebar
               cartItems={state.cartItems || []}
               subtotal={state.cartTotal}
               total={state.cartTotal}
               isLoading={state.isCreatingOrder}
               onConfirmOrder={actions.handleConfirmOrder}
-              socketStatus={null}
+              paymentMethod={state.paymentMethod}
             />
           </div>
         </div>

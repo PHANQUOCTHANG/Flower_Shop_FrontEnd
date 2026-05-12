@@ -48,14 +48,14 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
           const isSelected = paymentMethod === item.id;
 
           return (
-            <label
-              key={item.id}
-              className={`flex items-center p-4 rounded-xl cursor-pointer transition-all duration-200 border ${
-                isSelected
-                  ? "bg-[#FFF4F6] border-[#EE2B5B]"
-                  : "bg-white border-gray-200 hover:border-gray-300"
-              }`}
-            >
+            <React.Fragment key={item.id}>
+              <label
+                className={`flex items-center p-4 rounded-xl cursor-pointer transition-all duration-200 border ${
+                  isSelected
+                    ? "bg-[#FFF4F6] border-[#EE2B5B]"
+                    : "bg-white border-gray-200 hover:border-gray-300"
+                }`}
+              >
               {/* Radio Indicator */}
               <div className="flex-shrink-0 mr-4">
                 <div
@@ -98,6 +98,9 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
                 />
               </div>
             </label>
+
+            {/* Bank Transfer Details (Show when selected) */}
+          </React.Fragment>
           );
         })}
       </div>

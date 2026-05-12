@@ -116,6 +116,7 @@ export const ReviewsTab: React.FC<ReviewsTabProps> = ({ slug }) => {
 
   const { data, isLoading, isError } = useProductReviews({ slug, page, limit: LIMIT });
 
+  console.log("Data Review")
   const reviews = data?.data ?? [];
   const total = data?.total ?? 0;
   const totalPages = Math.ceil(total / LIMIT);

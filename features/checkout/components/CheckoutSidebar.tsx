@@ -8,16 +8,20 @@ interface CheckoutSidebarProps {
   total: number;
   isLoading: boolean;
   onConfirmOrder: () => void;
-  socketStatus?: null; // Không sử dụng tracker ở sidebar nữa
+  paymentMethod: "bank" | "wallet" | "cod";
 }
 
-// Sidebar phải: Tóm tắt đơn hàng & hỗ trợ khách hàng
+/**
+ * CheckoutSidebar: Sidebar phải trang checkout
+ * Gồm: Tóm tắt đơn hàng + Nút xác nhận, Phần hỗ trợ khách hàng
+ */
 export function CheckoutSidebar({
   cartItems,
   subtotal,
   total,
   isLoading,
   onConfirmOrder,
+  paymentMethod,
 }: CheckoutSidebarProps) {
   return (
     <div className="w-full lg:w-[420px] space-y-6">
@@ -28,6 +32,7 @@ export function CheckoutSidebar({
         total={total}
         onConfirmOrder={onConfirmOrder}
         isLoading={isLoading}
+        paymentMethod={paymentMethod}
       />
 
       {/* Phần hỗ trợ khách hàng */}

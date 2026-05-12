@@ -1,4 +1,8 @@
-import { RecipientForm, PaymentMethodSection } from "./index";
+import {
+  RecipientForm,
+  PaymentMethodSection,
+  BankTransferDetails,
+} from "./index";
 import { ValidationErrors } from "../utils/formValidation";
 import type { Address } from "@/types/profile";
 
@@ -18,7 +22,10 @@ interface CheckoutFormProps {
   onAddressSelect: (address: Address) => void;
 }
 
-// Form đơn hàng: Thông tin giao hàng & phương thức thanh toán
+/**
+ * CheckoutForm: Form chính của trang thanh toán
+ * Gồm: Thông tin giao hàng, Phương thức thanh toán, Chi tiết chuyển khoản (nếu chọn)
+ */
 export function CheckoutForm({
   name,
   shippingPhone,
@@ -36,7 +43,7 @@ export function CheckoutForm({
 }: CheckoutFormProps) {
   return (
     <div className="flex-1 space-y-6 sm:space-y-8 md:space-y-10">
-      {/* Form thông tin giao hàng (chứa danh sách địa chỉ) */}
+      {/* Thông tin giao hàng */}
       <RecipientForm
         name={name}
         shippingPhone={shippingPhone}
@@ -51,11 +58,14 @@ export function CheckoutForm({
         onAddressSelect={onAddressSelect}
       />
 
-      {/* Chọn phương thức thanh toán */}
+      {/* Phương thức thanh toán */}
       <PaymentMethodSection
         paymentMethod={paymentMethod}
         onPaymentMethodChange={onPaymentMethodChange}
       />
+
+      {/* Chi tiết chuyển khoản ngân hàng (hiển thị khi chọn thanh toán bằng ngân hàng) */}
+      {paymentMethod === "bank" && <BankTransferDetails />}
     </div>
   );
 }

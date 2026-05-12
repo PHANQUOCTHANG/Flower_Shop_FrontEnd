@@ -8,3 +8,4 @@ export { CheckoutForm } from "./CheckoutForm";
 export { CheckoutSidebar } from "./CheckoutSidebar";
 export { CheckoutFooter } from "./CheckoutFooter";
 export { OrderStatusTracker } from "./OrderStatusTracker";
+export { BankTransferDetails } from "./BankTransferDetails";

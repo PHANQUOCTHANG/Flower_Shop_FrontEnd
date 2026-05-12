@@ -2,6 +2,7 @@ import React from "react";
 import { ShieldCheck, Heart } from "lucide-react";
 import { formatCurrency } from "@/utils/format";
 import { CartItemResponse } from "@/features/cart/types/cart";
+import { useSettingStore } from "@/stores/setting.store";
 
 interface OrderSummaryCheckoutProps {
   cartItems: CartItemResponse[];
@@ -9,6 +10,7 @@ interface OrderSummaryCheckoutProps {
   total: number;
   onConfirmOrder: () => void;
   isLoading?: boolean;
+  paymentMethod: "bank" | "wallet" | "cod";
 }
 
 export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
@@ -17,7 +19,11 @@ export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
   total,
   onConfirmOrder,
   isLoading = false,
+  paymentMethod,
 }) => {
+  const settings = useSettingStore((s) => s.settings);
+  const shopPhone = settings?.shopConfig?.phone || "1900 6868";
+
   return (
     <div className="lg:sticky lg:top-6 space-y-4">
       <div className="bg-white rounded-2xl p-6 sm:p-7 shadow-sm border border-gray-100">
@@ -69,12 +75,14 @@ export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
             <span className="font-bold text-gray-800">Miễn phí</span>
           </div>
 
-          <div className="flex justify-between items-center text-[13px]">
-            <span className="text-gray-400">Khuyến mãi chuyển khoản (-5%)</span>
-            <span className="font-bold text-[#EE2B5B]">
-              - {formatCurrency(subtotal * 0.05)}
-            </span>
-          </div>
+          {paymentMethod === "bank" && (
+            <div className="flex justify-between items-center text-[13px]">
+              <span className="text-gray-400">Khuyến mãi chuyển khoản (-5%)</span>
+              <span className="font-bold text-[#EE2B5B]">
+                - {formatCurrency(subtotal * 0.05)}
+              </span>
+            </div>
+          )}
 
           {/* Tổng cộng */}
           <div className="pt-5 mt-2 border-t border-gray-100">
@@ -83,7 +91,7 @@ export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
                 Tổng thanh toán
               </span>
               <p className="text-[22px] font-black text-[#EE2B5B]">
-                {formatCurrency(total - subtotal * 0.05)}
+                {formatCurrency(paymentMethod === "bank" ? subtotal * 0.95 : subtotal)}
               </p>
             </div>
           </div>
@@ -127,10 +135,9 @@ export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
       {/* Support text below card */}
       <div className="text-center py-2">
         <p className="text-[12px] text-gray-400">
-          Cần hỗ trợ? Gọi ngay <span className="text-[#EE2B5B] font-bold">1900 1234</span>
+          Cần hỗ trợ? Gọi ngay <span className="text-[#EE2B5B] font-bold">{shopPhone}</span>
         </p>
       </div>
     </div>
   );
 };
-

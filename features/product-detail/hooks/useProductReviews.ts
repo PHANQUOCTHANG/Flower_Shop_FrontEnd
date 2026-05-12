@@ -17,3 +17,4 @@ export const useProductReviews = ({ slug, page = 1, limit = 10 }: UseProductRevi
     placeholderData: (prev) => prev,
   });
 };
+  

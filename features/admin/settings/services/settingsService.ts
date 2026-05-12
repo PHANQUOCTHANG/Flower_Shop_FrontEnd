@@ -24,4 +24,21 @@ export const settingsService = {
 
     return res.data.data;
   },
+
+  // Upload ảnh dùng chung cho settings
+  async uploadImage(file: File) {
+    const formData = new FormData();
+    formData.append("image", file);
+    const res = await api.post<ApiResponse<{ url: string; publicId: string }>>(
+      "/settings/upload-image",
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+
+    if (res.data.status !== "success") {
+      throw new Error(res.data.message || "Upload ảnh thất bại");
+    }
+
+    return res.data.data;
+  },
 };

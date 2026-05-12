@@ -49,6 +49,20 @@ It provides an intuitive interface for customers to browse and purchase flowers 
 
 ---
 
+## 🔐 Admin Access
+
+Access the admin dashboard at:
+
+```
+{YOUR_DOMAIN}/admin/login
+```
+
+**Demo Credentials:**
+- **Email:** admin@gmail.com
+- **Password:** admin123
+
+---
+
 ## 🏗 Architecture & Performance
 
 ### Hybrid Rendering (SSR + CSR)
@@ -116,12 +130,13 @@ npm run dev
 Application runs at
 
 ```
-http://localhost:3000
+{YOUR_DOMAIN}
 ```
 
 ---
 
-## 📦 Available Scripts
+
+## �📦 Available Scripts
 
 | Command | Description |
 |---|---|
