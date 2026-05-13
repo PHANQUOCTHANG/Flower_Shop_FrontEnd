@@ -9,6 +9,10 @@ interface PaginatedApiResponse<T> {
     page: number;
     limit: number;
     totalPages: number;
+    stats: {
+      avgRating: number;
+      starCounts: { star: number; count: number }[];
+    };
   };
 }
 
@@ -32,6 +36,7 @@ async function getReviewsBySlug(
     total: data.meta.total,
     page: data.meta.page,
     limit: data.meta.limit,
+    stats: data.meta.stats ?? { avgRating: 0, starCounts: [] },
   };
 }
 

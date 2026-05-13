@@ -3,6 +3,7 @@ import { Trash2 } from "lucide-react";
 import { formatCurrency } from "@/utils/format";
 import { CartItemResponse } from "@/features/cart/types/cart";
 import { QuantityControl } from "@/features/cart/components/QuantityControl";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 interface CartTableProps {
  items: CartItemResponse[];
@@ -37,12 +38,13 @@ export const CartTable: React.FC<CartTableProps> = ({
  {/* Sản phẩm */}
  <td className="px-6 py-6">
  <div className="flex items-center gap-4">
- <div className="w-[72px] h-[72px] rounded-lg overflow-hidden border border-gray-100 bg-gray-50 shrink-0">
- <img
- src={item.product.thumbnailUrl}
- alt={item.product.name}
- className="w-full h-full object-cover"
- />
+ <div className="w-[72px] h-[72px] rounded-lg overflow-hidden border border-gray-100 bg-gray-50 shrink-0 relative">
+  <OptimizedImage
+  src={item.product.thumbnailUrl}
+  alt={item.product.name}
+  fill
+  sizes="72px"
+  />
  </div>
  <div>
  <p className="text-sm font-bold text-gray-900 leading-snug mb-1">

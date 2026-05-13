@@ -9,16 +9,30 @@ import {
   OrdersSection,
   AddressSection,
   ChangePasswordForm,
-  ReviewFormModal,
 } from "@/features/profile/components";
-import { OrderDetailModal } from "@/features/admin/orders/components";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import dynamic from "next/dynamic";
 import {
   useProfilePageLogic,
   INITIAL_REVIEW_MODAL,
 } from "@/features/profile/hooks/useProfilePageLogic";
 
+const ReviewFormModal = dynamic(
+  () => import("@/features/profile/components").then((mod) => mod.ReviewFormModal),
+  { ssr: false }
+);
+
+const OrderDetailModal = dynamic(
+  () => import("@/features/admin/orders/components").then((mod) => mod.OrderDetailModal),
+  { ssr: false }
+);
+
+const ConfirmDialog = dynamic(
+  () => import("@/components/ui/ConfirmDialog").then((mod) => mod.ConfirmDialog),
+  { ssr: false }
+);
+
 export default function UserAccountContent() {
+
   const { state, actions } = useProfilePageLogic();
 
   return (

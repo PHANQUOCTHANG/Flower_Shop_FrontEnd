@@ -3,6 +3,7 @@ import { Trash2 } from "lucide-react";
 import { CartItemResponse } from "@/features/cart/types/cart";
 import { formatCurrency } from "@/utils/format";
 import { QuantityControl } from "@/features/cart/components/QuantityControl";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 interface CartItemsMobileProps {
  items: CartItemResponse[];
@@ -24,11 +25,14 @@ export const CartItemsMobile: React.FC<CartItemsMobileProps> = ({
  >
  {/* Header: ảnh + tên + xóa */}
  <div className="flex gap-4">
- <img
- src={item.product.thumbnailUrl}
- alt={item.product.name}
- className="size-20 rounded-xl object-cover"
- />
+  <div className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0">
+   <OptimizedImage
+   src={item.product.thumbnailUrl}
+   alt={item.product.name}
+   fill
+   sizes="80px"
+   />
+  </div>
  <div className="flex-1">
  <div className="flex justify-between items-start gap-2">
  <p className="typo-label leading-tight">{item.product.name}</p>

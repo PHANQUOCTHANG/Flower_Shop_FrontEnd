@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useDashboard } from "@/features/admin/dashboard/hooks/useDashboard";
 import { DashboardStats, KpiSnapshot } from "@/features/admin/dashboard/types/dashboard.types";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -400,12 +401,14 @@ const TopProductsTable = ({ data }: TopProductsProps) => {
                   <td className="px-3 py-3.5">
                     <div className="flex items-center gap-3 min-w-0">
                       {product.thumbnailUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={product.thumbnailUrl}
-                          alt={product.name}
-                          className="w-9 h-9 rounded-lg object-cover shrink-0 border border-slate-100"
-                        />
+                        <div className="relative w-9 h-9 rounded-lg overflow-hidden shrink-0 border border-slate-100">
+                          <OptimizedImage
+                            src={product.thumbnailUrl}
+                            alt={product.name}
+                            fill
+                            sizes="36px"
+                          />
+                        </div>
                       ) : (
                         <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
                           <Package size={14} className="text-slate-400" />

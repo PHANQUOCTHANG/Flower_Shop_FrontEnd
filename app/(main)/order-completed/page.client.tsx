@@ -109,7 +109,7 @@ export default function OrderCompletedPageClient() {
               <div key={idx} className="flex gap-4">
                 <div className="size-20 rounded-xl bg-slate-100 overflow-hidden shrink-0 shadow-sm border border-slate-50">
                   {item.product?.images?.[0] ? (
-                    <img src={item.product.images[0].url} alt={item.product.name} className="w-full h-full object-cover" />
+                    <img src={item.product.images[0].url} alt={item.product.name} className="w-full h-full object-cover" loading="lazy" />
                   ) : (
                     <ImageIcon className="w-full h-full p-6 text-slate-300" />
                   )}

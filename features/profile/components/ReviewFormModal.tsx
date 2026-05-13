@@ -175,12 +175,15 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
           {/* Product Preview */}
           {productImage && (
             <div className="flex gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-white border border-slate-200">
-                <OptimizedImage
+              <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-white border border-slate-200">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={productImage}
                   alt={productName}
-                  fill
-                  sizes="64px"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = "none";
+                  }}
                 />
               </div>
               <div className="flex-1">
@@ -275,19 +278,22 @@ export const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
                 {localFiles.map((item, index) => (
                   <div
                     key={`${item.preview}-${index}`}
-                    className="relative group rounded-lg overflow-hidden bg-slate-100 border border-slate-200"
+                    className="relative group rounded-lg overflow-hidden bg-slate-100 border border-slate-200 aspect-square"
                   >
                     {item.type === "image" ? (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={item.preview}
                         alt={`Ảnh ${index + 1}`}
-                        className="w-full h-24 object-cover"
+                        className="w-full h-full object-cover"
                       />
                     ) : (
                       <video
                         src={item.preview}
-                        className="w-full h-24 object-cover"
-                        controls={false}
+                        className="w-full h-full object-cover"
+                        muted
+                        playsInline
+                        preload="metadata"
                       />
                     )}
 

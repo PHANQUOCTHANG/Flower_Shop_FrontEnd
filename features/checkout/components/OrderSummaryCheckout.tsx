@@ -3,6 +3,7 @@ import { ShieldCheck, Heart } from "lucide-react";
 import { formatCurrency } from "@/utils/format";
 import { CartItemResponse } from "@/features/cart/types/cart";
 import { useSettingStore } from "@/stores/setting.store";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 interface OrderSummaryCheckoutProps {
   cartItems: CartItemResponse[];
@@ -37,11 +38,12 @@ export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({
           {cartItems.map((item) => (
             <div key={item.id} className="flex gap-4">
               {/* Hình ảnh sản phẩm */}
-              <div className="w-[70px] h-[70px] rounded-lg overflow-hidden flex-shrink-0 bg-gray-50 border border-gray-100">
-                <img
+              <div className="relative w-[70px] h-[70px] rounded-lg overflow-hidden flex-shrink-0 bg-gray-50 border border-gray-100">
+                <OptimizedImage
                   src={item.product.thumbnailUrl}
                   alt={item.product.name}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="70px"
                 />
               </div>
 

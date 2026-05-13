@@ -18,10 +18,17 @@ export interface ProductReview {
   media: ProductReviewMedia[];
 }
 
+// Thống kê rating từ backend (tính trên toàn bộ reviews, không phụ thuộc trang)
+export interface ReviewStats {
+  avgRating: number;
+  starCounts: { star: number; count: number }[];
+}
+
 // Kiểu phân trang cho review
 export interface ReviewsPage {
   data: ProductReview[];
   total: number;
   page: number;
   limit: number;
+  stats: ReviewStats;
 }

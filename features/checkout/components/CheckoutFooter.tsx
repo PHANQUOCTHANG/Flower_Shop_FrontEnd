@@ -17,16 +17,19 @@ export function CheckoutFooter() {
           src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
           className="h-4"
           alt="PayPal"
+          loading="lazy"
         />
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
           className="h-4"
           alt="Visa"
+          loading="lazy"
         />
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
           className="h-4"
           alt="Mastercard"
+          loading="lazy"
         />
       </div>
     </footer>
