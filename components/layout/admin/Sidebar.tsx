@@ -14,6 +14,7 @@ import {
   LogOut,
   MessageCircle,
   Bell,
+  Layers,
 } from "lucide-react";
 import { useLogout } from "@/features/auth/logout/hooks";
 import { useAuthStore } from "@/stores/auth.store";
@@ -140,6 +141,12 @@ export const Sidebar: FC<SidebarProps> = ({ currentPath, onNavigate, isOpen, onC
           label="Sản phẩm"
           active={currentPath === "products"}
           onClick={() => handleNavigate("products")}
+        />
+        <SidebarLink
+          icon={Layers}
+          label="Danh mục"
+          active={currentPath === "categories"}
+          onClick={() => handleNavigate("categories")}
         />
         <SidebarLink
           icon={ShoppingBag}

@@ -4,7 +4,7 @@ import {
   useProducts,
   useDeleteProduct,
 } from "@/features/admin/products/hooks/useProducts";
-import { useCategories } from "@/features/admin/products/hooks/useCategories";
+import { useCategories } from "@/features/admin/categories/hooks/useCategories";
 import {
   parseQueryParams,
   buildQueryParams,

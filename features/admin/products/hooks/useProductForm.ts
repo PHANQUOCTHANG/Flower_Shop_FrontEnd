@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect, useTransition } from "react";
 import { type Category, type RichEditorRef } from "@/features/admin/products/components/form";
-import { useCategories, useCreateCategory } from "@/features/admin/products/hooks/useCategories";
+import { useCategories, useCreateCategory } from "@/features/admin/categories/hooks/useCategories";
 import { type AlertType } from "@/components/ui/Alert";
+import { type Product, type ProductImage, type ProductCategory } from "@/types/product";
+import { type AdminCategory } from "@/features/admin/categories/types";
 
 export interface AlertState {
   type: AlertType;
@@ -24,7 +26,7 @@ export interface ThumbnailState {
 export function useProductForm() {
   // ===== HOOKS =====
   // Hook xử lý kết nối API với danh mục sản phẩm (categories)
-  const { createCategoryAsync: createCategoryHook } = useCreateCategory();
+  const { mutateAsync: createCategoryAsync } = useCreateCategory();
   const { categories: fetchedCategories, loading: loadingCategories } = useCategories();
   const [, startTransition] = useTransition();
 
@@ -66,7 +68,7 @@ export function useProductForm() {
   useEffect(() => {
     if (fetchedCategories.length > 0) {
       startTransition(() => {
-        const categoryList: Category[] = fetchedCategories.map((cat: any) => ({
+        const categoryList: Category[] = fetchedCategories.map((cat: AdminCategory) => ({
           id: String(cat.id),
           name: cat.name,
           slug: cat.slug || "",
@@ -134,16 +136,17 @@ export function useProductForm() {
     if (!trimmed) return;
 
     try {
-      let payload: any = { name: trimmed };
+      let payload: FormData | { name: string; parentId?: string | null } = { name: trimmed };
       if (parentId) payload.parentId = parentId;
       
       if (thumbFile) {
-        payload = new FormData();
-        payload.append("name", trimmed);
-        if (parentId) payload.append("parentId", parentId);
-        payload.append("thumbnail", thumbFile);
+        const formData = new FormData();
+        formData.append("name", trimmed);
+        if (parentId) formData.append("parentId", parentId);
+        formData.append("thumbnail", thumbFile);
+        payload = formData;
       }
-      const newCategory = await createCategoryHook(payload);
+      const newCategory = await createCategoryAsync(payload);
       const categoryId = String(newCategory.id);
       
       startTransition(() => {
@@ -215,15 +218,15 @@ export function useProductForm() {
   };
 
   // Hàm điền dữ liệu sản phẩm có sẵn vào form (dành cho trang Cập nhật)
-  const populateForm = (product: any) => {
+  const populateForm = (product: Product) => {
     setName(product.name || "");
-    setStatus((product.status || "active") as any);
+    setStatus((product.status as "active" | "hidden" | "draft") || "active");
     setPrice(String(product.price ?? ""));
     setComparePrice(String(product.comparePrice ?? ""));
     setSku(product.sku || "");
 
     if (product.categories) {
-      const categoryIds = product.categories.map((cat: any) => String(cat.id));
+      const categoryIds = product.categories.map((cat: ProductCategory) => String(cat.id));
       setSelectedCategoryIds(categoryIds);
     }
 
@@ -235,7 +238,7 @@ export function useProductForm() {
     }
 
     if (product.images && Array.isArray(product.images)) {
-      const imgList: UploadedImage[] = product.images.map((img: any, idx: number) => ({
+      const imgList: UploadedImage[] = product.images.map((img: ProductImage, idx: number) => ({
         id: img.id,
         url: img.url,
         name: `Image ${idx + 1}`,
