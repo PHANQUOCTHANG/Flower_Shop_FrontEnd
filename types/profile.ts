@@ -28,6 +28,7 @@ export interface MyOrder {
   note: string | null;
   createdAt: string;
   updatedAt: string;
+  items: any[]; // Có thể định nghĩa chi tiết hơn nếu cần
 }
 
 /**

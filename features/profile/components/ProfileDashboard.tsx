@@ -2,7 +2,13 @@
 
 import React, { FC } from "react";
 import Image from "next/image";
-import { ArrowRight, Camera } from "lucide-react";
+import {
+  ArrowRight,
+  Camera,
+  Calendar,
+  Package,
+  ChevronRight,
+} from "lucide-react";
 import { User } from "@/stores/auth.store";
 import { useAddresses } from "../hooks/useAddresses";
 import { AddressCard } from "./AddressCard";
@@ -14,12 +20,14 @@ interface ProfileDashboardProps {
   user: User | null;
   orders: MyOrder[];
   onNavigateTab: (tab: "orders" | "address") => void;
+  onViewOrder?: (orderId: string) => void;
 }
 
 export const ProfileDashboard: FC<ProfileDashboardProps> = ({
   user,
   orders,
   onNavigateTab,
+  onViewOrder = () => {},
 }) => {
   const { addresses, isLoading: isAddressesLoading } = useAddresses({
     limit: 2,
@@ -176,7 +184,7 @@ export const ProfileDashboard: FC<ProfileDashboardProps> = ({
 
       {/* 4. Recent Orders Summary */}
       <div>
-        <div className="flex justify-between items-end mb-4">
+        <div className="flex flex-wrap justify-between items-end gap-2 mb-4">
           <div>
             <h2 className="font-bold text-lg text-slate-900">
               Đơn hàng gần đây
@@ -187,71 +195,99 @@ export const ProfileDashboard: FC<ProfileDashboardProps> = ({
           </div>
           <button
             onClick={() => onNavigateTab("orders")}
-            className="text-[#EE2B5B] text-sm font-bold flex items-center gap-1 hover:underline"
+            className="text-[#EE2B5B] text-sm font-bold flex items-center gap-1 hover:underline shrink-0"
           >
-            Xem tất cả đơn hàng <ArrowRight size={16} />
+            Xem tất cả <ArrowRight size={16} />
           </button>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-slate-100 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-semibold border-b border-slate-100">
-                  <th className="px-6 py-4">Mã Đơn</th>
-                  <th className="px-6 py-4">Ngày</th>
-                  <th className="px-6 py-4">Trạng Thái</th>
-                  <th className="px-6 py-4 text-right">Tổng Tiền</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {orders.length > 0 ? (
-                  orders.slice(0, 3).map((order) => {
-                    const statusConfig = ORDER_STATUS_MAP[order.status] || {
-                      label: order.status,
-                      styles: "bg-slate-100 text-slate-700",
-                    };
+        {orders.length > 0 ? (
+          <div className="flex flex-col gap-4">
+            {orders.slice(0, 3).map((order) => {
+              const statusConfig = ORDER_STATUS_MAP[order.status] || {
+                label: order.status,
+                styles: "bg-slate-100 text-slate-700",
+              };
 
-                    return (
-                      <tr
-                        key={order.id}
-                        className="hover:bg-slate-50/50 transition-colors cursor-pointer"
-                        // onClick={() => onNavigateTab("orders")}
+              const firstItem = order.items?.[0];
+              const itemName = firstItem?.productName || "Đơn hàng hoa";
+              const itemCount = order.items?.length || 1;
+
+              return (
+                <div
+                  key={order.id}
+                  onClick={() => onViewOrder(order.id)}
+                  className="group bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 shadow-[0_2px_12px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:border-[#EE2B5B]/20 transition-all duration-300 cursor-pointer flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6"
+                >
+                  {/* 1. Order Details */}
+                  <div className="flex-1 min-w-0 flex flex-col gap-1 sm:gap-1.5">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-bold text-[#EE2B5B] uppercase tracking-wider">
+                        #{order.id.slice(-8).toUpperCase()}
+                      </span>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusConfig.styles}`}
                       >
-                        <td className="px-6 py-4 text-sm font-bold text-slate-900">
-                          #{order.id.slice(-8).toUpperCase()}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-slate-500">
-                          {formatDate(order.createdAt)}
-                        </td>
-                        <td className="px-6 py-4">
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${statusConfig.styles}`}
-                          >
-                            <span className="size-1.5 rounded-full bg-current mr-1.5 opacity-60"></span>
-                            {statusConfig.label}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-sm font-bold text-slate-900 text-right">
-                          {formatPrice(order.totalPrice)}
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="px-6 py-8 text-center text-slate-500"
+                        <span className="size-1.5 rounded-full bg-current mr-1.5 opacity-60"></span>
+                        {statusConfig.label}
+                      </span>
+                    </div>
+
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 line-clamp-1 group-hover:text-[#EE2B5B] transition-colors">
+                      {itemName}
+                      {itemCount > 1 && ` và ${itemCount - 1} sản phẩm khác`}
+                    </h3>
+
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-500 text-xs sm:text-sm">
+                      <div className="flex items-center gap-1.5">
+                        <Calendar size={14} className="opacity-70" />
+                        <span>{formatDate(order.createdAt)}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Package size={14} className="opacity-70" />
+                        <span>
+                          {order.paymentMethod === "cod"
+                            ? "Thanh toán khi nhận hàng"
+                            : "Chuyển khoản / Ví"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. Price & Action */}
+                  <div className="w-full sm:w-auto flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-50 sm:pl-6 sm:border-l sm:border-slate-100">
+                    <div className="flex flex-col items-start sm:items-end">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">
+                        Tổng thanh toán
+                      </span>
+                      <span className="text-lg sm:text-xl font-black text-slate-900">
+                        {formatPrice(order.totalPrice || 0)}
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onViewOrder(order.id);
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 bg-slate-50 text-slate-600 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-[#EE2B5B] hover:text-white transition-all shadow-sm group/btn"
                     >
-                      Chưa có đơn hàng nào
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                      <span>Chi tiết</span>
+                      <ChevronRight
+                        size={14}
+                        className="group-hover/btn:translate-x-0.5 transition-transform"
+                      />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        </div>
+        ) : (
+          <div className="bg-white rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-slate-100 px-6 py-10 text-center text-slate-500 text-sm">
+            Chưa có đơn hàng nào
+          </div>
+        )}
       </div>
     </div>
   );

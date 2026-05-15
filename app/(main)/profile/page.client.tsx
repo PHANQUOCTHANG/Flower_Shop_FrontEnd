@@ -17,27 +17,30 @@ import {
 } from "@/features/profile/hooks/useProfilePageLogic";
 
 const ReviewFormModal = dynamic(
-  () => import("@/features/profile/components").then((mod) => mod.ReviewFormModal),
-  { ssr: false }
+  () =>
+    import("@/features/profile/components").then((mod) => mod.ReviewFormModal),
+  { ssr: false },
 );
 
 const OrderDetailModal = dynamic(
-  () => import("@/features/admin/orders/components").then((mod) => mod.OrderDetailModal),
-  { ssr: false }
+  () =>
+    import("@/features/admin/orders/components").then(
+      (mod) => mod.OrderDetailModal,
+    ),
+  { ssr: false },
 );
 
 const ConfirmDialog = dynamic(
-  () => import("@/components/ui/ConfirmDialog").then((mod) => mod.ConfirmDialog),
-  { ssr: false }
+  () =>
+    import("@/components/ui/ConfirmDialog").then((mod) => mod.ConfirmDialog),
+  { ssr: false },
 );
 
 export default function UserAccountContent() {
-
   const { state, actions } = useProfilePageLogic();
 
   return (
     <div className="min-h-screen bg-slate-50 font-['Inter',sans-serif] text-slate-900">
-      
       {/* Khối thông báo thành công */}
       {state.successMessage && (
         <div className="fixed bottom-4 right-4 left-4 sm:bottom-6 sm:right-6 sm:left-auto sm:max-w-sm z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -51,7 +54,6 @@ export default function UserAccountContent() {
       )}
 
       <main className="mx-auto w-full max-w-350 px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 animate-in fade-in duration-700">
-        
         {/* Điều hướng (Breadcrumb) */}
         <Breadcrumbs
           items={[
@@ -61,7 +63,6 @@ export default function UserAccountContent() {
         />
 
         <div className="mt-6 flex flex-col lg:flex-row gap-8 lg:gap-12">
-          
           {/* Cột trái: Sidebar Menu */}
           <ProfileSidebar
             activeTab={state.activeTab}
@@ -84,6 +85,7 @@ export default function UserAccountContent() {
                   user={state.user}
                   orders={state.orders || []}
                   onNavigateTab={actions.handleTabChange}
+                  onViewOrder={actions.handleViewOrder}
                 />
               )}
               {state.activeTab === "orders" && (

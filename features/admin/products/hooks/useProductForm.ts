@@ -1,8 +1,18 @@
 import { useState, useRef, useEffect, useTransition } from "react";
-import { type Category, type RichEditorRef } from "@/features/admin/products/components/form";
-import { useCategories, useCreateCategory } from "@/features/admin/categories/hooks/useCategories";
+import {
+  type Category,
+  type RichEditorRef,
+} from "@/features/admin/products/components/form";
+import {
+  useCategories,
+  useCreateCategory,
+} from "@/features/admin/categories/hooks/useCategories";
 import { type AlertType } from "@/components/ui/Alert";
-import { type Product, type ProductImage, type ProductCategory } from "@/types/product";
+import {
+  type Product,
+  type ProductImage,
+  type ProductCategory,
+} from "@/types/product";
 import { type AdminCategory } from "@/features/admin/categories/types";
 
 export interface AlertState {
@@ -27,7 +37,8 @@ export function useProductForm() {
   // ===== HOOKS =====
   // Hook xử lý kết nối API với danh mục sản phẩm (categories)
   const { mutateAsync: createCategoryAsync } = useCreateCategory();
-  const { categories: fetchedCategories, loading: loadingCategories } = useCategories();
+  const { categories: fetchedCategories, loading: loadingCategories } =
+    useCategories();
   const [, startTransition] = useTransition();
 
   // ===== REF: SECTION REFS =====
@@ -58,7 +69,7 @@ export function useProductForm() {
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false); // Quản lý trạng thái kéo thả ảnh
-  
+
   // State quản lý thông tin của ảnh đại diện (thumbnail)
   const [thumbnail, setThumbnail] = useState<ThumbnailState | null>(null);
   const [isThumbDragging, setIsThumbDragging] = useState(false); // Quản lý kéo thả của ảnh đại diện
@@ -68,12 +79,14 @@ export function useProductForm() {
   useEffect(() => {
     if (fetchedCategories.length > 0) {
       startTransition(() => {
-        const categoryList: Category[] = fetchedCategories.map((cat: AdminCategory) => ({
-          id: String(cat.id),
-          name: cat.name,
-          slug: cat.slug || "",
-          parentId: cat.parentId || null,
-        }));
+        const categoryList: Category[] = fetchedCategories.map(
+          (cat: AdminCategory) => ({
+            id: String(cat.id),
+            name: cat.name,
+            slug: cat.slug || "",
+            parentId: cat.parentId || null,
+          }),
+        );
         setCategories(categoryList);
       });
     }
@@ -131,14 +144,20 @@ export function useProductForm() {
   };
 
   // Gửi API để tạo 1 danh mục mới và ngay lập tức thêm vào mảng categories đang được nhắm tới
-  const handleAddCategory = async (categoryName: string, thumbFile: File | null = null, parentId: string | null = null) => {
+  const handleAddCategory = async (
+    categoryName: string,
+    thumbFile: File | null = null,
+    parentId: string | null = null,
+  ) => {
     const trimmed = categoryName.trim();
     if (!trimmed) return;
 
     try {
-      let payload: FormData | { name: string; parentId?: string | null } = { name: trimmed };
+      let payload: FormData | { name: string; parentId?: string | null } = {
+        name: trimmed,
+      };
       if (parentId) payload.parentId = parentId;
-      
+
       if (thumbFile) {
         const formData = new FormData();
         formData.append("name", trimmed);
@@ -148,12 +167,12 @@ export function useProductForm() {
       }
       const newCategory = await createCategoryAsync(payload);
       const categoryId = String(newCategory.id);
-      
+
       startTransition(() => {
         setCategories((prev) => [
           ...prev,
-          { 
-            id: categoryId, 
+          {
+            id: categoryId,
             name: newCategory.name,
             slug: newCategory.slug || "",
             parentId: newCategory.parentId || null,
@@ -196,15 +215,18 @@ export function useProductForm() {
   // Xác thực và chuẩn hoá dữ liệu dựa trên backend request (product.request.ts)
   const validateForm = (): string | null => {
     const trimmedName = name.trim();
-    if (trimmedName.length < 2) return "Tên sản phẩm phải có tối thiểu 2 ký tự.";
+    if (trimmedName.length < 2)
+      return "Tên sản phẩm phải có tối thiểu 2 ký tự.";
     if (trimmedName.length > 255) return "Tên sản phẩm tối đa 255 ký tự.";
 
     const parsedPrice = parseFloat(price);
-    if (isNaN(parsedPrice) || parsedPrice < 0) return "Giá sản phẩm phải là số hợp lệ và không được âm.";
+    if (isNaN(parsedPrice) || parsedPrice < 0)
+      return "Giá sản phẩm phải là số hợp lệ và không được âm.";
 
     if (comparePrice) {
       const parsedCompare = parseFloat(comparePrice);
-      if (isNaN(parsedCompare) || parsedCompare < 0) return "Giá so sánh phải là số hợp lệ và không được âm.";
+      if (isNaN(parsedCompare) || parsedCompare < 0)
+        return "Giá so sánh phải là số hợp lệ và không được âm.";
     }
 
     const trimmedSku = sku.trim();
@@ -226,7 +248,9 @@ export function useProductForm() {
     setSku(product.sku || "");
 
     if (product.categories) {
-      const categoryIds = product.categories.map((cat: ProductCategory) => String(cat.id));
+      const categoryIds = product.categories.map((cat: ProductCategory) =>
+        String(cat.id),
+      );
       setSelectedCategoryIds(categoryIds);
     }
 
@@ -238,11 +262,13 @@ export function useProductForm() {
     }
 
     if (product.images && Array.isArray(product.images)) {
-      const imgList: UploadedImage[] = product.images.map((img: ProductImage, idx: number) => ({
-        id: img.id,
-        url: img.url,
-        name: `Image ${idx + 1}`,
-      }));
+      const imgList: UploadedImage[] = product.images.map(
+        (img: ProductImage, idx: number) => ({
+          id: img.id,
+          url: img.url,
+          name: `Image ${idx + 1}`,
+        }),
+      );
       setImages(imgList);
       setDeletedImageIds([]);
     }
@@ -300,6 +326,6 @@ export function useProductForm() {
       resetForm,
       validateForm,
       populateForm,
-    }
+    },
   };
 }
