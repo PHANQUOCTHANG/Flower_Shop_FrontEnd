@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import {
@@ -11,6 +11,7 @@ import {
   User,
   ArrowRight,
   LogOut,
+  Loader2,
 } from "lucide-react";
 import { useCartStore } from "@/stores/cart.store";
 import { useAuthStore } from "@/stores/auth.store";
@@ -19,7 +20,6 @@ import { useLogout } from "@/features/auth/logout/hooks";
 import { formatCurrency } from "@/utils/format";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { useSettingStore } from "@/stores/setting.store";
-import path from "path";
 
 const NAV_LINKS = [
   { href: "/", label: "Trang chủ" },
@@ -68,30 +68,141 @@ const AvatarEl = ({ size = "md", userName, userAvatar }: { size?: "sm" | "md" | 
   );
 };
 
-const SearchDropdown = ({ results, loading, onSelect }: { results: any[]; loading: boolean; onSelect: (slug: string) => void; }) => (
-  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 overflow-hidden max-h-72 overflow-y-auto">
-    {loading ? (
-      <p className="p-4 text-center text-sm text-slate-400">Đang tìm...</p>
-    ) : results.length > 0 ? (
-      results.map((p) => (
-        <div
-          key={p.id}
-          onClick={() => onSelect(p.slug)}
-          className="flex items-center gap-3 p-3 hover:bg-[#FCE9ED] cursor-pointer border-b border-slate-50 last:border-0 transition-colors"
-        >
-          <OptimizedImage src={p.thumbnailUrl} alt={p.name} width={44} height={44} className="rounded-xl" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-slate-800 truncate">{p.name}</p>
-            <p className="text-xs font-bold text-[#EE2B5B]">{formatCurrency(p.price)}</p>
-          </div>
-          <ArrowRight size={14} className="text-slate-300 shrink-0" />
-        </div>
-      ))
-    ) : (
-      <p className="p-4 text-center text-sm text-slate-400">Không tìm thấy sản phẩm</p>
-    )}
-  </div>
-);
+// ── Infinite-scroll search hook ──────────────────────────────────────────────
+const SEARCH_PAGE_SIZE = 5;
+
+function useSearchInfiniteScroll(searchQuery: string) {
+  const [page, setPage] = useState(1);
+  const [accResults, setAccResults] = useState<any[]>([]);
+  const [hasMore, setHasMore] = useState(false);
+  const prevQueryRef = useRef("");
+
+  const { products, meta, loading, fetching } = useProducts({
+    search: searchQuery.trim() || undefined,
+    limit: SEARCH_PAGE_SIZE,
+    page,
+    enabled: !!searchQuery.trim(),
+  });
+
+  // Reset khi từ khóa thay đổi
+  useEffect(() => {
+    if (searchQuery.trim() !== prevQueryRef.current) {
+      prevQueryRef.current = searchQuery.trim();
+      setPage(1);
+      setAccResults([]);
+      setHasMore(false);
+    }
+  }, [searchQuery]);
+
+  // Khi có data mới → append vào accumulated
+  useEffect(() => {
+    if (!loading && products.length > 0) {
+      if (page === 1) {
+        setAccResults(products);
+      } else {
+        setAccResults((prev) => {
+          const existingIds = new Set(prev.map((p: any) => p.id));
+          const newItems = products.filter((p: any) => !existingIds.has(p.id));
+          return [...prev, ...newItems];
+        });
+      }
+    }
+    if (!loading && products.length === 0 && page === 1) {
+      setAccResults([]);
+    }
+  }, [products, loading, page]);
+
+  // Tính hasMore từ meta
+  useEffect(() => {
+    if (meta) {
+      setHasMore(page < (meta.totalPages ?? 1));
+    }
+  }, [meta, page]);
+
+  const loadMore = useCallback(() => {
+    if (!fetching && hasMore) setPage((p) => p + 1);
+  }, [fetching, hasMore]);
+
+  return { accResults, loading: loading && page === 1, fetching, hasMore, loadMore };
+}
+
+// ── SearchDropdown với infinite scroll ───────────────────────────────────────
+const SearchDropdown = ({
+  results,
+  loading,
+  fetching,
+  hasMore,
+  onSelect,
+  onLoadMore,
+  maxHeight = "max-h-72",
+}: {
+  results: any[];
+  loading: boolean;
+  fetching: boolean;
+  hasMore: boolean;
+  onSelect: (slug: string) => void;
+  onLoadMore: () => void;
+  maxHeight?: string;
+}) => {
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !fetching) {
+          onLoadMore();
+        }
+      },
+      { root: scrollContainerRef.current, threshold: 0.1 }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, fetching, onLoadMore]);
+
+  return (
+    <div
+      ref={scrollContainerRef}
+      className={`absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 overflow-hidden ${maxHeight} overflow-y-auto`}
+    >
+      {loading ? (
+        <p className="p-4 text-center text-sm text-slate-400">Đang tìm...</p>
+      ) : results.length > 0 ? (
+        <>
+          {results.map((p) => (
+            <div
+              key={p.id}
+              onClick={() => onSelect(p.slug)}
+              className="flex items-center gap-3 p-3 hover:bg-[#FCE9ED] cursor-pointer border-b border-slate-50 last:border-0 transition-colors"
+            >
+              <OptimizedImage src={p.thumbnailUrl} alt={p.name} width={44} height={44} className="rounded-xl" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-slate-800 truncate">{p.name}</p>
+                <p className="text-xs font-bold text-[#EE2B5B]">{formatCurrency(p.price)}</p>
+              </div>
+              <ArrowRight size={14} className="text-slate-300 shrink-0" />
+            </div>
+          ))}
+          {/* Sentinel để trigger load more */}
+          <div ref={sentinelRef} className="h-1" />
+          {fetching && (
+            <div className="flex items-center justify-center gap-2 py-3 text-xs text-slate-400">
+              <Loader2 size={14} className="animate-spin text-[#EE2B5B]" />
+              Đang tải thêm...
+            </div>
+          )}
+          {!hasMore && results.length >= SEARCH_PAGE_SIZE && (
+            <p className="py-2 text-center text-[11px] text-slate-300">Đã hiển thị tất cả kết quả</p>
+          )}
+        </>
+      ) : (
+        <p className="p-4 text-center text-sm text-slate-400">Không tìm thấy sản phẩm</p>
+      )}
+    </div>
+  );
+};
 
 export default function Header() {
   const router = useRouter();
@@ -109,11 +220,10 @@ export default function Header() {
 
   const { logout, isLoading: isLogoutLoading } = useLogout();
 
-  const { products: searchResults, loading: searchLoading } = useProducts({
-    search: searchQuery.trim() ? searchQuery : undefined,
-    limit: 5,
-    enabled: !!searchQuery.trim(), // Chỉ gọi API khi có từ khóa
-  });
+  // Infinite-scroll search (active khi desktop dropdown hoặc mobile overlay đang mở)
+  const searchActive = showSuggestions || mobileSearchOpen;
+  const { accResults: searchResults, loading: searchLoading, fetching: searchFetching, hasMore: searchHasMore, loadMore: searchLoadMore } =
+    useSearchInfiniteScroll(searchActive ? searchQuery : "");
 
   const cartCount = useCartStore((s) => s.getItemCount());
   const isSessionReady = useAuthStore((s) => s.isSessionReady);
@@ -268,7 +378,14 @@ export default function Header() {
               />
             </form>
             {showSuggestions && searchQuery && (
-              <SearchDropdown results={searchResults} loading={searchLoading} onSelect={handleSelectProduct} />
+              <SearchDropdown
+                results={searchResults}
+                loading={searchLoading}
+                fetching={searchFetching}
+                hasMore={searchHasMore}
+                onSelect={handleSelectProduct}
+                onLoadMore={searchLoadMore}
+              />
             )}
           </div>
 
@@ -412,40 +529,16 @@ export default function Header() {
               </button>
             </div>
             {searchQuery && (
-              <div className="mt-3 rounded-2xl border border-slate-100 overflow-hidden max-h-60 overflow-y-auto">
-                {searchLoading ? (
-                  <p className="p-4 text-center text-sm text-slate-400">
-                    Đang tìm...
-                  </p>
-                ) : searchResults.length > 0 ? (
-                  searchResults.map((p) => (
-                    <div
-                      key={p.id}
-                      onClick={() => handleSelectProduct(p.slug)}
-                      className="flex items-center gap-3 p-3 hover:bg-[#FCE9ED] cursor-pointer border-b border-slate-50 last:border-0 transition-colors"
-                    >
-                      <OptimizedImage
-                        src={p.thumbnailUrl}
-                        alt={p.name}
-                        width={40}
-                        height={40}
-                        className="rounded-xl"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold truncate">
-                          {p.name}
-                        </p>
-                        <p className="text-xs font-bold text-[#EE2B5B]">
-                          {formatCurrency(p.price)}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="p-4 text-center text-sm text-slate-400">
-                    Không có kết quả
-                  </p>
-                )}
+              <div className="mt-3 relative">
+                <SearchDropdown
+                  results={searchResults}
+                  loading={searchLoading}
+                  fetching={searchFetching}
+                  hasMore={searchHasMore}
+                  onSelect={handleSelectProduct}
+                  onLoadMore={searchLoadMore}
+                  maxHeight="max-h-60"
+                />
               </div>
             )}
           </div>
