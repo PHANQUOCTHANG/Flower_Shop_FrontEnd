@@ -24,7 +24,7 @@ export function CheckoutSidebar({
   paymentMethod,
 }: CheckoutSidebarProps) {
   return (
-    <div className="w-full lg:w-[420px] space-y-6">
+    <div className="w-full space-y-6">
       {/* Tóm tắt đơn hàng */}
       <OrderSummaryCheckout
         cartItems={cartItems}

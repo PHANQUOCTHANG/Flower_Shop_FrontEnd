@@ -18,14 +18,15 @@ interface CategoryModalProps {
   isOpen: boolean;
   onClose: () => void;
   category?: AdminCategory | null;
+  categories?: AdminCategory[];
   onSubmit: (data: FormData) => Promise<void>;
 }
 
-export const CategoryModal = ({ isOpen, onClose, category, onSubmit }: CategoryModalProps) => {
+export const CategoryModal = ({ isOpen, onClose, category, categories = [], onSubmit }: CategoryModalProps) => {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [status, setStatus] = useState("active");
-  const [sortOrder, setSortOrder] = useState(0);
+  const [parentId, setParentId] = useState<string>("");
   const [thumbnail, setThumbnail] = useState<{ url: string; file: File | null }>({ url: "", file: null });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -36,13 +37,13 @@ export const CategoryModal = ({ isOpen, onClose, category, onSubmit }: CategoryM
       setName(category.name);
       setSlug(category.slug);
       setStatus(category.status);
-      setSortOrder(category.sortOrder);
+      setParentId(category.parentId || "");
       setThumbnail({ url: category.thumbnailUrl || "", file: null });
     } else {
       setName("");
       setSlug("");
       setStatus("active");
-      setSortOrder(0);
+      setParentId("");
       setThumbnail({ url: "", file: null });
     }
 
@@ -108,7 +109,7 @@ export const CategoryModal = ({ isOpen, onClose, category, onSubmit }: CategoryM
       formData.append("name", name);
       formData.append("slug", slug);
       formData.append("status", status);
-      formData.append("sortOrder", sortOrder.toString());
+      if (parentId) formData.append("parentId", parentId);
       
       if (thumbnail.file) {
         formData.append("thumbnail", thumbnail.file);
@@ -239,17 +240,44 @@ export const CategoryModal = ({ isOpen, onClose, category, onSubmit }: CategoryM
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              {/* Thứ tự sắp xếp */}
+              {/* Danh mục cha */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-black text-slate-500 uppercase tracking-wider ml-1">
-                  Thứ tự
+                  Danh mục cha (Tùy chọn)
                 </label>
-                <input
-                  type="number"
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#13ec5b]/40 focus:border-[#13ec5b] transition-all"
-                />
+                <select
+                  value={parentId}
+                  onChange={(e) => setParentId(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#13ec5b]/40 focus:border-[#13ec5b] transition-all appearance-none"
+                >
+                  <option value="">-- Không có (Danh mục gốc) --</option>
+                  {(() => {
+                    const getChildren = (pid: string) => categories.filter((c) => c.parentId === pid);
+                    const rootCategories = categories.filter((c) => !c.parentId);
+                    
+                    const renderOptions = (cats: AdminCategory[], level = 0): React.ReactNode[] => {
+                      let options: React.ReactNode[] = [];
+                      cats.forEach((cat) => {
+                        // Prevent category from being its own parent or a descendant of itself
+                        if (category && cat.id === category.id) return;
+                        
+                        const prefix = "— ".repeat(level);
+                        options.push(
+                          <option key={cat.id} value={cat.id}>
+                            {prefix}{cat.name}
+                          </option>
+                        );
+                        const children = getChildren(cat.id);
+                        if (children.length > 0) {
+                          options = options.concat(renderOptions(children, level + 1));
+                        }
+                      });
+                      return options;
+                    };
+                    
+                    return renderOptions(rootCategories);
+                  })()}
+                </select>
               </div>
 
               {/* Trạng thái */}

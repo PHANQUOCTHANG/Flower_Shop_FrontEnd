@@ -63,9 +63,6 @@ export const CategoryTable = ({
                 Tên danh mục
               </th>
               <th className="px-5 py-3.5 text-[11px] font-black text-slate-400 uppercase tracking-widest text-center">
-                Thứ tự
-              </th>
-              <th className="px-5 py-3.5 text-[11px] font-black text-slate-400 uppercase tracking-widest">
                 Trạng thái
               </th>
               <th className="px-5 py-3.5 text-[11px] font-black text-slate-400 uppercase tracking-widest text-right">
@@ -76,7 +73,7 @@ export const CategoryTable = ({
           <tbody className="divide-y divide-slate-100">
             {categories.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-6 py-14 text-center text-slate-400 text-sm font-medium">
+                <td colSpan={4} className="px-6 py-14 text-center text-slate-400 text-sm font-medium">
                   Chưa có danh mục nào
                 </td>
               </tr>
@@ -106,11 +103,6 @@ export const CategoryTable = ({
                     </div>
                   </td>
                   <td className="px-5 py-4 text-center">
-                    <span className="text-sm font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
-                      {category.sortOrder}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4">
                     <StatusBadge status={category.status} />
                   </td>
                   <td className="px-5 py-4 text-right">
@@ -165,9 +157,6 @@ export const CategoryTable = ({
                 <p className="text-sm font-bold text-slate-900 truncate">{category.name}</p>
                 <div className="flex items-center gap-2">
                   <StatusBadge status={category.status} />
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">
-                    Thứ tự: {category.sortOrder}
-                  </span>
                 </div>
               </div>
               <div className="flex items-center gap-1 shrink-0">

@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useAddToCart } from "@/features/cart/hooks/useCart";
 import { useAuthStore } from "@/stores/auth.store";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
+import Alert from "@/components/ui/Alert";
+import { createPortal } from "react-dom";
 
 // Hằng số
 const INITIAL_QUANTITY = 1;
@@ -134,6 +136,7 @@ export const ProductCard = ({
   // State
   const [cartState, setCartState] = useState<CartState>("idle");
   const [quantity, setQuantity] = useState(INITIAL_QUANTITY);
+  const [alert, setAlert] = useState<{ type: "error" | "success"; message: string } | null>(null);
 
   // Tính toán thông tin kinh tế sản phẩm
   const discount = product.comparePrice
@@ -158,9 +161,9 @@ export const ProductCard = ({
   // Bước 1: Mở bộ chọn số lượng
   const handleOpenPicker = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
+    // Hiển thị thông báo nếu chưa đăng nhập thay vì chuyển hướng
     if (!isLogin) {
-      router.push("/login");
+      setAlert({ type: "error", message: "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng" });
       return;
     }
     // Không mở picker nếu hết hàng
@@ -208,10 +211,23 @@ export const ProductCard = ({
   // Chế độ Danh sách (List View)
   if (viewMode === "list") {
     return (
-      <div
-        onClick={() => router.push(`/products/${product.slug}`)}
-        className="flex flex-row gap-3 sm:gap-6 bg-white rounded-2xl sm:rounded-4xl overflow-hidden border border-gray-100 hover:border-[#13ec5b]/30 hover:shadow-xl transition-all duration-300 p-3 sm:p-6 cursor-pointer"
-      >
+      <>
+        {alert && typeof document !== "undefined" && createPortal(
+          <div className="fixed top-24 right-6 z-[100] max-w-md">
+            <Alert
+              type={alert.type}
+              message={alert.message}
+              onClose={() => setAlert(null)}
+              autoClose
+              duration={4000}
+            />
+          </div>,
+          document.body
+        )}
+        <div
+          onClick={() => router.push(`/products/${product.slug}`)}
+          className="flex flex-row gap-3 sm:gap-6 bg-white rounded-2xl sm:rounded-4xl overflow-hidden border border-gray-100 hover:border-[#13ec5b]/30 hover:shadow-xl transition-all duration-300 p-3 sm:p-6 cursor-pointer"
+        >
         {/* Hình ảnh sản phẩm */}
         <div className="relative w-28 h-32 sm:w-36 sm:h-44 md:w-48 md:h-56 shrink-0 overflow-hidden rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-100/50">
           {/* Badge: % giảm giá */}
@@ -284,7 +300,7 @@ export const ProductCard = ({
           {/* Khu vực hành động */}
           <div className="flex flex-wrap gap-2 sm:gap-3 mt-2 sm:mt-3 items-center">
             {/* Nút MUA NGAY */}
-            <button
+            {/* <button
               disabled={isOutOfStock}
               onClick={(e) => {
                 e.stopPropagation();
@@ -296,7 +312,7 @@ export const ProductCard = ({
               <span className="whitespace-nowrap">
                 {isOutOfStock ? "HẾT HÀNG" : "MUA NGAY"}
               </span>
-            </button>
+            </button> */}
 
             {/* Giỏ hàng: Bộ chọn hoặc Nút thêm */}
             {cartState === "picking" ? (
@@ -311,15 +327,29 @@ export const ProductCard = ({
           </div>
         </div>
       </div>
+      </>
     );
   }
 
   // Chế độ Lưới (Grid View) - Mặc định
   return (
-    <div
-      onClick={() => router.push(`/products/${product.slug}`)}
-      className="group flex flex-col bg-white rounded-3xl overflow-hidden border border-gray-100 hover:border-gray-200 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 cursor-pointer"
-    >
+    <>
+      {alert && typeof document !== "undefined" && createPortal(
+        <div className="fixed top-24 right-6 z-[100] max-w-md">
+          <Alert
+            type={alert.type}
+            message={alert.message}
+            onClose={() => setAlert(null)}
+            autoClose
+            duration={4000}
+          />
+        </div>,
+        document.body
+      )}
+      <div
+        onClick={() => router.push(`/products/${product.slug}`)}
+        className="group flex flex-col bg-white rounded-3xl overflow-hidden border border-gray-100 hover:border-gray-200 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 cursor-pointer"
+      >
       {/* Phần hình ảnh – aspect-[4/5] = tỷ lệ 4:5 chuẩn cho card hoa */}
       <div className="relative aspect-[4/5] overflow-hidden bg-gray-50">
         {/* Badge: % giảm giá */}
@@ -390,7 +420,7 @@ export const ProductCard = ({
         {/* Khu vực hành động */}
         <div className="mt-auto flex flex-col gap-3">
           {/* Nút MUA NGAY */}
-          <button
+          {/* <button
             disabled={isOutOfStock}
             onClick={(e) => {
               e.stopPropagation();
@@ -400,7 +430,7 @@ export const ProductCard = ({
           >
             <Bolt size={16} fill="currentColor" />
             {isOutOfStock ? "HẾT HÀNG" : "MUA NGAY"}
-          </button>
+          </button> */}
 
           {/* Giỏ hàng: Bộ chọn hoặc Nút thêm */}
           {cartState === "picking" ? (
@@ -413,5 +443,6 @@ export const ProductCard = ({
         </div>
       </div>
     </div>
+    </>
   );
 };

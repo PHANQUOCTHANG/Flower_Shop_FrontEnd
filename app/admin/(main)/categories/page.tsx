@@ -115,6 +115,7 @@ export default function CategoriesPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         category={editingCategory}
+        categories={categories}
         onSubmit={handleSubmit}
       />
 

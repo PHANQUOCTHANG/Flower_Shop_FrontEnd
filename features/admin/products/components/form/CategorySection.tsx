@@ -57,9 +57,7 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
         return (
           <div key={cat.id} className="flex flex-col">
             <label
-              className={`flex items-center cursor-pointer hover:bg-slate-50 p-2 rounded transition-colors ${
-                level > 0 ? "ml-6" : ""
-              }`}
+              className="flex items-center cursor-pointer hover:bg-slate-50 p-2 rounded transition-colors"
             >
               <input
                 type="checkbox"
@@ -72,7 +70,11 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
                 {cat.name}
               </span>
             </label>
-            {children.length > 0 && renderCategoryTree(children, level + 1)}
+            {children.length > 0 && (
+              <div className="ml-6 border-l border-slate-100">
+                {renderCategoryTree(children, level + 1)}
+              </div>
+            )}
           </div>
         );
       });
