@@ -83,6 +83,7 @@ export interface CreateOrderResponse {
   data: {
     jobId?: string;
     status?: string;
-    id?: string;
+    id?: string;       // khi normal flow
+    orderId?: string;  // khi fallback (Redis lỗi)
   };
 }

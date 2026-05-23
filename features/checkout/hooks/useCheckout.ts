@@ -86,18 +86,22 @@ export const useCheckout = (options?: UseCheckoutOptions) => {
       if (response.data?.jobId) {
         setJobId(response.data.jobId);
         options?.onJobIdReceived?.(response.data.jobId);
-      } else if (response.data?.id) {
-        const completedOrder: Order = {
-          id: response.data.id,
-          userId: "",
-          totalPrice: 0,
-          status: response.data.status || "processing",
-          paymentStatus: "unpaid",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        setOrder(completedOrder);
-        options?.onSuccess?.(completedOrder);
+      } else {
+        // Fallback khi Redis lỗi: backend trả orderId (không phải id)
+        const resolvedId = response.data?.orderId || response.data?.id;
+        if (resolvedId) {
+          const completedOrder: Order = {
+            id: resolvedId,
+            userId: "",
+            totalPrice: 0,
+            status: response.data.status || "completed",
+            paymentStatus: "unpaid",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          setOrder(completedOrder);
+          options?.onSuccess?.(completedOrder);
+        }
       }
     },
     onError: (error: any) => {

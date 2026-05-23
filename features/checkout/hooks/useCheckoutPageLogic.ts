@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
 import { useCart } from "@/features/cart/hooks";
-import { useCheckout } from "@/features/checkout/hooks/useCheckout";
 import { checkoutEventTracker } from "@/features/checkout/hooks/checkoutEventTracker";
 import {
   useDefaultAddress,
@@ -18,10 +16,10 @@ import {
 } from "@/features/checkout/constants/checkoutConfig";
 import type { Address } from "@/types/profile";
 import { useAuthStore } from "@/stores/auth.store";
+import { useCheckoutStore } from "@/stores/checkout.store";
 
 export function useCheckoutPageLogic() {
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   // --- Dữ liệu giỏ hàng & Địa chỉ ---
   const { items: cartItems, total: cartTotal } = useCart();
@@ -46,23 +44,6 @@ export function useCheckoutPageLogic() {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState<"success" | "error">("success");
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // --- Hook Tạo Đơn Hàng ---
-  const { createOrder, isLoading: isCreatingOrder } = useCheckout({
-    queryClient,
-    onJobIdReceived: (jobId) => {
-      setIsNavigating(true);
-      router.push(`/order-processing?jobId=${jobId}`);
-    },
-    onSuccess: () => {
-      checkoutEventTracker.trackNavigation(CHECKOUT_CONFIG.STEP_NAME, "completed");
-    },
-    onError: (error: any) => {
-      setAlertType("error");
-      setAlertMessage(error?.message || VALIDATION_MESSAGES.ORDER_ERROR);
-      setShowAlert(true);
-    },
-  });
 
   // --- Theo dõi sự kiện Checkout (Event Tracking) ---
   useEffect(() => {
@@ -176,12 +157,13 @@ export function useCheckoutPageLogic() {
       items: orderItems,
     };
 
-    // 4. Gửi yêu cầu Tạo Đơn hàng
-    try {
-      await createOrder(requestData);
-    } catch (error) {
-      console.error("Lỗi tạo đơn hàng:", error);
-    }
+    // 4. Lưu form data vào store → redirect ngay sang /order-processing?mode=submit
+    //    API call sẽ được thực hiện tại trang order-processing
+    //    → Thời gian hiển thị "đang xử lý" = thời gian thực server phản hồi
+    checkoutEventTracker.trackNavigation(CHECKOUT_CONFIG.STEP_NAME, "completed");
+    useCheckoutStore.getState().setPendingCheckout(requestData);
+    setIsNavigating(true);
+    router.push("/order-processing?mode=submit");
   }, [
     name,
     shippingAddress,
@@ -191,7 +173,7 @@ export function useCheckoutPageLogic() {
     cartTotal,
     paymentMethod,
     paymentStatus,
-    createOrder,
+    router,
   ]);
 
   return {
@@ -204,7 +186,7 @@ export function useCheckoutPageLogic() {
       paymentMethod,
       cartItems,
       cartTotal,
-      isCreatingOrder,
+      isCreatingOrder: isNavigating, // Alias để không phải sửa các component dùng isCreatingOrder
       isNavigating,
       showAlert,
       alertMessage,
