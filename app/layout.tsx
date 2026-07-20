@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Providers from "@/providers/react-query-provider";
 import { SessionProvider } from "@/providers/SessionProvider";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,9 +33,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body>
-        <Providers>
-          <SessionProvider>{children}</SessionProvider>
-        </Providers>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID"}>
+          <Providers>
+            <SessionProvider>{children}</SessionProvider>
+          </Providers>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

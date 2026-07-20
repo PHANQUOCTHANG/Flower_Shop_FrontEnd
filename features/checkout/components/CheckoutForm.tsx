@@ -11,14 +11,14 @@ interface CheckoutFormProps {
   shippingPhone: string;
   shippingAddress: string;
   note: string;
-  paymentMethod: "bank" | "wallet" | "cod";
+  paymentMethod: "bank" | "cod" | "vnpay";
   errors: ValidationErrors;
   selectedAddressId?: string;
   onNameChange: (value: string) => void;
   onShippingPhoneChange: (value: string) => void;
   onShippingAddressChange: (value: string) => void;
   onNoteChange: (value: string) => void;
-  onPaymentMethodChange: (method: "bank" | "wallet" | "cod") => void;
+  onPaymentMethodChange: (method: "bank" | "cod" | "vnpay") => void;
   onAddressSelect: (address: Address) => void;
 }
 

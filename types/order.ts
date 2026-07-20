@@ -57,7 +57,7 @@ export interface CreateOrderData {
   totalPrice: number;
   shippingAddress: string;
   shippingPhone: string;
-  paymentMethod: "bank" | "wallet" | "cod";
+  paymentMethod: "bank" | "cod" | "vnpay";
   paymentStatus: "unpaid" | "paid";
   name: string;
   note?: string;
@@ -85,5 +85,6 @@ export interface CreateOrderResponse {
     status?: string;
     id?: string;       // khi normal flow
     orderId?: string;  // khi fallback (Redis lỗi)
+    vnpayUrl?: string; // khi paymentMethod = vnpay
   };
 }

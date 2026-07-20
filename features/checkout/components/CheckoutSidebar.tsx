@@ -8,7 +8,7 @@ interface CheckoutSidebarProps {
   total: number;
   isLoading: boolean;
   onConfirmOrder: () => void;
-  paymentMethod: "bank" | "wallet" | "cod";
+  paymentMethod: "bank" | "cod" | "vnpay";
 }
 
 /**

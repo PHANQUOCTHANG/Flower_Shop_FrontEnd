@@ -39,6 +39,7 @@ export default function OrderCompletedPageClient() {
   const [isLoading, setIsLoading] = React.useState(true);
   
   const orderId = searchParams.get("id");
+  const vnpayStatus = searchParams.get("vnpay"); // "success" | "failed" | null
   const { order, isLoading: isOrderLoading } = useOrderById(orderId);
 
   useEffect(() => {
@@ -87,6 +88,17 @@ export default function OrderCompletedPageClient() {
           <div className="px-4 py-1.5 bg-[#13ec5b]/10 rounded-full text-[#0d9e3e] text-xs font-bold tracking-widest uppercase">
             Mã đơn hàng: {order?.slug ? `#${order.slug.toUpperCase()}` : `#FLWR-${orderId?.substring(0,5).toUpperCase() || '12345'}`}
           </div>
+          {/* VNPay payment status badge */}
+          {vnpayStatus === "success" && (
+            <div className="mt-2 px-4 py-1.5 bg-blue-50 rounded-full text-blue-600 text-xs font-bold tracking-wide flex items-center gap-1.5">
+              <CheckCircle2 size={14} /> Đã thanh toán qua VNPay
+            </div>
+          )}
+          {vnpayStatus === "failed" && (
+            <div className="mt-2 px-4 py-1.5 bg-red-50 rounded-full text-red-500 text-xs font-bold tracking-wide">
+              ⚠ Thanh toán VNPay không thành công — vui lòng thử lại hoặc chọn phương thức khác
+            </div>
+          )}
         </div>
 
         {/* Next Step Box */}

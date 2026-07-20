@@ -31,7 +31,7 @@ export default function OrderProcessingPageClient() {
   // "queued"   : server trả jobId (Redis OK) → chuyển sang chờ socket
   // "completed": server trả orderId (Redis lỗi) hoặc socket báo xong
   // "failed"   : lỗi từ server hoặc network
-  type SubmitStatus = "calling" | "queued" | "completed" | "failed";
+  type SubmitStatus = "calling" | "queued" | "waiting_payment" | "completed" | "failed";
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("calling");
   const [resolvedOrderId, setResolvedOrderId] = useState<string | null>(null);
   const [activeJobId, setActiveJobId] = useState<string | null>(urlJobId);
@@ -68,17 +68,32 @@ export default function OrderProcessingPageClient() {
     // Xóa khỏi store ngay (chỉ dùng 1 lần, tránh re-submit nếu F5)
     reset();
 
-    // ★ Gọi API — thời gian từ đây đến khi server phản hồi chính là
-    //   thời gian user nhìn thấy trang "Đang xử lý đơn hàng"
+    // ★ Gọi API
     checkoutService
       .createOrder(pendingFormData)
       .then((response) => {
+        // ★ VNPay: redirect sang cổng thanh toán VNPay
+        if (response.data?.vnpayUrl) {
+          const newWindow = window.open(response.data.vnpayUrl, "_blank");
+          
+          if (!newWindow || newWindow.closed || typeof newWindow.closed === "undefined") {
+            // Popup chặn → Fallback mở ở tab hiện tại
+            window.location.href = response.data.vnpayUrl;
+          } else {
+            // Mở tab mới thành công → Giữ lại trang hiện tại và chờ socket
+            const orderId = response.data?.orderId || response.data?.id;
+            if (orderId) {
+              setResolvedOrderId(orderId);
+              setSubmitStatus("waiting_payment");
+            }
+          }
+          return;
+        }
+
         if (response.data?.jobId) {
-          // Redis OK: server xếp vào queue, chuyển sang chờ socket
           setActiveJobId(response.data.jobId);
           setSubmitStatus("queued");
         } else {
-          // Redis lỗi — backend fallback trả orderId trực tiếp
           const orderId = response.data?.orderId || response.data?.id;
           if (orderId) {
             setResolvedOrderId(orderId);
@@ -95,7 +110,7 @@ export default function OrderProcessingPageClient() {
       });
   }, [mode, router]);
 
-  // ── Socket listener (dùng chung cho URL jobId lẫn mode=submit→queued) ────────
+  // ── Socket listener cho Job xử lý (order:status) ─────────────────────────────
   const { status: socketStatus } = useOrderStatus({
     jobId: activeJobId || undefined,
     enabled: !!activeJobId,
@@ -111,6 +126,33 @@ export default function OrderProcessingPageClient() {
     },
   });
 
+  // ── Socket listener cho VNPay IPN (order:payment_updated) ───────────────────
+  useEffect(() => {
+    if (submitStatus !== "waiting_payment" || !resolvedOrderId) return;
+    
+    import("@/lib/socket").then(({ getSocket, initializeSocket }) => {
+      import("@/stores/auth.store").then(({ useAuthStore }) => {
+        const token = useAuthStore.getState().accessToken;
+        if (!token) return;
+
+        const socket = getSocket() || initializeSocket(token);
+        if (!socket.connected) socket.connect();
+
+        const handlePaymentUpdate = (event: any) => {
+          if (event.orderId === resolvedOrderId && event.paymentStatus === "paid") {
+            setSubmitStatus("completed");
+          }
+        };
+
+        socket.on("order:payment_updated", handlePaymentUpdate);
+
+        return () => {
+          socket.off("order:payment_updated", handlePaymentUpdate);
+        };
+      });
+    });
+  }, [submitStatus, resolvedOrderId]);
+
   // ── Khi completed → dọn cart + redirect sang order-completed ─────────────────
   useEffect(() => {
     if (submitStatus !== "completed" || !resolvedOrderId) return;
@@ -120,14 +162,13 @@ export default function OrderProcessingPageClient() {
     queryClient.invalidateQueries({ queryKey: ["cart"] });
     queryClient.invalidateQueries({ queryKey: ["orders", "my-orders"] });
 
-    // Redirect ngay (không cần delay nhân tạo — thời gian processing đã là thực)
+    // Redirect ngay
     redirectTimerRef.current = setTimeout(() => {
       router.push(`/order-completed?id=${resolvedOrderId}`);
     }, 1000); // 1s nhỏ để animation "completed" hiển thị trước
   }, [submitStatus, resolvedOrderId, router, setItems, queryClient]);
 
   // ── Map state sang OrderStatusEvent để truyền vào OrderStatusTracker ─────────
-  // mode=submit → dùng local state; có jobId trong URL → dùng socketStatus
   const displayStatus: OrderStatusEvent | null = (() => {
     if (mode !== "submit") return socketStatus;
     switch (submitStatus) {
@@ -135,6 +176,8 @@ export default function OrderProcessingPageClient() {
         return { jobId: "direct", status: "processing", message: "Đang gửi đơn hàng lên server...", data: undefined };
       case "queued":
         return { jobId: activeJobId || "direct", status: "queued", message: "Đơn hàng đang chờ xử lý...", data: undefined };
+      case "waiting_payment":
+        return { jobId: "direct", status: "processing", message: "Đang chờ bạn thanh toán VNPay ở cửa sổ mới...", data: undefined };
       case "completed":
         return { jobId: "direct", status: "completed", message: "Đặt hàng thành công!", data: resolvedOrderId ? { orderId: resolvedOrderId, totalPrice: 0 } : undefined };
       case "failed":

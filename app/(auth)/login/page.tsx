@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Flower2, Loader, ArrowLeft } from "lucide-react";
 import { useLogin } from "@/features/auth/login/hooks/useLogin";
 import Alert from "@/components/ui/Alert";
+import { useGoogleLogin } from "@react-oauth/google";
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -43,7 +44,20 @@ export default function LoginPage() {
   const [successMessage, setSuccessMessage] = useState("");
 
   // hooks .
-  const { login, isLoading, error } = useLogin();
+  const { login, loginWithGoogle, isLoading, error } = useLogin();
+
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        await loginWithGoogle(tokenResponse.access_token);
+        setSuccessMessage("Đăng nhập Google thành công! Chuyển hướng...");
+      } catch (err) {
+        console.error("Lỗi khi xử lý token Google:", err);
+      }
+    },
+    onError: () => console.error("Google Login Failed"),
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -223,11 +237,15 @@ export default function LoginPage() {
             </div>
             
             <div className="grid grid-cols-2 gap-3">
-              <button className="flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-100 rounded-xl bg-white hover:border-[#4285F4]/30 hover:bg-[#4285F4]/5 transition-colors group">
+              <button 
+                type="button"
+                onClick={() => handleGoogleLogin()}
+                className="flex items-center justify-center gap-2 px-4 h-[44px] border-2 border-gray-100 rounded-xl bg-white hover:border-[#4285F4]/30 hover:bg-[#4285F4]/5 transition-colors group"
+              >
                 <GoogleIcon />
                 <span className="text-xs font-bold text-gray-600 group-hover:text-[#4285F4] transition-colors">Google</span>
               </button>
-              <button className="flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-100 rounded-xl bg-white hover:border-[#1877F2]/30 hover:bg-[#1877F2]/5 transition-colors group">
+              <button className="flex items-center justify-center gap-2 px-4 h-[44px] border-2 border-gray-100 rounded-xl bg-white hover:border-[#1877F2]/30 hover:bg-[#1877F2]/5 transition-colors group">
                 <FacebookIcon />
                 <span className="text-xs font-bold text-gray-600 group-hover:text-[#1877F2] transition-colors">Facebook</span>
               </button>
