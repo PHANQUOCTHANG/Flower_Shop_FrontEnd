@@ -3,7 +3,7 @@
 import { notFound } from "next/navigation";
 import Alert from "@/components/ui/Alert";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { Loading } from "@/components/ui/Loading";
+import { ProductDetailSkeleton } from "@/components/skeletons/ProductDetailSkeleton";
 import {
   Gallery,
   ProductInfo,
@@ -23,7 +23,7 @@ export default function ProductDetailClient() {
   const { state, actions } = useProductDetailLogic();
 
   // --- Trạng thái tải và lỗi ---
-  if (state.loading) return <Loading />;
+  if (state.loading) return <ProductDetailSkeleton />;
   if (state.error || !state.product) notFound();
 
   // --- Render giao diện ---

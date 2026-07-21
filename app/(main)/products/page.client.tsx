@@ -7,7 +7,7 @@ import {
   ProductGrid,
 } from "@/features/products/components";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { Loading } from "@/components/ui/Loading";
+import { ProductListSkeleton } from "@/components/skeletons/ProductListSkeleton";
 import { Pagination } from "@/components/ui/Pagination";
 import { useProductCollectionLogic } from "@/features/products/hooks/useProductCollectionLogic";
 
@@ -15,7 +15,7 @@ function FlowerCollectionContent() {
   const { state, actions } = useProductCollectionLogic();
 
   // --- Trạng thái tải dữ liệu ban đầu ---
-  if (state.productsLoading || state.categoriesLoading) return <Loading />;
+  if (state.productsLoading || state.categoriesLoading) return <ProductListSkeleton />;
 
   // --- Render giao diện ---
   return (
@@ -89,7 +89,7 @@ function FlowerCollectionContent() {
 
 export default function FlowerCollectionClient() {
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<ProductListSkeleton />}>
       <FlowerCollectionContent />
     </Suspense>
   );

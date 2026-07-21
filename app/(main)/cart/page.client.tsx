@@ -3,7 +3,7 @@
 import React from "react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ProgressTracker } from "@/components/ui/ProgressTracker";
-import { Loading } from "@/components/ui/Loading";
+import { CartSkeleton } from "@/components/skeletons/CartSkeleton";
 import {
   CartHeader,
   CartContent,
@@ -17,7 +17,7 @@ export default function CartPageClient() {
   const { state, actions } = useCartPageLogic();
 
   // --- Trạng thái tải ---
-  if (state.isLoading) return <Loading />;
+  if (state.isLoading) return <CartSkeleton />;
 
   // --- Render giao diện ---
   return (
