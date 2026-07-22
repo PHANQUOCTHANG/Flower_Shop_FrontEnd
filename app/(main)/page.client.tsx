@@ -7,10 +7,11 @@ import Categories from "@/features/home/components/Categories";
 import ProductSection from "@/features/home/components/ProductSection";
 import Consultation from "@/features/home/components/Consultation";
 import LazySection from "@/features/home/components/LazySection";
+import { FlashSaleSection } from "@/features/campaign/components/FlashSaleSection";
 import { useHome, type HomeCategoryGroup } from "@/features/home/hooks/useHome";
 
 export default function HomePageClient() {
-  const { categories, categoriesLoading, productsByCategory, loading } =
+  const { categories, categoriesLoading, productsByCategory, loading, activeCampaign } =
     useHome();
 
   return (
@@ -19,6 +20,9 @@ export default function HomePageClient() {
 
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-10 lg:px-20">
         <Features />
+
+        {/* Section Flash Sale */}
+        {activeCampaign && <FlashSaleSection campaign={activeCampaign as any} />}
 
         {/* Danh mục — load ngay vì near top */}
         <Categories categories={categories} loading={categoriesLoading} />

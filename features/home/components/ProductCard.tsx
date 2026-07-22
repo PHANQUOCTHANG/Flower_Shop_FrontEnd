@@ -14,6 +14,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import Alert from "@/components/ui/Alert";
 import { createPortal } from "react-dom";
+import { WishlistButton } from "@/features/wishlist/components/WishlistButton";
 
 export default function ProductCard({ product }: { product: Product }) {
   const router = useRouter();
@@ -96,6 +97,9 @@ export default function ProductCard({ product }: { product: Product }) {
       >
         {/* Ảnh */}
         <div className="relative aspect-[3/4] overflow-hidden bg-gray-50">
+          <div className="absolute top-3 right-3 z-10">
+            <WishlistButton productId={product.id} size="lg" />
+          </div>
           {discount > 0 && (
             <span className="absolute top-3 left-3 z-10 text-white text-[10px] font-bold px-2 py-1 rounded-md bg-[#13ec5b]">
               -{discount}%

@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/features/products/services/productService";
 import { categoryService } from "@/features/products/services/categoryService";
+import { campaignService } from "@/features/campaign/services/campaignService";
 
 export interface HomeCategoryGroup {
   category: {
@@ -36,6 +37,13 @@ export const useHome = () => {
   });
 
   const groupedData = (groupedQuery.data || []) as any[];
+
+  // Lấy chiến dịch Sale hiện tại
+  const campaignQuery = useQuery({
+    queryKey: ["campaign", "active"],
+    queryFn: () => campaignService.getActiveCampaign(),
+    staleTime: 60_000,
+  });
   
   // Format lại data đúng cấu trúc UI đang chờ
   const isGroupedLoading = groupedQuery.isPending;
@@ -59,5 +67,6 @@ export const useHome = () => {
     productsByCategory,
     loading: categoryQuery.isPending || groupedQuery.isPending,
     fetching: categoryQuery.isFetching || groupedQuery.isFetching,
+    activeCampaign: campaignQuery.data || null,
   };
 };

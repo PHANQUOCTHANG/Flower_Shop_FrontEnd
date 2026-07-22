@@ -12,8 +12,10 @@ import {
   ArrowRight,
   LogOut,
   Loader2,
+  Heart,
 } from "lucide-react";
 import { useCartStore } from "@/stores/cart.store";
+import { useWishlistStore } from "@/stores/wishlist.store";
 import { useAuthStore } from "@/stores/auth.store";
 import { useProducts } from "@/features/products/hooks/useProducts";
 import { useLogout } from "@/features/auth/logout/hooks";
@@ -226,6 +228,7 @@ export default function Header() {
     useSearchInfiniteScroll(searchActive ? searchQuery : "");
 
   const cartCount = useCartStore((s) => s.getItemCount());
+  const wishlistCount = useWishlistStore((s) => s.count);
   const isSessionReady = useAuthStore((s) => s.isSessionReady);
   const isLoggedIn = useAuthStore((s) => s.isAuthenticated);
   const userName = useAuthStore((s) => s.user?.name || "");
@@ -398,6 +401,24 @@ export default function Header() {
               aria-label="Tìm kiếm"
             >
               <Search size={21} />
+            </button>
+
+            {/* Wishlist */}
+            <button
+              onClick={() => router.push(isLoggedIn ? "/favorite" : "/login")}
+              className={`relative p-2 rounded-xl transition-all ${
+                pathname === "/favorite"
+                  ? "bg-[#EE2B5B] text-white"
+                  : "hover:bg-[#FCE9ED] text-slate-600"
+              }`}
+              aria-label="Yêu thích"
+            >
+              <Heart size={21} />
+              {isLoggedIn && wishlistCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-[#EE2B5B] text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center ring-2 ring-white">
+                  {wishlistCount > 9 ? "9+" : wishlistCount}
+                </span>
+              )}
             </button>
 
             {/* Cart */}

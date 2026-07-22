@@ -8,6 +8,8 @@ import FloatingActions from "@/components/layout/client/FloatingActions";
 import { useAuthStore } from "@/stores/auth.store";
 import { useFetchCart, CART_QUERY_KEY } from "@/features/cart/hooks/useCart";
 import { useSettingStore } from "@/stores/setting.store";
+import { useWishlistStore } from "@/stores/wishlist.store";
+import { wishlistService } from "@/features/wishlist/services/wishlistService";
 
 export default function MainLayout({
   children,
@@ -31,6 +33,19 @@ export default function MainLayout({
   // Safety net: khi isLoggedIn thay đổi từ false → true (sau login/refresh),
   // force refetch cart để đảm bảo data luôn cập nhật dù cache có stale hay không
   const prevLoggedIn = useRef(false);
+  const setWishlistIds = useWishlistStore((state) => state.setIds);
+  const clearWishlist = useWishlistStore((state) => state.clear);
+
+  useEffect(() => {
+    if (isSessionReady) {
+      if (isLoggedIn) {
+        wishlistService.getWishlistIds().then(setWishlistIds).catch(console.error);
+      } else {
+        clearWishlist();
+      }
+    }
+  }, [isLoggedIn, isSessionReady, setWishlistIds, clearWishlist]);
+
   useEffect(() => {
     const wasLoggedIn = prevLoggedIn.current;
     prevLoggedIn.current = isLoggedIn;
@@ -38,8 +53,9 @@ export default function MainLayout({
     // Chỉ trigger khi transition false → true (vừa login)
     if (!wasLoggedIn && isLoggedIn && isSessionReady) {
       queryClient.invalidateQueries({ queryKey: CART_QUERY_KEY });
+      wishlistService.getWishlistIds().then(setWishlistIds).catch(console.error);
     }
-  }, [isLoggedIn, isSessionReady, queryClient]);
+  }, [isLoggedIn, isSessionReady, queryClient, setWishlistIds]);
 
   return (
     <div className="flex flex-col min-h-screen">
