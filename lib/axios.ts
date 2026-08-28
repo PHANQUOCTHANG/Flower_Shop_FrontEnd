@@ -84,6 +84,7 @@ const refreshClient = axios.create({
  * finally() đảm bảo lock luôn được giải phóng dù success hay fail.
  */
 let refreshPromise: Promise<string> | null = null;
+let isRedirecting = false;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -220,7 +221,8 @@ api.interceptors.response.use(
         console.debug("[Axios] Refresh failed - logging out user");
         logout();
 
-        if (typeof window !== "undefined") {
+        if (!isRedirecting && typeof window !== "undefined") {
+          isRedirecting = true;
           // Gọi API logout để xóa HttpOnly cookies
           fetch(BASE_URL + "/auth/logout", {
             method: "POST",
