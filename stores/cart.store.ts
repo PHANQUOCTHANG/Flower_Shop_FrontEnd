@@ -87,7 +87,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
   // nhưng || [] bảo vệ trường hợp setItems được gọi với undefined từ bên ngoài.
   getTotal: () =>
     (get().items || []).reduce(
-      (acc, item) => acc + item.product.price * item.quantity,
+      (acc, item) => acc + (item.product.salePrice || item.product.price) * item.quantity,
       0,
     ),
 
