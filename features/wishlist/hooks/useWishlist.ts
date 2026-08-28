@@ -9,7 +9,7 @@ export const WISHLIST_IDS_QUERY_KEY = ["wishlist", "ids"];
 
 export const useToggleWishlist = () => {
   const toggleStore = useWishlistStore((state) => state.toggle);
-  const wishlistIds = useWishlistStore((state) => state.wishlistIds);
+  const isInWishlist = useWishlistStore((state) => state.isInWishlist);
   const isLoggedIn = useAuthStore((state) => state.isAuthenticated);
   const router = useRouter();
 
@@ -24,7 +24,7 @@ export const useToggleWishlist = () => {
     onMutate: async (productId) => {
       if (!isLoggedIn) return;
       // Optimistic update
-      const isCurrentlyAdded = wishlistIds.has(productId);
+      const isCurrentlyAdded = isInWishlist(productId);
       toggleStore(productId, !isCurrentlyAdded);
       return { isCurrentlyAdded };
     },

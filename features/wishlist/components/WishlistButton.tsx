@@ -12,7 +12,7 @@ interface WishlistButtonProps {
 }
 
 export function WishlistButton({ productId, size = "md", className }: WishlistButtonProps) {
-  const isFavorited = useWishlistStore((state) => state.wishlistIds.has(productId));
+  const isFavorited = useWishlistStore((state) => state.isInWishlist(productId));
   const toggleMutation = useToggleWishlist();
 
   const handleToggle = (e: React.MouseEvent) => {
