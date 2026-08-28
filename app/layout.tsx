@@ -28,12 +28,12 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="en"
+      lang="vi"
       className={`${inter.className} ${playfairDisplay.className}`}
       suppressHydrationWarning
     >
       <body>
-        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID"}>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
           <Providers>
             <SessionProvider>{children}</SessionProvider>
           </Providers>
