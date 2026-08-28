@@ -9,6 +9,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import Alert from "@/components/ui/Alert";
 import { createPortal } from "react-dom";
+import { WishlistButton } from "@/features/wishlist/components/WishlistButton";
 
 // Hằng số
 const INITIAL_QUANTITY = 1;
@@ -252,12 +253,9 @@ export const ProductCard = ({
           )}
 
           {/* Nút yêu thích */}
-          <button
-            onClick={(e) => e.stopPropagation()}
-            className="absolute top-3 right-3 z-10 size-8 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-gray-600 hover:text-[#13ec5b] transition-all active:scale-90"
-          >
-            <Heart size={16} />
-          </button>
+          <div className="absolute top-3 right-3 z-10">
+            <WishlistButton productId={product.id} size="sm" />
+          </div>
 
           {/* Ảnh */}
           <OptimizedImage
@@ -374,12 +372,9 @@ export const ProductCard = ({
         )}
 
         {/* Nút yêu thích */}
-        <button
-          onClick={(e) => e.stopPropagation()}
-          className="absolute top-4 right-4 z-10 size-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-gray-600 hover:text-[#13ec5b] transition-all active:scale-90"
-        >
-          <Heart size={DROPDOWN_SIZE_DEFAULT} />
-        </button>
+        <div className="absolute top-4 right-4 z-10">
+          <WishlistButton productId={product.id} size="md" />
+        </div>
 
         {/* Ảnh */}
         <OptimizedImage
