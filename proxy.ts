@@ -27,24 +27,12 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-// Lấy role từ user cookie để bảo vệ admin route ở tầng UI
+// Lấy role từ cookie httpOnly — không thể giả mạo từ browser
 function extractUserRole(request: NextRequest): string {
-  // Parse từ user cookie JSON
-  const userCookie = request.cookies.get("user")?.value;
-
-  if (!userCookie) {
-    return "";
-  }
-
-  try {
-    let decoded = decodeURIComponent(userCookie);
-    if (decoded.startsWith("j:")) decoded = decoded.slice(2);
-    const userData = JSON.parse(decoded);
-    return (userData?.role ?? "").toUpperCase();
-  } catch (error) {
-    console.error("[extractUserRole] ✗ Error parsing user cookie:", error);
-    return "";
-  }
+  // Cookie "role" được set với httpOnly: true từ backend
+  // ⇒ JS/DevTools không đọc được, Next.js middleware (server-side) đọc được
+  const role = request.cookies.get("role")?.value ?? "";
+  return role.toUpperCase();
 }
 
 // ─── Proxy Core ──────────────────────────────────────────────────────────

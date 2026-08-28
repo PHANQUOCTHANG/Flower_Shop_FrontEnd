@@ -236,17 +236,15 @@ export default function LoginPage() {
               <div className="flex-grow border-t border-gray-100" />
             </div>
             
-            <div className={`grid ${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID !== "YOUR_GOOGLE_CLIENT_ID" ? "grid-cols-2" : "grid-cols-1"} gap-3`}>
-              {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID !== "YOUR_GOOGLE_CLIENT_ID" && (
-                <button 
-                  type="button"
-                  onClick={() => handleGoogleLogin()}
-                  className="flex items-center justify-center gap-2 px-4 h-[44px] border-2 border-gray-100 rounded-xl bg-white hover:border-[#4285F4]/30 hover:bg-[#4285F4]/5 transition-colors group"
-                >
-                  <GoogleIcon />
-                  <span className="text-xs font-bold text-gray-600 group-hover:text-[#4285F4] transition-colors">Google</span>
-                </button>
-              )}
+            <div className="grid grid-cols-2 gap-3">
+              <button 
+                type="button"
+                onClick={() => handleGoogleLogin()}
+                className="flex items-center justify-center gap-2 px-4 h-[44px] border-2 border-gray-100 rounded-xl bg-white hover:border-[#4285F4]/30 hover:bg-[#4285F4]/5 transition-colors group"
+              >
+                <GoogleIcon />
+                <span className="text-xs font-bold text-gray-600 group-hover:text-[#4285F4] transition-colors">Google</span>
+              </button>
               <button className="flex items-center justify-center gap-2 px-4 h-[44px] border-2 border-gray-100 rounded-xl bg-white hover:border-[#1877F2]/30 hover:bg-[#1877F2]/5 transition-colors group">
                 <FacebookIcon />
                 <span className="text-xs font-bold text-gray-600 group-hover:text-[#1877F2] transition-colors">Facebook</span>
