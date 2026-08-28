@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { Product } from "../types";
 import { X, ZoomIn } from "lucide-react";
+import { WishlistButton } from "@/features/wishlist/components/WishlistButton";
 
 interface GalleryProps {
   product: Product;
@@ -53,7 +54,12 @@ export const Gallery: React.FC<GalleryProps> = ({
           {/* Gradient overlay bottom */}
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
 
-          {/* Zoom button */}
+          {/* Wishlist button — top-left, luôn hiển thị */}
+          <div className="absolute top-4 left-4 z-10">
+            <WishlistButton productId={product.id} size="lg" />
+          </div>
+
+          {/* Zoom button — top-right */}
           <button
             onClick={() => setLightboxOpen(true)}
             className="absolute top-4 right-4 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-md text-gray-600 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-white hover:scale-110"
