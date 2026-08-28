@@ -15,6 +15,13 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
         )
       : 0;
 
+  // Giá hiển thị: ưu tiên salePrice từ campaign, sau đó mới dùng giá gốc
+  const displayPrice = product.salePrice ?? product.price;
+  const isCampaignSale = !!product.salePrice && product.salePrice < product.price;
+  const campaignDiscount = isCampaignSale
+    ? Math.round(((product.price - product.salePrice!) / product.price) * 100)
+    : 0;
+
   const categoryName = product.categories?.[0]?.name;
 
   return (
@@ -64,9 +71,21 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
       {/* Giá */}
       <div className="flex items-end gap-3 py-4 border-t border-b border-gray-100">
         <p className="text-4xl font-black text-[#0ecf50] tracking-tight">
-          {formatCurrency(product.price)}
+          {formatCurrency(displayPrice)}
         </p>
-        {product.comparePrice && product.comparePrice > product.price && (
+        {/* Giá gốc gạch ngang khi có campaign sale */}
+        {isCampaignSale && (
+          <>
+            <span className="text-lg text-gray-300 line-through font-medium mb-0.5">
+              {formatCurrency(product.price)}
+            </span>
+            <span className="mb-1 inline-flex items-center px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-xs font-bold shadow-sm">
+              -{campaignDiscount}%
+            </span>
+          </>
+        )}
+        {/* comparePrice (giảm giá thường) chỉ hiển thị khi không có campaign */}
+        {!isCampaignSale && product.comparePrice && product.comparePrice > product.price && (
           <>
             <span className="text-lg text-gray-300 line-through font-medium mb-0.5">
               {formatCurrency(product.comparePrice)}

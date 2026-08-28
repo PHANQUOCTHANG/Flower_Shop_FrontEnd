@@ -43,6 +43,7 @@ export interface Product {
   deletedAt?: string | null;
   images: ProductImage[];
   categories: ProductCategory[];
+  salePrice?: number | null; // Giá khuyến mãi từ campaign (nếu có)
 }
 
 // ─── UI & Hiển thị ───────────────────────────────────────────────
@@ -52,6 +53,7 @@ export interface SimilarProduct {
   name: string;
   slug: string;
   price: number;
+  salePrice?: number | null; // Giá khuyến mãi từ campaign (nếu có)
   thumbnailUrl: string | null;
   images: ProductImage[];
 }
