@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { CreateOrderData } from "@/types/order";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -16,12 +17,23 @@ interface CheckoutStore {
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
-export const useCheckoutStore = create<CheckoutStore>((set) => ({
-  pendingFormData: null,
+export const useCheckoutStore = create<CheckoutStore>()(
+  persist(
+    (set) => ({
+      pendingFormData: null,
 
-  // Lưu form data trước khi redirect sang /order-processing
-  setPendingCheckout: (data) => set({ pendingFormData: data }),
+      // Lưu form data trước khi redirect sang /order-processing
+      setPendingCheckout: (data) => set({ pendingFormData: data }),
 
-  // Xóa sau khi đã submit xong
-  reset: () => set({ pendingFormData: null }),
-}));
+      // Xóa sau khi đã submit xong (xóa cả sessionStorage)
+      reset: () => set({ pendingFormData: null }),
+    }),
+    {
+      name: "checkout-storage",
+      // sessionStorage: tồn tại qua F5, tự xóa khi đóng tab
+      storage: createJSONStorage(() => sessionStorage),
+      // Chỉ persist pendingFormData, không persist action functions
+      partialize: (state) => ({ pendingFormData: state.pendingFormData }),
+    },
+  ),
+);
