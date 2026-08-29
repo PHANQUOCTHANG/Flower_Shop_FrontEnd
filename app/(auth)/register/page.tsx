@@ -64,9 +64,35 @@ function Field({
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function RegisterPage() {
-  const { form, isLoading, error, updateForm, handleSubmit } = useRegister();
+  const { form, isLoading, error, updateForm, handleSubmit, handleVerifyOtp, step, setStep } = useRegister();
   const [showPass, setShowPass] = useState(false);
   const [showAlert, setShowAlert] = useState(true);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return;
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    // Tự động focus sang ô tiếp theo
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      nextInput?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Quay lại ô trước đó nếu nhấn Backspace trên ô trống
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      prevInput?.focus();
+    }
+  };
+
+  const submitOtp = () => {
+    handleVerifyOtp(otp.join(""));
+  };
 
   return (
     <div className="min-h-screen bg-[#fcfbf9] font-sans text-[#1b0d11] flex items-center justify-center p-4 sm:p-8 transition-colors duration-300 selection:bg-[#EE2B5B]/20 selection:text-[#EE2B5B]">
@@ -138,11 +164,18 @@ export default function RegisterPage() {
           {/* Error Alert */}
           {error && showAlert && (
             <div className="mb-6 animate-in fade-in zoom-in-95 duration-300">
-              <Alert type="error" message={error.message} autoClose duration={5000} onClose={() => setShowAlert(false)} />
+              <Alert 
+                type={step === 2 && error.message.includes("kiểm tra email") ? "success" : "error"} 
+                message={error.message} 
+                autoClose 
+                duration={10000} 
+                onClose={() => setShowAlert(false)} 
+              />
             </div>
           )}
 
           {/* Form */}
+          {step === 1 ? (
           <form
             className="space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150"
             onSubmit={(e) => {
@@ -247,6 +280,58 @@ export default function RegisterPage() {
               </button>
             </div>
           </form>
+          ) : (
+            <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-700">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#EE2B5B]/10 text-[#EE2B5B] mb-4">
+                  <Mail size={32} />
+                </div>
+                <h3 className="text-xl font-bold text-[#1b0d11]">Xác thực Email</h3>
+                <p className="text-gray-500 text-sm mt-2">
+                  Chúng tôi đã gửi mã xác thực gồm 6 số đến <br />
+                  <span className="font-semibold text-[#EE2B5B]">{form.email}</span>
+                </p>
+              </div>
+
+              <div className="flex justify-center gap-2 sm:gap-4">
+                {otp.map((digit, index) => (
+                  <input
+                    key={index}
+                    id={`otp-${index}`}
+                    type="text"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleOtpChange(index, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                    disabled={isLoading}
+                    className="w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold rounded-xl border-2 border-gray-200 bg-gray-50/50 focus:bg-white focus:border-[#EE2B5B] focus:ring-4 focus:ring-[#EE2B5B]/10 outline-none transition-all disabled:opacity-50"
+                  />
+                ))}
+              </div>
+
+              <div className="pt-2">
+                <button
+                  onClick={submitOtp}
+                  disabled={isLoading || otp.join("").length !== 6}
+                  className="relative w-full overflow-hidden group bg-[#1b0d11] hover:bg-black disabled:bg-gray-300 text-white font-bold py-3.5 rounded-xl transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] shadow-lg"
+                >
+                  {isLoading ? (
+                    <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  ) : (
+                    <span className="tracking-wide text-sm">XÁC THỰC & ĐĂNG NHẬP</span>
+                  )}
+                </button>
+                
+                <button 
+                  onClick={() => setStep(1)} 
+                  disabled={isLoading}
+                  className="w-full mt-4 text-sm font-semibold text-gray-500 hover:text-[#EE2B5B] transition-colors"
+                >
+                  Quay lại đăng ký
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Chuyển sang đăng nhập */}
           <div className="mt-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">

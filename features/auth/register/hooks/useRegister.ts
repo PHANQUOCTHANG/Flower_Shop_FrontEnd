@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { registerUser } from "../services/registerService";
+import { registerUser, verifyRegistration } from "../services/registerService";
 import { RegisterPayload } from "@/types/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/auth.store";
@@ -25,7 +25,10 @@ export interface UseRegisterReturn {
   error: RegisterError | null;
   updateForm: (key: keyof RegisterFormData, value: string | boolean) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
+  handleVerifyOtp: (otp: string) => Promise<void>;
   clearError: () => void;
+  step: 1 | 2;
+  setStep: (step: 1 | 2) => void;
 }
 
 /**
@@ -44,6 +47,7 @@ export const useRegister = (): UseRegisterReturn => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<RegisterError | null>(null);
+  const [step, setStep] = useState<1 | 2>(1);
 
   const updateForm = (key: keyof RegisterFormData, value: string | boolean) => {
     setForm((prev) => ({
@@ -170,22 +174,47 @@ export const useRegister = (): UseRegisterReturn => {
       // Gọi API đăng ký
       const response = await registerUser(payload);
 
+      // Chuyển sang bước 2 (nhập OTP)
+      setStep(2);
+      setError({ message: response.message }); // Tạm dùng error message để hiện thông báo thành công (hoặc toast sau)
+      setIsLoading(false);
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Đăng ký thất bại, vui lòng thử lại";
+      setError({ message: errorMessage });
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (otp: string) => {
+    setError(null);
+    if (!otp || otp.length !== 6) {
+      setError({ message: "Vui lòng nhập đúng 6 số OTP" });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await verifyRegistration(form.email, otp);
+
       // Lưu trạng thái đăng nhập
       setAuth(response.accessToken, {
         ...response.user,
         name: response.user.name || response.user.fullName || "",
       });
 
-      // Xóa cache cũ của cart để buộc refetch ngay khi MainLayout mount
+      // Xóa cache cũ của cart
       queryClient.removeQueries({ queryKey: CART_QUERY_KEY });
 
-      // Redirect to home page ngay lập tức
+      // Redirect to home page
       router.push("/");
     } catch (err) {
       const errorMessage =
         err instanceof Error
           ? err.message
-          : "Đăng ký thất bại, vui lòng thử lại";
+          : "Xác thực thất bại, vui lòng thử lại";
       setError({ message: errorMessage });
       setIsLoading(false);
     }
@@ -201,6 +230,9 @@ export const useRegister = (): UseRegisterReturn => {
     error,
     updateForm,
     handleSubmit,
+    handleVerifyOtp,
     clearError,
+    step,
+    setStep,
   };
 };

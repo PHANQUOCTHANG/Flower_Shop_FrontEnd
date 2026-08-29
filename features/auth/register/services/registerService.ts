@@ -9,15 +9,41 @@ import { RegisterPayload, RegisterResponse } from "@/types/auth";
  */
 export const registerUser = async (
   payload: RegisterPayload,
-): Promise<RegisterResponse> => {
+): Promise<{ message: string }> => {
   try {
-    const response = await api.post<ApiResponse<RegisterResponse>>(
+    const response = await api.post<{ status: string; message: string }>(
       "/auth/register",
       payload,
     );
 
     if (response.data.status === "error") {
       throw new Error(response.data.message || "Đăng ký thất bại");
+    }
+
+    return { message: response.data.message };
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw error;
+  }
+};
+
+/**
+ * Xác thực OTP đăng ký
+ */
+export const verifyRegistration = async (
+  email: string,
+  otp: string,
+): Promise<RegisterResponse> => {
+  try {
+    const response = await api.post<ApiResponse<RegisterResponse>>(
+      "/auth/register/verify",
+      { email, otp },
+    );
+
+    if (response.data.status === "error") {
+      throw new Error(response.data.message || "Xác thực thất bại");
     }
 
     return response.data.data;
