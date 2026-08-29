@@ -71,16 +71,39 @@ export default function RegisterPage() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
 
   const handleOtpChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return;
+    // Chỉ lấy ký tự số cuối cùng (nếu gõ đè)
+    const digit = value.replace(/\D/g, "").slice(-1);
+    
     const newOtp = [...otp];
-    newOtp[index] = value;
+    newOtp[index] = digit;
     setOtp(newOtp);
 
     // Tự động focus sang ô tiếp theo
-    if (value && index < 5) {
-      const nextInput = document.getElementById(`otp-${index + 1}`);
-      nextInput?.focus();
+    if (digit && index < 5) {
+      setTimeout(() => {
+        const nextInput = document.getElementById(`otp-${index + 1}`);
+        nextInput?.focus();
+      }, 10);
     }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text/plain").replace(/\D/g, "").slice(0, 6);
+    if (!pastedData) return;
+    
+    const newOtp = [...otp];
+    for (let i = 0; i < pastedData.length; i++) {
+      if (i < 6) newOtp[i] = pastedData[i];
+    }
+    setOtp(newOtp);
+    
+    // Focus ô cuối cùng được dán
+    const focusIndex = Math.min(pastedData.length, 5);
+    setTimeout(() => {
+      const nextInput = document.getElementById(`otp-${focusIndex === 6 ? 5 : focusIndex}`);
+      nextInput?.focus();
+    }, 10);
   };
 
   const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -309,11 +332,11 @@ export default function RegisterPage() {
                   <input
                     key={index}
                     id={`otp-${index}`}
-                    type="text"
-                    maxLength={1}
+                    type="tel"
                     value={digit}
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                    onPaste={handleOtpPaste}
                     disabled={isLoading}
                     className="w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold rounded-xl border-2 border-gray-200 bg-gray-50/50 focus:bg-white focus:border-[#EE2B5B] focus:ring-4 focus:ring-[#EE2B5B]/10 outline-none transition-all disabled:opacity-50"
                   />
