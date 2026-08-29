@@ -95,16 +95,20 @@ export function useProfilePageLogic() {
 
   // --- Các hàm xử lý (Handlers) ---
 
-  // Xử lý chuyển tab với hiệu ứng mờ (fade)
+  // Xử lý chuyển tab ngay lập tức để không có cảm giác lag
   const handleTabChange = useCallback(
     (tab: ProfileTabType) => {
       if (tab === activeTab) return;
+      
+      // Update URL first without blocking
+      router.replace(tab === "profile" ? "/profile" : `/profile?tab=${tab}`, { scroll: false });
+      
+      // Update state
       setVisible(false);
       setTimeout(() => {
         setActiveTab(tab);
         setVisible(true);
-        router.replace(tab === "profile" ? "/profile" : `/profile?tab=${tab}`);
-      }, 150);
+      }, 50); // Chỉ delay 50ms cho hiệu ứng mờ nháy siêu nhanh, hoặc ta có thể bỏ hẳn
     },
     [router, activeTab],
   );
