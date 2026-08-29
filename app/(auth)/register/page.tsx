@@ -66,6 +66,7 @@ function Field({
 export default function RegisterPage() {
   const { form, isLoading, error, updateForm, handleSubmit, handleVerifyOtp, step, setStep } = useRegister();
   const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [showAlert, setShowAlert] = useState(true);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
 
@@ -249,13 +250,23 @@ export default function RegisterPage() {
               label="Xác nhận mật khẩu"
               id="confirmPassword"
               icon={<Lock size={16} />}
-              type="password"
+              type={showConfirmPass ? "text" : "password"}
               placeholder="••••••••"
               required
               disabled={isLoading}
               value={form.confirmPassword}
               onChange={(e) => updateForm("confirmPassword", e.target.value)}
               className="bg-gray-50/50 rounded-xl focus:bg-white border-2 border-gray-100 shadow-sm font-medium py-3 text-sm focus:ring-[#EE2B5B]/10 focus:border-[#EE2B5B]"
+              rightSlot={
+                <button
+                  type="button"
+                  disabled={isLoading}
+                  onClick={() => setShowConfirmPass(!showConfirmPass)}
+                  className="text-gray-400 hover:text-[#EE2B5B] transition-colors disabled:opacity-50"
+                >
+                  {showConfirmPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              }
             />
 
             {/* Submit */}
