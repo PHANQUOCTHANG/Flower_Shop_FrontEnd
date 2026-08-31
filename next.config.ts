@@ -3,6 +3,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
+    // Loader tuỳ chỉnh: ảnh Cloudinary được Cloudinary tự resize/nén (f_auto,
+    // q_auto) theo đúng width Next yêu cầu cho từng breakpoint — không còn bị
+    // Next.js/Vercel tải về nén lại lần 2 (nguyên nhân chính gây ảnh mờ).
+    loader: "custom",
+    loaderFile: "./lib/cloudinaryLoader.ts",
     remotePatterns: [
       { protocol: "https", hostname: "cdn.yoursite.com" },
       { protocol: "https", hostname: "res.cloudinary.com" },

@@ -4,6 +4,9 @@ export interface ProductImage {
   id: string;
   url: string;
   isPrimary: boolean;
+  sortOrder?: number;
+  width?: number | null;
+  height?: number | null;
 }
 
 export interface ProductCategory {

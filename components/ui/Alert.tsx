@@ -1,7 +1,7 @@
-import { AlertCircle, CheckCircle, X } from "lucide-react";
+import { AlertCircle, AlertTriangle, CheckCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export type AlertType = "success" | "error";
+export type AlertType = "success" | "error" | "warning";
 
 interface AlertProps {
  type: AlertType;
@@ -34,18 +34,29 @@ export default function Alert({
  if (!isVisible) return null;
 
  const isSuccess = type === "success";
+ const isWarning = type === "warning";
  const bgColor = isSuccess
  ? "bg-green-50 "
+ : isWarning
+ ? "bg-amber-50 "
  : "bg-red-50 ";
  const borderColor = isSuccess
  ? "border-green-200 "
+ : isWarning
+ ? "border-amber-200 "
  : "border-red-200 ";
  const textColor = isSuccess
  ? "text-green-800 "
+ : isWarning
+ ? "text-amber-800 "
  : "text-red-800 ";
- const iconColor = isSuccess ? "text-green-600" : "text-red-600";
+ const iconColor = isSuccess
+ ? "text-green-600"
+ : isWarning
+ ? "text-amber-600"
+ : "text-red-600";
 
- const Icon = isSuccess ? CheckCircle : AlertCircle;
+ const Icon = isSuccess ? CheckCircle : isWarning ? AlertTriangle : AlertCircle;
 
  return (
  <div
@@ -69,7 +80,7 @@ export default function Alert({
  }}
  className={`
  flex-shrink-0 text-lg hover:opacity-70 transition-opacity
- ${isSuccess ? "hover:text-green-600" : "hover:text-red-600"}
+ ${isSuccess ? "hover:text-green-600" : isWarning ? "hover:text-amber-600" : "hover:text-red-600"}
  `}
  aria-label="Close alert"
  >

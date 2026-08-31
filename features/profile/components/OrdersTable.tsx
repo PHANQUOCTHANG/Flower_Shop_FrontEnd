@@ -2,16 +2,15 @@
 "use client";
 
 import React, { FC } from "react";
-import Image from "next/image";
-import { Eye, Calendar, Package, ChevronRight } from "lucide-react";
+import { Calendar, Package, ChevronRight } from "lucide-react";
 import {
   ORDER_STATUS_MAP,
   StatusConfig,
 } from "@/features/profile/constants/profile.constants";
-import { MyOrder } from "@/features/profile/types/profile";
+import { MyOrder } from "@/types/profile";
 
 interface OrdersTableProps {
-  orders: any[]; // Sử dụng any tạm thời để hỗ trợ các trường mở rộng như items
+  orders: MyOrder[];
   onViewOrder: (orderId: string) => void;
 }
 
@@ -92,7 +91,7 @@ export const OrdersTable: FC<OrdersTableProps> = ({ orders, onViewOrder }) => {
                   Tổng thanh toán
                 </span>
                 <span className="text-lg sm:text-xl font-black text-slate-900">
-                  {formatPrice(order.totalPrice || order.totalAmount)}
+                  {formatPrice(order.totalPrice)}
                 </span>
               </div>
               

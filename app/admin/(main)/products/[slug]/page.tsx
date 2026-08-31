@@ -94,6 +94,8 @@ export default function ProductDetailPage() {
     setSelectedCategoryIds,
     addFiles,
     handleRemoveImage,
+    reorderImages,
+    setPrimaryImage,
     handleThumbFile,
     handleRemoveThumbnail,
     handleAddCategory,
@@ -166,11 +168,23 @@ export default function ProductDetailPage() {
           formDataToSend.append("thumbnailEmpty", "true");
         }
 
-        // Thêm gallery images
+        // Thêm gallery images + thứ tự cuối cùng sau khi kéo-thả sắp xếp.
+        // Token: id thật cho ảnh cũ giữ lại, "new:<index>" cho ảnh mới — index
+        // đánh theo đúng thứ tự file được append vào field "images" bên dưới,
+        // để backend khớp lại đúng ảnh (xem product.controller.ts updateProduct).
+        let newFileIndex = 0;
+        const imageOrder: string[] = [];
         images.forEach((img) => {
           if (img.file) {
             formDataToSend.append("images", img.file);
+            imageOrder.push(`new:${newFileIndex}`);
+            newFileIndex += 1;
+          } else {
+            imageOrder.push(img.id);
           }
+        });
+        imageOrder.forEach((token) => {
+          formDataToSend.append("imageOrder", token);
         });
 
         // Thêm deleted image IDs
@@ -309,6 +323,8 @@ export default function ProductDetailPage() {
             images={images}
             onFilesAdd={addFiles}
             onImageRemove={handleRemoveImage}
+            onReorderImages={reorderImages}
+            onSetPrimaryImage={setPrimaryImage}
             isDragging={isDragging}
             onDragEnter={() => setIsDragging(true)}
             onDragLeave={() => setIsDragging(false)}

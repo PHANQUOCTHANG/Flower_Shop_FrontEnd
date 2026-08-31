@@ -51,7 +51,7 @@ export const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
  <p className="text-slate-600 text-sm leading-relaxed">
  {message}{" "}
  <span className="font-bold text-slate-900 ">
- "{itemName}"
+ &quot;{itemName}&quot;
  </span>
  ?
  </p>

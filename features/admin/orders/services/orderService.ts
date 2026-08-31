@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import api from "@/lib/axios";
-import { ApiResponse } from "@/types/response";
+import { ApiResponse, PaginationMeta } from "@/types/response";
 import { OrderResponse } from "@/types/order";
 
 export interface GetOrdersParams {
@@ -15,6 +13,17 @@ export interface GetOrdersParams {
   dateTo?: string;
 }
 
+export interface OrderStatusCounts {
+  pending: number;
+  processing: number;
+  completed: number;
+  cancelled: number;
+}
+
+interface OrdersMeta extends PaginationMeta {
+  statusCounts?: OrderStatusCounts;
+}
+
 interface OrdersListResponse {
   orders: OrderResponse[];
   pagination: {
@@ -24,7 +33,7 @@ interface OrdersListResponse {
     totalPages: number;
   };
   message: string;
-  meta: any;
+  meta?: OrdersMeta;
 }
 
 export const orderService = {
@@ -51,11 +60,11 @@ export const orderService = {
 
     return {
       orders: res.data.data ?? [],
-      pagination: (res.data.meta as any) || {
-        total: 0,
-        page: 1,
-        limit: 10,
-        totalPages: 0,
+      pagination: {
+        total: res.data.meta?.total ?? 0,
+        page: res.data.meta?.page ?? 1,
+        limit: res.data.meta?.limit ?? 10,
+        totalPages: res.data.meta?.totalPages ?? 0,
       },
       meta: res.data.meta,
       message: res.data.message || "Success",

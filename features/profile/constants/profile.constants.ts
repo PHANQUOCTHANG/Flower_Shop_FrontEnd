@@ -23,29 +23,31 @@ export const PROFILE_NAV_ITEMS: NavItem[] = [
 
 // Trạng thái đơn hàng
 
+import { OrderStatus } from "@/types/enums";
+
 export interface StatusConfig {
   styles: string;
   label: string;
 }
 
 export const ORDER_STATUS_MAP: Record<string, StatusConfig> = {
-  pending: { styles: "bg-yellow-100 text-yellow-700", label: "Chờ xác nhận" },
-  processing: {
+  [OrderStatus.PENDING]: { styles: "bg-yellow-100 text-yellow-700", label: "Chờ xác nhận" },
+  [OrderStatus.PROCESSING]: {
     styles: "bg-orange-100 text-orange-700",
     label: "Đang giao",
   },
-  completed: { styles: "bg-green-100 text-green-700", label: "Hoàn thành" },
-  cancelled: { styles: "bg-red-100 text-red-700", label: "Đã hủy" },
+  [OrderStatus.COMPLETED]: { styles: "bg-green-100 text-green-700", label: "Hoàn thành" },
+  [OrderStatus.CANCELLED]: { styles: "bg-red-100 text-red-700", label: "Đã hủy" },
 };
 
 // Tùy chọn bộ lọc đơn hàng
 
 export const ORDER_STATUS_OPTIONS = [
   { value: "", label: "Tất cả trạng thái" },
-  { value: "pending", label: "Chờ xác nhận" },
-  { value: "processing", label: "Đang giao" },
-  { value: "completed", label: "Hoàn thành" },
-  { value: "cancelled", label: "Đã hủy" },
+  { value: OrderStatus.PENDING, label: "Chờ xác nhận" },
+  { value: OrderStatus.PROCESSING, label: "Đang giao" },
+  { value: OrderStatus.COMPLETED, label: "Hoàn thành" },
+  { value: OrderStatus.CANCELLED, label: "Đã hủy" },
 ];
 
 export const ORDER_SORT_OPTIONS = [

@@ -2,7 +2,8 @@
 
 "use client";
 
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
+import Link from "next/link";
 import { Package, RefreshCw } from "lucide-react";
 import { OrdersFilters } from "@/features/profile/components/OrdersFilters";
 import { OrdersTable } from "@/features/profile/components/OrdersTable";
@@ -143,12 +144,12 @@ export const OrdersSection: FC<OrdersSectionProps> = ({
             Bạn chưa thực hiện đơn hàng nào. Hãy khám phá các sản phẩm tuyệt vời
             của chúng tôi nhé!
           </p>
-          <a
+          <Link
             href="/products"
             className="inline-block px-8 py-3 bg-[#EE2B5B] text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-[#D11E48] hover:shadow-lg hover:shadow-[#EE2B5B]/20 transition-all duration-300"
           >
             Khám phá ngay
-          </a>
+          </Link>
         </div>
       )}
 

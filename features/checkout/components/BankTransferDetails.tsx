@@ -121,7 +121,7 @@ export const BankTransferDetails: React.FC<BankTransferDetailsProps> = ({
               nội dung chuyển khoản
             </li>
             <li className="list-disc">
-              Ví dụ: Nội dung chuyển = "0901234567" hoặc "DH + Số ĐT"
+              Ví dụ: Nội dung chuyển = &quot;0901234567&quot; hoặc &quot;DH + Số ĐT&quot;
             </li>
             <li className="list-disc">
               Điều này giúp chúng tôi xác nhận đơn hàng nhanh chóng

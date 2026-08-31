@@ -68,6 +68,8 @@ export default function AddNewProductPage() {
     setSku,
     addFiles,
     handleRemoveImage,
+    reorderImages,
+    setPrimaryImage,
     handleThumbFile,
     handleRemoveThumbnail,
     handleAddCategory,
@@ -205,6 +207,8 @@ export default function AddNewProductPage() {
             images={images}
             onFilesAdd={addFiles}
             onImageRemove={handleRemoveImage}
+            onReorderImages={reorderImages}
+            onSetPrimaryImage={setPrimaryImage}
             isDragging={isDragging}
             onDragEnter={() => setIsDragging(true)}
             onDragLeave={() => setIsDragging(false)}

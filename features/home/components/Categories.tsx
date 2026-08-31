@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { ProductCategory } from "@/features/products/types";
@@ -26,57 +26,57 @@ export default function Categories({ categories, loading }: CategoriesProps) {
  const [isAtStart, setIsAtStart] = useState(true);
  const [isAtEnd, setIsAtEnd] = useState(false);
 
- const checkScroll = () => {
+ const checkScroll = useCallback(() => {
    if (!scrollRef.current) return;
    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
    setIsAtStart(scrollLeft <= 5);
    setIsAtEnd(scrollLeft + clientWidth >= scrollWidth - 10);
- };
+ }, []);
 
- // Initial check on load and resize
- useEffect(() => {
-   checkScroll();
-   window.addEventListener("resize", checkScroll);
-   return () => window.removeEventListener("resize", checkScroll);
- }, [categories]);
-
- // Auto scroll every 5 seconds
- useEffect(() => {
-   if (!categories || categories.length <= 5) return;
-   
-   const interval = setInterval(() => {
-     handleNext();
-   }, 5000);
-   
-   return () => clearInterval(interval);
- }, [categories]);
-
- const getScrollAmount = () => {
+ const getScrollAmount = useCallback(() => {
    if (!scrollRef.current) return 0;
    const firstChild = scrollRef.current.children[0] as HTMLElement;
    return firstChild ? firstChild.offsetWidth + 16 : 200; // 16px is gap-4
- };
+ }, []);
 
- const handleNext = () => {
+ const handleNext = useCallback(() => {
    if (!scrollRef.current) return;
    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
    const isEnd = scrollLeft + clientWidth >= scrollWidth - 10;
-   
+
    if (isEnd) {
      scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
    } else {
      scrollRef.current.scrollBy({ left: getScrollAmount(), behavior: "smooth" });
    }
- };
+ }, [getScrollAmount]);
 
- const handlePrev = () => {
+ const handlePrev = useCallback(() => {
    if (!scrollRef.current) return;
    if (scrollRef.current.scrollLeft <= 0) {
      scrollRef.current.scrollTo({ left: scrollRef.current.scrollWidth, behavior: "smooth" });
    } else {
      scrollRef.current.scrollBy({ left: -getScrollAmount(), behavior: "smooth" });
    }
- };
+ }, [getScrollAmount]);
+
+ // Initial check on load and resize
+ useEffect(() => {
+   checkScroll();
+   window.addEventListener("resize", checkScroll);
+   return () => window.removeEventListener("resize", checkScroll);
+ }, [categories, checkScroll]);
+
+ // Auto scroll every 5 seconds
+ useEffect(() => {
+   if (!categories || categories.length <= 5) return;
+
+   const interval = setInterval(() => {
+     handleNext();
+   }, 5000);
+
+   return () => clearInterval(interval);
+ }, [categories, handleNext]);
 
  if (loading) {
   return (

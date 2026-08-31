@@ -158,7 +158,7 @@ export default function OrderCompletedPageClient() {
             <div>
               <p className="text-[10px] font-black text-[#0d9e3e] uppercase tracking-widest mb-2">LỜI CHÚC TRÊN THIỆP</p>
               <p className="text-xs text-slate-500 italic leading-relaxed line-clamp-3">
-                "{order?.note || "Không có lời chúc kèm theo."}"
+                &quot;{order?.note || "Không có lời chúc kèm theo."}&quot;
               </p>
             </div>
           </div>

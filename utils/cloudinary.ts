@@ -1,11 +1,20 @@
 /**
  * Tiện ích xử lý URL Cloudinary để tối ưu hóa ảnh.
  *
+ * Logic build transform dùng chung giữa `cloudinaryLoader` (loader của
+ * next/image, quyết định width theo từng breakpoint) và các nơi hiếm khi cần
+ * render ảnh Cloudinary ngoài next/image (vd CSS background-image).
+ *
  * Mặc định dùng c_limit: scale ảnh vừa khung mà KHÔNG crop.
  * Nếu muốn crop fill (avatar, thumbnail vuông), truyền crop="fill".
  */
 
-interface CloudinaryOptions {
+export const CLOUDINARY_HOST = "res.cloudinary.com";
+
+export const isCloudinaryUrl = (url: string | null | undefined): boolean =>
+  !!url && url.includes(CLOUDINARY_HOST);
+
+interface CloudinaryTransformOptions {
   width?: number;
   height?: number;
   quality?: string | number;
@@ -14,28 +23,25 @@ interface CloudinaryOptions {
   gravity?: string;
 }
 
-export const getCloudinaryUrl = (
-  url: string | null | undefined,
-  options: CloudinaryOptions = {},
+/** Build URL Cloudinary đã áp transform, hoặc trả về nguyên url nếu không phải Cloudinary. */
+export const buildCloudinaryUrl = (
+  url: string,
+  options: CloudinaryTransformOptions = {},
 ): string => {
-  if (!url) return "";
+  if (!isCloudinaryUrl(url)) return url;
 
-  // Không phải Cloudinary → trả về gốc
-  if (!url.includes("res.cloudinary.com")) return url;
-
-  // Đã có transformation → không transform lại
+  // Đã có transformation sẵn trong URL → không transform chồng lên
   if (url.includes("/upload/f_") || url.includes("/upload/q_")) return url;
 
   const {
     width,
     height,
-    quality = "auto",
+    quality = "auto:best",
     format = "auto",
-    crop = "limit",   // Mặc định: không cắt ảnh
+    crop = "limit", // Mặc định: không cắt ảnh
     gravity = "auto",
   } = options;
 
-  // Tách URL tại /upload/
   const parts = url.split("/upload/");
   if (parts.length !== 2) return url;
 

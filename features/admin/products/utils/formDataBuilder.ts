@@ -1,5 +1,6 @@
 // Type definitions & builder cho FormData
 export interface UploadedImage {
+  id?: string;
   url: string;
   file?: File;
 }

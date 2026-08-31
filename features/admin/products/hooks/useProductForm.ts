@@ -33,6 +33,31 @@ export interface ThumbnailState {
   file?: File;
 }
 
+// Ngưỡng độ phân giải ảnh — khớp với validate phía backend
+// (backend/src/middleware/upload.middleware.ts: MIN_PRODUCT_IMAGE_DIMENSION).
+const MIN_IMAGE_DIMENSION = 800;
+const RECOMMENDED_IMAGE_DIMENSION = 1600;
+
+// Đọc kích thước thật của ảnh trước khi upload, để cảnh báo ngay trên trình
+// duyệt thay vì để admin chờ round-trip lên server mới biết ảnh bị từ chối.
+function getImageDimensions(
+  file: File,
+): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const img = new window.Image();
+    img.onload = () => {
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+      URL.revokeObjectURL(objectUrl);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Không đọc được kích thước ảnh"));
+    };
+    img.src = objectUrl;
+  });
+}
+
 export function useProductForm() {
   // ===== HOOKS =====
   // Hook xử lý kết nối API với danh mục sản phẩm (categories)
@@ -93,18 +118,78 @@ export function useProductForm() {
   }, [fetchedCategories]);
 
   // ===== HELPER FUNCTIONS =====
-  // Xử lý khi người dùng chọn file hoặc kéo thả nhiều file vào thư viện ảnh
-  const addFiles = (files: File[]) => {
-    const newImgs: UploadedImage[] = files
-      .filter((f) => f.type.startsWith("image/"))
-      .map((f) => ({
-        id: crypto.randomUUID(),
-        url: URL.createObjectURL(f),
-        name: f.name,
-        file: f,
-      }));
+  // Xử lý khi người dùng chọn file hoặc kéo thả nhiều file vào thư viện ảnh.
+  // Validate độ phân giải ngay trên trình duyệt trước khi nhận file, tránh
+  // admin phải chờ round-trip lên server mới biết ảnh bị từ chối.
+  const addFiles = async (files: File[]) => {
+    const imageFiles = files.filter((f) => f.type.startsWith("image/"));
+    const accepted: File[] = [];
+    const tooSmall: string[] = [];
+    const belowRecommended: string[] = [];
+
+    for (const file of imageFiles) {
+      try {
+        const { width, height } = await getImageDimensions(file);
+        if (width < MIN_IMAGE_DIMENSION && height < MIN_IMAGE_DIMENSION) {
+          tooSmall.push(`${file.name} (${width}x${height}px)`);
+          continue;
+        }
+        if (
+          width < RECOMMENDED_IMAGE_DIMENSION &&
+          height < RECOMMENDED_IMAGE_DIMENSION
+        ) {
+          belowRecommended.push(`${file.name} (${width}x${height}px)`);
+        }
+        accepted.push(file);
+      } catch {
+        // Không đọc được kích thước (hiếm) → vẫn cho qua, để backend tự validate
+        accepted.push(file);
+      }
+    }
+
+    if (tooSmall.length > 0) {
+      setAlertState({
+        type: "error",
+        message: `Đã bỏ qua ${tooSmall.length} ảnh quá nhỏ (tối thiểu ${MIN_IMAGE_DIMENSION}x${MIN_IMAGE_DIMENSION}px): ${tooSmall.join(", ")}`,
+      });
+    } else if (belowRecommended.length > 0) {
+      setAlertState({
+        type: "warning",
+        message: `Nên dùng ảnh từ ${RECOMMENDED_IMAGE_DIMENSION}x${RECOMMENDED_IMAGE_DIMENSION}px trở lên để hiển thị nét nhất ở trang chi tiết: ${belowRecommended.join(", ")}`,
+      });
+    }
+
+    const newImgs: UploadedImage[] = accepted.map((f) => ({
+      id: crypto.randomUUID(),
+      url: URL.createObjectURL(f),
+      name: f.name,
+      file: f,
+    }));
     setImages((prev) => [...prev, ...newImgs]);
   };
+
+  // Kéo-thả sắp xếp lại thứ tự ảnh gallery (ảnh đầu tiên = ảnh đại diện)
+  const reorderImages = (fromIndex: number, toIndex: number) => {
+    setImages((prev) => {
+      if (
+        fromIndex === toIndex ||
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= prev.length ||
+        toIndex >= prev.length
+      ) {
+        return prev;
+      }
+      const next = [...prev];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return next;
+    });
+  };
+
+  // Đặt 1 ảnh làm ảnh đại diện — đưa lên vị trí đầu tiên trong mảng, vì thứ tự
+  // mảng chính là thứ tự lưu (sortOrder) và ảnh đầu tiên luôn là ảnh đại diện.
+  const setPrimaryImage = (index: number) => reorderImages(index, 0);
 
   // Xử lý xóa ảnh trong thư viện ảnh bằng index
   const handleRemoveImage = (index: number) => {
@@ -123,8 +208,31 @@ export function useProductForm() {
   };
 
   // Xử lý khi người dùng chọn hoặc kéo thả file làm ảnh đại diện
-  const handleThumbFile = (file: File) => {
+  const handleThumbFile = async (file: File) => {
     if (!file.type.startsWith("image/")) return;
+
+    try {
+      const { width, height } = await getImageDimensions(file);
+      if (width < MIN_IMAGE_DIMENSION && height < MIN_IMAGE_DIMENSION) {
+        setAlertState({
+          type: "error",
+          message: `Ảnh đại diện quá nhỏ (${width}x${height}px). Vui lòng chọn ảnh tối thiểu ${MIN_IMAGE_DIMENSION}x${MIN_IMAGE_DIMENSION}px.`,
+        });
+        return;
+      }
+      if (
+        width < RECOMMENDED_IMAGE_DIMENSION &&
+        height < RECOMMENDED_IMAGE_DIMENSION
+      ) {
+        setAlertState({
+          type: "warning",
+          message: `Nên dùng ảnh đại diện từ ${RECOMMENDED_IMAGE_DIMENSION}x${RECOMMENDED_IMAGE_DIMENSION}px trở lên để hiển thị nét nhất.`,
+        });
+      }
+    } catch {
+      // Không đọc được kích thước (hiếm) → vẫn cho qua, để backend tự validate
+    }
+
     if (thumbnail?.url && thumbnail.url.startsWith("blob:")) {
       URL.revokeObjectURL(thumbnail.url);
     }
@@ -262,7 +370,13 @@ export function useProductForm() {
     }
 
     if (product.images && Array.isArray(product.images)) {
-      const imgList: UploadedImage[] = product.images.map(
+      // Ảnh đại diện luôn đứng đầu mảng cục bộ (quy ước: index 0 = primary),
+      // các ảnh còn lại giữ nguyên thứ tự sortOrder từ backend.
+      const sorted = [...product.images].sort((a, b) => {
+        if (a.isPrimary !== b.isPrimary) return a.isPrimary ? -1 : 1;
+        return 0;
+      });
+      const imgList: UploadedImage[] = sorted.map(
         (img: ProductImage, idx: number) => ({
           id: img.id,
           url: img.url,
@@ -319,6 +433,8 @@ export function useProductForm() {
       setIsThumbDragging,
       addFiles,
       handleRemoveImage,
+      reorderImages,
+      setPrimaryImage,
       handleThumbFile,
       handleRemoveThumbnail,
       handleAddCategory,

@@ -6,6 +6,7 @@ import {
 } from "@/features/admin/orders/hooks/useOrder";
 import type { GetOrdersParams } from "@/features/admin/orders/services/orderService";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
+import { OrderStatus } from "@/types/enums";
 
 export function useOrdersPageLogic() {
   const router = useRouter();
@@ -171,10 +172,10 @@ export function useOrdersPageLogic() {
 
     return [
       { name: "Tất cả", value: "all", count: total },
-      { name: "Chờ xử lý", value: "pending", count: counts.pending },
-      { name: "Đang giao", value: "processing", count: counts.processing },
-      { name: "Đã giao", value: "completed", count: counts.completed },
-      { name: "Đã hủy", value: "cancelled", count: counts.cancelled },
+      { name: "Chờ xử lý", value: OrderStatus.PENDING, count: counts.pending },
+      { name: "Đang giao", value: OrderStatus.PROCESSING, count: counts.processing },
+      { name: "Đã giao", value: OrderStatus.COMPLETED, count: counts.completed },
+      { name: "Đã hủy", value: OrderStatus.CANCELLED, count: counts.cancelled },
     ];
   }, [meta?.statusCounts]);
 

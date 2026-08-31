@@ -11,6 +11,10 @@ interface CustomConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
+interface ApiErrorResponse {
+  message?: string;
+}
+
 interface RefreshTokenResponse {
   accessToken?: string;
   user?: {
@@ -152,8 +156,9 @@ api.interceptors.response.use(
 
   async (error: AxiosError) => {
     // Extract backend error message globally so err.message always has the exact reason
-    if (error.response?.data && (error.response.data as any).message) {
-      error.message = (error.response.data as any).message;
+    const responseData = error.response?.data as ApiErrorResponse | undefined;
+    if (responseData?.message) {
+      error.message = responseData.message;
     }
 
     const originalRequest = error.config as CustomConfig | undefined;

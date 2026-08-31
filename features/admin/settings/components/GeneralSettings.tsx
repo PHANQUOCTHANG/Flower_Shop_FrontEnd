@@ -77,7 +77,7 @@ export default function GeneralSettings({ data, onSave, saving }: Props) {
             className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-[#13ec5b] outline-none"
             placeholder="https://www.google.com/maps/embed?..."
           />
-          <p className="text-xs text-slate-400 italic mt-1">Lấy link từ phần 'Nhúng bản đồ' trên Google Maps</p>
+          <p className="text-xs text-slate-400 italic mt-1">Lấy link từ phần &apos;Nhúng bản đồ&apos; trên Google Maps</p>
         </div>
       </div>
 

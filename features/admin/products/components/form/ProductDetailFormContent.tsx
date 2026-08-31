@@ -25,6 +25,8 @@ interface ProductDetailFormContentProps {
   images: UploadedImage[];
   onFilesAdd: (files: File[]) => void;
   onImageRemove: (index: number) => void;
+  onReorderImages: (fromIndex: number, toIndex: number) => void;
+  onSetPrimaryImage: (index: number) => void;
   isDragging: boolean;
   onDragEnter: () => void;
   onDragLeave: () => void;
@@ -48,6 +50,8 @@ export function ProductDetailFormContent({
   images,
   onFilesAdd,
   onImageRemove,
+  onReorderImages,
+  onSetPrimaryImage,
   isDragging,
   onDragEnter,
   onDragLeave,
@@ -78,10 +82,13 @@ export function ProductDetailFormContent({
       {/* Thư viện ảnh */}
       <GallerySection
         images={images.map((img) => ({
+          id: img.id,
           url: img.url,
         }))}
         onFilesAdd={onFilesAdd}
         onImageRemove={onImageRemove}
+        onReorder={onReorderImages}
+        onSetPrimary={onSetPrimaryImage}
         isDragging={isDragging}
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}

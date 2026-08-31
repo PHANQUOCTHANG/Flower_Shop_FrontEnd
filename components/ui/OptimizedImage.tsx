@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image, { type ImageProps } from "next/image";
-import { getCloudinaryUrl } from "@/utils/cloudinary";
+import { isCloudinaryUrl } from "@/utils/cloudinary";
 
 interface OptimizedImageProps extends Omit<ImageProps, "src"> {
   src: string | null | undefined;
@@ -72,14 +72,14 @@ export const OptimizedImage = ({
   const [hasError, setHasError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const resolvedSrc = hasError
-    ? fallbackSrc
-    : getCloudinaryUrl(src, {
-        width: fill ? undefined : (width as number | undefined),
-        height: fill ? undefined : (height as number | undefined),
-        crop,
-        gravity,
-      }) || fallbackSrc;
+  const rawSrc = (hasError ? fallbackSrc : src) || fallbackSrc;
+
+  // crop/gravity không nằm trong chữ ký loader của next/image ({src,width,
+  // quality}) nên mã hoá vào query string của src — cloudinaryLoader.ts đọc
+  // ra rồi bóc khỏi URL trước khi build transform thật.
+  const resolvedSrc = isCloudinaryUrl(rawSrc)
+    ? `${rawSrc}?_crop=${crop}&_gravity=${gravity}`
+    : rawSrc;
 
   const fitClass = objectFit === "contain" ? "object-contain" : "object-cover";
 
@@ -93,7 +93,9 @@ export const OptimizedImage = ({
     .filter(Boolean)
     .join(" ");
 
-  const isBlobOrDataUrl =
+  // Blob/data URL (preview local trước khi upload) không đi qua được loader
+  // Cloudinary — next/image cần unoptimized cho 2 loại này.
+  const skipLoader =
     resolvedSrc.startsWith("blob:") || resolvedSrc.startsWith("data:");
 
   const handleLoad = () => setIsLoaded(true);
@@ -112,7 +114,7 @@ export const OptimizedImage = ({
           fill
           sizes={sizes}
           className={imageClass}
-          unoptimized={isBlobOrDataUrl}
+          unoptimized={skipLoader}
           onLoad={handleLoad}
           onError={handleError}
           {...props}
@@ -134,7 +136,7 @@ export const OptimizedImage = ({
         height={height}
         sizes={sizes}
         className={imageClass}
-        unoptimized={isBlobOrDataUrl}
+        unoptimized={skipLoader}
         onLoad={handleLoad}
         onError={handleError}
         {...props}

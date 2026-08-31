@@ -14,6 +14,21 @@ export interface UserProfile {
 }
 
 /**
+ * Sản phẩm bên trong đơn hàng của người dùng
+ */
+export interface MyOrderItem {
+  id: string;
+  productId: string;
+  productName: string;
+  thumbnail: string | null;
+  quantity: number;
+  price: number;
+  subtotal: number;
+  slug: string;
+  isReview?: boolean;
+}
+
+/**
  * Chi tiết đơn hàng của người dùng
  */
 export interface MyOrder {
@@ -28,7 +43,7 @@ export interface MyOrder {
   note: string | null;
   createdAt: string;
   updatedAt: string;
-  items: any[]; // Có thể định nghĩa chi tiết hơn nếu cần
+  items: MyOrderItem[];
 }
 
 /**
@@ -42,7 +57,13 @@ export interface MyOrdersResponse {
     limit: number;
     totalPages: number;
   };
-  meta: any;
+  meta?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    results: number;
+  };
 }
 
 /**
