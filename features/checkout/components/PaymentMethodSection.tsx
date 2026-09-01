@@ -8,6 +8,12 @@ interface PaymentMethodSectionProps {
 
 const PAYMENT_METHODS = [
   {
+    id: "cod" as const,
+    title: "Thanh toán khi nhận hoa (COD)",
+    desc: "Áp dụng cho đơn dưới 2.000.000đ",
+    icon: ShoppingBag,
+  },
+  {
     id: "bank" as const,
     title: "Chuyển khoản ngân hàng",
     desc: "Giảm ngay 5% khi chuyển khoản",
@@ -18,12 +24,6 @@ const PAYMENT_METHODS = [
     title: "Thanh toán qua VNPay",
     desc: "ATM / Visa / MasterCard / QR Pay",
     icon: QrCode,
-  },
-  {
-    id: "cod" as const,
-    title: "Thanh toán khi nhận hoa (COD)",
-    desc: "Áp dụng cho đơn dưới 2.000.000đ",
-    icon: ShoppingBag,
   },
 ];
 

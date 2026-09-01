@@ -1,5 +1,8 @@
 "use client";
 import { forwardRef } from "react";
+import { Hash } from "lucide-react";
+
+import { SectionHeading } from "./SectionHeading";
 
 interface SkuSectionProps {
   sku: string;
@@ -13,7 +16,7 @@ const SkuSection = forwardRef<HTMLDivElement, SkuSectionProps>(
         ref={ref}
         className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm"
       >
-        <h3 className="text-lg font-bold mb-6">🏷️ Mã SKU</h3>
+        <SectionHeading icon={Hash} title="Mã SKU" />
         <div>
           <label className="block text-sm font-semibold text-slate-700 mb-2">
             SKU

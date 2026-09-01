@@ -24,8 +24,8 @@ export function ProductDetailFooter({
   return (
     <div className="sticky bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-slate-200 px-4 sm:px-6 md:px-8 py-4 flex items-center justify-between z-20">
       {/* Status indicator */}
-      <div className="flex items-center gap-2 text-xs text-slate-500">
-        <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+      <div className="flex items-center gap-2 text-sm font-semibold text-slate-600">
+        <span className="w-2.5 h-2.5 bg-yellow-400 rounded-full animate-pulse" />
         {PRODUCT_MESSAGES.UNSAVED}
       </div>
 
@@ -42,7 +42,7 @@ export function ProductDetailFooter({
           type="submit"
           onClick={onSubmit}
           disabled={isUpdating}
-          className="bg-[#13ec5b] text-white px-8 py-2 text-sm font-bold rounded-lg shadow-lg shadow-[#13ec5b]/20 hover:bg-[#d42552] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          className="bg-primary text-white px-8 py-2 text-sm font-bold rounded-lg shadow-lg shadow-primary/20 hover:bg-primary-dark disabled:opacity-40 disabled:cursor-not-allowed transition-all"
         >
           {isUpdating ? `${submitLabel.split(" ")[0]}...` : submitLabel}
         </button>

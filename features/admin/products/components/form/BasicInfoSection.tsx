@@ -1,7 +1,9 @@
 "use client";
 import { forwardRef } from "react";
+import { FileText } from "lucide-react";
 
 import RichEditor, { RichEditorRef } from "../RichEditor";
+import { SectionHeading } from "./SectionHeading";
 
 interface BasicInfoSectionProps {
   name: string;
@@ -17,7 +19,7 @@ const BasicInfoSection = forwardRef<HTMLDivElement, BasicInfoSectionProps>(
         ref={ref}
         className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm"
       >
-        <h3 className="text-lg font-bold mb-6">📝 Thông tin cơ bản</h3>
+        <SectionHeading icon={FileText} title="Thông tin cơ bản" />
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">

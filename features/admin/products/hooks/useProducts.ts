@@ -12,6 +12,8 @@ const productKeys = {
   details: () => [...productKeys.all, "detail"] as const,
   detail: (id: string) => [...productKeys.details(), id] as const,
   bySlug: (slug: string) => ["product", "slug", slug] as const,
+  trashLists: () => [...productKeys.all, "trash"] as const,
+  trashList: (params?: object) => [...productKeys.trashLists(), params] as const,
 };
 
 // Params kiểu dữ liệu
@@ -221,12 +223,152 @@ export const useDeleteProduct = () => {
 
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+      // Sản phẩm vừa xóa mềm giờ thuộc thùng rác — đồng bộ luôn danh sách/badge thùng rác
+      queryClient.invalidateQueries({ queryKey: productKeys.trashLists() });
     },
   });
 
   return {
     deleteProduct: mutate,
     deleteProductAsync: mutateAsync,
+    isPending,
+    isError,
+    error: error as Error | null,
+  };
+};
+
+// Hook lấy danh sách sản phẩm trong thùng rác
+export const useTrashProducts = (params?: UseProductsParams) => {
+  const query = useQuery({
+    queryKey: productKeys.trashList(params),
+    queryFn: () => {
+      const apiParams = Object.fromEntries(
+        Object.entries({
+          page: params?.page,
+          limit: params?.limit,
+          search: params?.search || undefined,
+          priceMin: params?.priceMin ?? undefined,
+          priceMax: params?.priceMax ?? undefined,
+          category: params?.category || undefined,
+          sort: params?.sort || undefined,
+        }).filter(([, v]) => v !== undefined),
+      );
+      return productService.getTrashProducts(apiParams);
+    },
+    placeholderData: (prev) => prev,
+    staleTime: 30_000,
+  });
+
+  return {
+    products: query.data?.products ?? [],
+    meta: query.data?.meta,
+    totalPages: query.data?.meta?.totalPages ?? 1,
+    loading: query.isPending,
+    fetching: query.isFetching,
+    error: query.error ?? null,
+    isEmpty: !query.isPending && (query.data?.products?.length ?? 0) === 0,
+    refetch: query.refetch,
+  };
+};
+
+// Hook xóa vĩnh viễn sản phẩm khỏi thùng rác
+export const useHardDeleteProduct = () => {
+  const queryClient = useQueryClient();
+
+  const { mutate, mutateAsync, isPending, isError, error } = useMutation({
+    mutationFn: (productId: string) =>
+      productService.hardDeleteProduct(productId),
+
+    onMutate: async (productId) => {
+      await queryClient.cancelQueries({ queryKey: productKeys.trashLists() });
+
+      const previousLists = queryClient.getQueriesData({
+        queryKey: productKeys.trashLists(),
+      });
+
+      queryClient.setQueriesData(
+        { queryKey: productKeys.trashLists() },
+        (old: any) => {
+          if (!old?.products) return old;
+          return {
+            ...old,
+            products: old.products.filter((p: Product) => p.id !== productId),
+            meta: old.meta
+              ? { ...old.meta, total: (old.meta.total ?? 1) - 1 }
+              : old.meta,
+          };
+        },
+      );
+
+      return { previousLists };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousLists?.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: productKeys.trashLists() });
+    },
+  });
+
+  return {
+    hardDeleteProduct: mutate,
+    hardDeleteProductAsync: mutateAsync,
+    isPending,
+    isError,
+    error: error as Error | null,
+  };
+};
+
+// Hook khôi phục sản phẩm từ thùng rác
+export const useRestoreProduct = () => {
+  const queryClient = useQueryClient();
+
+  const { mutate, mutateAsync, isPending, isError, error } = useMutation({
+    mutationFn: (productId: string) => productService.restoreProduct(productId),
+
+    onMutate: async (productId) => {
+      await queryClient.cancelQueries({ queryKey: productKeys.trashLists() });
+
+      const previousLists = queryClient.getQueriesData({
+        queryKey: productKeys.trashLists(),
+      });
+
+      queryClient.setQueriesData(
+        { queryKey: productKeys.trashLists() },
+        (old: any) => {
+          if (!old?.products) return old;
+          return {
+            ...old,
+            products: old.products.filter((p: Product) => p.id !== productId),
+            meta: old.meta
+              ? { ...old.meta, total: (old.meta.total ?? 1) - 1 }
+              : old.meta,
+          };
+        },
+      );
+
+      return { previousLists };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousLists?.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: productKeys.trashLists() });
+      queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+    },
+  });
+
+  return {
+    restoreProduct: mutate,
+    restoreProductAsync: mutateAsync,
     isPending,
     isError,
     error: error as Error | null,

@@ -2,11 +2,13 @@
 
 @theme {
   --color-primary: #13ec5b;
+  --color-primary-dark: #0fbf4a;
   --color-danger: #ee2b5b;
 }
 
 :root {
   --primary: #13ec5b;
+  --primary-dark: #0fbf4a;
   --danger: #ee2b5b;
 }
 

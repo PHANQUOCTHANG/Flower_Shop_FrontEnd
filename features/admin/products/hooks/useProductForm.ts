@@ -27,12 +27,6 @@ export interface UploadedImage {
   file?: File;
 }
 
-export interface ThumbnailState {
-  url: string;
-  name: string;
-  file?: File;
-}
-
 // Ngưỡng độ phân giải ảnh — khớp với validate phía backend
 // (backend/src/middleware/upload.middleware.ts: MIN_PRODUCT_IMAGE_DIMENSION).
 const MIN_IMAGE_DIMENSION = 800;
@@ -95,9 +89,13 @@ export function useProductForm() {
   const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false); // Quản lý trạng thái kéo thả ảnh
 
-  // State quản lý thông tin của ảnh đại diện (thumbnail)
-  const [thumbnail, setThumbnail] = useState<ThumbnailState | null>(null);
-  const [isThumbDragging, setIsThumbDragging] = useState(false); // Quản lý kéo thả của ảnh đại diện
+  // Ảnh đại diện (thumbnail) không còn là 1 khối upload riêng — nó luôn là
+  // images[0]. 2 state dưới đây chỉ ghi nhớ trạng thái BAN ĐẦU (lúc populateForm)
+  // để lúc submit biết ảnh đại diện có thực sự đổi hay không (xem resolveThumbnail.ts).
+  const [initialPrimaryImageId, setInitialPrimaryImageId] = useState<
+    string | null
+  >(null);
+  const [hadInitialThumbnail, setHadInitialThumbnail] = useState(false);
 
   // ===== EFFECTS =====
   // Tự động map dữ liệu danh sách category nhận được từ API vào state
@@ -207,50 +205,6 @@ export function useProductForm() {
     });
   };
 
-  // Xử lý khi người dùng chọn hoặc kéo thả file làm ảnh đại diện
-  const handleThumbFile = async (file: File) => {
-    if (!file.type.startsWith("image/")) return;
-
-    try {
-      const { width, height } = await getImageDimensions(file);
-      if (width < MIN_IMAGE_DIMENSION && height < MIN_IMAGE_DIMENSION) {
-        setAlertState({
-          type: "error",
-          message: `Ảnh đại diện quá nhỏ (${width}x${height}px). Vui lòng chọn ảnh tối thiểu ${MIN_IMAGE_DIMENSION}x${MIN_IMAGE_DIMENSION}px.`,
-        });
-        return;
-      }
-      if (
-        width < RECOMMENDED_IMAGE_DIMENSION &&
-        height < RECOMMENDED_IMAGE_DIMENSION
-      ) {
-        setAlertState({
-          type: "warning",
-          message: `Nên dùng ảnh đại diện từ ${RECOMMENDED_IMAGE_DIMENSION}x${RECOMMENDED_IMAGE_DIMENSION}px trở lên để hiển thị nét nhất.`,
-        });
-      }
-    } catch {
-      // Không đọc được kích thước (hiếm) → vẫn cho qua, để backend tự validate
-    }
-
-    if (thumbnail?.url && thumbnail.url.startsWith("blob:")) {
-      URL.revokeObjectURL(thumbnail.url);
-    }
-    setThumbnail({
-      url: URL.createObjectURL(file),
-      name: file.name,
-      file: file,
-    });
-  };
-
-  // Loại bỏ ảnh đại diện khỏi form (kèm dọn dẹp bộ nhớ Blob URL)
-  const handleRemoveThumbnail = () => {
-    if (thumbnail?.url && thumbnail.url.startsWith("blob:")) {
-      URL.revokeObjectURL(thumbnail.url);
-    }
-    setThumbnail(null);
-  };
-
   // Gửi API để tạo 1 danh mục mới và ngay lập tức thêm vào mảng categories đang được nhắm tới
   const handleAddCategory = async (
     categoryName: string,
@@ -314,7 +268,8 @@ export function useProductForm() {
     setComparePrice("");
     setSku("");
     setImages([]);
-    setThumbnail(null);
+    setInitialPrimaryImageId(null);
+    setHadInitialThumbnail(false);
     setSelectedCategoryIds([]);
     shortDescEditorRef.current?.setHTML("");
     descEditorRef.current?.setHTML("");
@@ -362,12 +317,7 @@ export function useProductForm() {
       setSelectedCategoryIds(categoryIds);
     }
 
-    if (product.thumbnailUrl) {
-      setThumbnail({
-        url: product.thumbnailUrl,
-        name: "Current thumbnail",
-      });
-    }
+    setHadInitialThumbnail(!!product.thumbnailUrl);
 
     if (product.images && Array.isArray(product.images)) {
       // Ảnh đại diện luôn đứng đầu mảng cục bộ (quy ước: index 0 = primary),
@@ -384,7 +334,10 @@ export function useProductForm() {
         }),
       );
       setImages(imgList);
+      setInitialPrimaryImageId(imgList[0]?.id ?? null);
       setDeletedImageIds([]);
+    } else {
+      setInitialPrimaryImageId(null);
     }
 
     if (product.shortDescription) {
@@ -414,8 +367,8 @@ export function useProductForm() {
       images,
       deletedImageIds,
       isDragging,
-      thumbnail,
-      isThumbDragging,
+      initialPrimaryImageId,
+      hadInitialThumbnail,
       loadingCategories,
     },
     actions: {
@@ -429,14 +382,10 @@ export function useProductForm() {
       setImages,
       setDeletedImageIds,
       setIsDragging,
-      setThumbnail,
-      setIsThumbDragging,
       addFiles,
       handleRemoveImage,
       reorderImages,
       setPrimaryImage,
-      handleThumbFile,
-      handleRemoveThumbnail,
       handleAddCategory,
       handleSelectCategory,
       resetForm,

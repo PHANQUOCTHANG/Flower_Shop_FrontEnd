@@ -8,6 +8,7 @@ import Alert from "@/components/ui/Alert";
 import { useCreateProduct } from "@/features/admin/products/hooks/useProducts";
 import { useProductForm } from "@/features/admin/products/hooks/useProductForm";
 import { logFormData } from "@/features/admin/products/utils/formSubmission";
+import { resolveThumbnailForSubmit } from "@/features/admin/products/utils/resolveThumbnail";
 
 // Components
 import {
@@ -53,8 +54,8 @@ export default function AddNewProductPage() {
     selectedCategoryIds,
     images,
     isDragging,
-    thumbnail,
-    isThumbDragging,
+    initialPrimaryImageId,
+    hadInitialThumbnail,
     loadingCategories,
   } = state;
 
@@ -70,12 +71,9 @@ export default function AddNewProductPage() {
     handleRemoveImage,
     reorderImages,
     setPrimaryImage,
-    handleThumbFile,
-    handleRemoveThumbnail,
     handleAddCategory,
     handleSelectCategory,
     setIsDragging,
-    setIsThumbDragging,
     resetForm,
     validateForm,
   } = actions;
@@ -123,9 +121,14 @@ export default function AddNewProductPage() {
           formDataToSend.append("categoryIds", id);
         });
 
-        // Thêm thumbnail file
-        if (thumbnail?.file) {
-          formDataToSend.append("thumbnail", thumbnail.file);
+        // Thêm thumbnail — suy ra từ ảnh đầu tiên trong thư viện
+        const thumbnailResult = await resolveThumbnailForSubmit({
+          images,
+          initialPrimaryImageId,
+          hadInitialThumbnail,
+        });
+        if (thumbnailResult.file) {
+          formDataToSend.append("thumbnail", thumbnailResult.file);
         }
 
         // Thêm gallery images
@@ -223,12 +226,6 @@ export default function AddNewProductPage() {
             onSelectCategory={handleSelectCategory}
             onAddCategory={handleAddCategory}
             isLoadingCategories={loadingCategories}
-            thumbnail={thumbnail}
-            onThumbFile={handleThumbFile}
-            onRemoveThumbnail={handleRemoveThumbnail}
-            isThumbDragging={isThumbDragging}
-            onThumbDragEnter={() => setIsThumbDragging(true)}
-            onThumbDragLeave={() => setIsThumbDragging(false)}
           />
         </form>
       </div>

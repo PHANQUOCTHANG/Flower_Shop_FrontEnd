@@ -14,7 +14,7 @@ import { CategoryItem } from "@/features/admin/products/types";
 interface FilterBarProps {
   searchKeyword: string;
   selectedCategory: string | undefined;
-  selectedStatus: string;
+  selectedStatus?: string;
   sortBy: string;
   minPrice: number | null;
   maxPrice: number | null;
@@ -26,9 +26,11 @@ interface FilterBarProps {
     max: number | null;
   }>;
   hasActiveFilters: boolean;
+  // Ẩn bộ lọc trạng thái ở trang thùng rác (mọi sản phẩm ở đó đều đã bị xóa)
+  showStatusFilter?: boolean;
   onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onStatusChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onStatusChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onSortChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onPriceRangeChange: (minVal: number | null, maxVal: number | null) => void;
   onApplyFilter: () => void;
@@ -38,13 +40,14 @@ interface FilterBarProps {
 export const FilterBar = ({
   searchKeyword,
   selectedCategory,
-  selectedStatus,
+  selectedStatus = "all",
   sortBy,
   minPrice,
   maxPrice,
   categories,
   priceRanges,
   hasActiveFilters,
+  showStatusFilter = true,
   onSearchChange,
   onCategoryChange,
   onStatusChange,
@@ -75,7 +78,7 @@ export const FilterBar = ({
   // Đếm số bộ lọc nâng cao đang áp dụng
   const activeFilterCount = [
     selectedCategory && selectedCategory !== "Tất cả",
-    selectedStatus !== "all",
+    showStatusFilter && selectedStatus !== "all",
     sortBy !== "newest",
     minPrice !== null || maxPrice !== null,
   ].filter(Boolean).length;
@@ -167,7 +170,11 @@ export const FilterBar = ({
       >
         <div className="overflow-hidden">
           <div className="bg-slate-50/80 rounded-2xl border border-slate-200 p-4 sm:p-5 mt-0.5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div
+              className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${
+                showStatusFilter ? "lg:grid-cols-4" : "lg:grid-cols-3"
+              }`}
+            >
               {/* Danh mục */}
               <div className="flex flex-col gap-1.5">
                 <label className="flex items-center gap-1.5 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
@@ -192,25 +199,27 @@ export const FilterBar = ({
               </div>
 
               {/* Trạng thái */}
-              <div className="flex flex-col gap-1.5">
-                <label className="flex items-center gap-1.5 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
-                  <BarChart2 size={11} className="text-slate-400" />
-                  Trạng thái
-                </label>
-                <div className="relative">
-                  <select
-                    value={selectedStatus}
-                    onChange={onStatusChange}
-                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#13ec5b]/40 focus:border-[#13ec5b] transition-all cursor-pointer appearance-none pr-8"
-                  >
-                    <option value="all">Tất cả trạng thái</option>
-                    <option value="active">Hoạt động</option>
-                    <option value="hidden">Đang ẩn</option>
-                    <option value="draft">Bản nháp</option>
-                  </select>
-                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              {showStatusFilter && (
+                <div className="flex flex-col gap-1.5">
+                  <label className="flex items-center gap-1.5 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
+                    <BarChart2 size={11} className="text-slate-400" />
+                    Trạng thái
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={selectedStatus}
+                      onChange={onStatusChange}
+                      className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#13ec5b]/40 focus:border-[#13ec5b] transition-all cursor-pointer appearance-none pr-8"
+                    >
+                      <option value="all">Tất cả trạng thái</option>
+                      <option value="active">Hoạt động</option>
+                      <option value="hidden">Đang ẩn</option>
+                      <option value="draft">Bản nháp</option>
+                    </select>
+                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Khoảng giá */}
               <div className="flex flex-col gap-1.5">

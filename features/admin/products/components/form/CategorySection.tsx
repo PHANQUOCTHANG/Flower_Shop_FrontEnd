@@ -1,5 +1,8 @@
 "use client";
-import { forwardRef, useState } from "react";
+import { forwardRef, useMemo, useState } from "react";
+import { Camera, FolderTree, PlusCircle, Search, X } from "lucide-react";
+
+import { SectionHeading } from "./SectionHeading";
 
 export interface Category {
   id: string;
@@ -32,6 +35,7 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
     const [newCategoryParentId, setNewCategoryParentId] = useState<string>("");
     const [isAddingCategory, setIsAddingCategory] = useState(false);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
 
     const handleAddCategory = async () => {
       if (!newCategoryName.trim()) return;
@@ -51,19 +55,47 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
     const rootCategories = categories.filter((c) => !c.parentId);
     const getChildren = (parentId: string) => categories.filter((c) => c.parentId === parentId);
 
+    // Danh mục hợp lệ để hiển thị khi đang tìm kiếm: chính nó khớp tên hoặc
+    // là tổ tiên của một danh mục khớp tên (để không làm gãy cây phân cấp).
+    const visibleCategories = useMemo(() => {
+      const term = searchTerm.trim().toLowerCase();
+      if (!term) return categories;
+
+      const matchedIds = new Set(
+        categories.filter((c) => c.name.toLowerCase().includes(term)).map((c) => c.id),
+      );
+      const visibleIds = new Set(matchedIds);
+      categories.forEach((c) => {
+        if (!matchedIds.has(c.id)) return;
+        let parentId = c.parentId;
+        while (parentId) {
+          visibleIds.add(parentId);
+          parentId = categories.find((p) => p.id === parentId)?.parentId ?? null;
+        }
+      });
+      return categories.filter((c) => visibleIds.has(c.id));
+    }, [categories, searchTerm]);
+
+    const visibleRootCategories = visibleCategories.filter((c) => !c.parentId);
+    const getVisibleChildren = (parentId: string) =>
+      visibleCategories.filter((c) => c.parentId === parentId);
+
     const renderCategoryTree = (cats: Category[], level = 0) => {
       return cats.map((cat) => {
-        const children = getChildren(cat.id);
+        const children = getVisibleChildren(cat.id);
+        const isChecked = selectedCategoryIds.includes(cat.id);
         return (
           <div key={cat.id} className="flex flex-col">
             <label
-              className="flex items-center cursor-pointer hover:bg-slate-50 p-2 rounded transition-colors"
+              className={`flex items-center cursor-pointer p-2 rounded transition-colors ${
+                isChecked ? "bg-primary/5" : "hover:bg-slate-50"
+              }`}
             >
               <input
                 type="checkbox"
-                checked={selectedCategoryIds.includes(cat.id)}
+                checked={isChecked}
                 onChange={() => onSelectCategory(cat.id)}
-                className="w-4 h-4 accent-[#13ec5b] cursor-pointer"
+                className="w-4 h-4 accent-primary cursor-pointer"
               />
               <span className="ml-3 text-sm text-slate-700">
                 {level > 0 && <span className="text-slate-400 mr-1">↳</span>}
@@ -103,19 +135,40 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
         ref={ref}
         className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm"
       >
-        <h3 className="text-lg font-bold mb-6">📂 Danh mục</h3>
+        <SectionHeading icon={FolderTree} title="Danh mục" />
 
         {/* Existing Categories */}
         <div className="mb-6">
           <label className="block text-sm font-semibold text-slate-700 mb-3">
             Chọn danh mục
           </label>
+          {categories.length > 6 && (
+            <div className="relative mb-3">
+              <Search
+                size={15}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Tìm danh mục..."
+                className="w-full rounded-lg border border-slate-300 pl-9 pr-3 py-1.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+              />
+            </div>
+          )}
           {isLoadingCategories ? (
             <div className="text-sm text-slate-500">Đang tải danh mục...</div>
           ) : categories.length > 0 ? (
-            <div className="space-y-1 max-h-60 overflow-y-auto">
-              {renderCategoryTree(rootCategories)}
-            </div>
+            visibleRootCategories.length > 0 ? (
+              <div className="space-y-1 max-h-72 overflow-y-auto">
+                {renderCategoryTree(visibleRootCategories)}
+              </div>
+            ) : (
+              <div className="text-sm text-slate-500">
+                Không tìm thấy danh mục phù hợp
+              </div>
+            )
           ) : (
             <div className="text-sm text-slate-500">Không có danh mục nào</div>
           )}
@@ -124,12 +177,12 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
         {/* Add New Category */}
         <div className="border-t border-slate-200 pt-5 mt-2">
           {!showAddForm ? (
-            <button 
-              type="button" 
-              onClick={() => setShowAddForm(true)} 
-              className="flex items-center gap-2 text-sm font-semibold text-[#13ec5b] hover:text-[#d91e49] transition-colors"
+            <button
+              type="button"
+              onClick={() => setShowAddForm(true)}
+              className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-dark transition-colors"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus-circle"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+              <PlusCircle size={16} strokeWidth={2.5} />
               Thêm danh mục mới
             </button>
           ) : (
@@ -148,7 +201,7 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
                   }}
                   className="text-xs font-semibold text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1"
                 >
-                  Đóng <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                  Đóng <X size={12} strokeWidth={2} />
                 </button>
               </div>
               <div className="flex flex-col gap-4">
@@ -171,7 +224,7 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
                 type="button"
                 onClick={handleAddCategory}
                 disabled={!newCategoryName.trim() || isAddingCategory}
-                className="px-5 py-2 bg-[#13ec5b] text-white rounded-lg font-medium text-sm hover:bg-[#d91e49] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-5 py-2 bg-primary text-white rounded-lg font-medium text-sm hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isAddingCategory ? "Thêm..." : "Thêm"}
               </button>
@@ -191,7 +244,7 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
               </select>
             </div>
             
-            {/* Box Upload Thumbnail (Style giống ThumbnailSection) */}
+            {/* Box Upload Thumbnail cho danh mục mới */}
             <div>
               <p className="text-xs font-semibold text-slate-600 mb-2">Ảnh đại diện (Tùy chọn)</p>
               {thumbFile ? (
@@ -220,7 +273,7 @@ const CategorySection = forwardRef<HTMLDivElement, CategorySectionProps>(
                     className="hidden"
                     disabled={isAddingCategory}
                   />
-                  <div className="text-3xl mb-2">📸</div>
+                  <Camera className="mx-auto mb-2 text-slate-400" size={28} />
                   <p className="text-xs font-semibold text-slate-700">Nhấp để chọn ảnh</p>
                   <p className="text-[10px] text-slate-500 mt-1">Hỗ trợ JPG, PNG, WebP</p>
                 </label>

@@ -7,35 +7,28 @@ import { DeleteConfirmDialog } from "@/components/ui/admin/DeleteConfirmDialog";
 // Components
 import {
   FilterBar,
-  ProductTable,
-  ProductStats,
+  TrashProductTable,
   ProductPageHeader,
 } from "@/features/admin/products/components";
 
 // Hooks
-import { useProductsPageLogic } from "@/features/admin/products/hooks/useProductsPageLogic";
-import { useTrashProducts } from "@/features/admin/products/hooks/useProducts";
+import { useTrashProductsPageLogic } from "@/features/admin/products/hooks/useTrashProductsPageLogic";
 
 // Types & constants
-import {
-  FILTER_DEFAULTS,
-  PRODUCT_PRICE_RANGES,
-} from "@/features/admin/products/constants/productConfig";
+import { PRODUCT_PRICE_RANGES } from "@/features/admin/products/constants/productConfig";
 
-function ProductsPageContent() {
-  const { state, actions } = useProductsPageLogic();
-  // Lấy nhanh tổng số sản phẩm trong thùng rác để hiển thị badge trên header
-  const { meta: trashMeta } = useTrashProducts({ limit: 1 });
+function TrashProductsPageContent() {
+  const { state, actions } = useTrashProductsPageLogic();
 
   if (state.productsLoading || state.categoriesLoading) return <Loading />;
 
   return (
     <>
-      {/* Delete confirm dialog */}
+      {/* Xóa vĩnh viễn confirm dialog */}
       <DeleteConfirmDialog
         isOpen={state.isDeleteDialogOpen}
-        title="Xóa sản phẩm"
-        message="Bạn có chắc chắn muốn xóa sản phẩm"
+        title="Xóa vĩnh viễn sản phẩm"
+        message="Bạn có chắc chắn muốn xóa vĩnh viễn sản phẩm"
         itemName={state.selectedProductForDelete?.name || ""}
         onConfirm={actions.handleConfirmDelete}
         onCancel={actions.handleCloseDeleteDialog}
@@ -44,17 +37,14 @@ function ProductsPageContent() {
 
       <div className="flex flex-col min-h-screen overflow-auto bg-[#f6f8f6] font-['Inter',_sans-serif]">
         {/* Header */}
-        <ProductPageHeader trashCount={trashMeta?.total} />
+        <ProductPageHeader variant="trash" />
 
         {/* Main content */}
         <main className="p-4 sm:p-6 md:p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-6 sm:gap-8 animate-in fade-in duration-500">
-          {/* Filters */}
+          {/* Filters — dùng lại toàn bộ bộ lọc của trang quản lý sản phẩm */}
           <FilterBar
             searchKeyword={state.searchKeyword}
-            selectedCategory={
-              state.selectedCategory || FILTER_DEFAULTS.CATEGORY_ALL
-            }
-            selectedStatus={state.statusFilter}
+            selectedCategory={state.selectedCategory || "Tất cả"}
             sortBy={state.sortBy}
             minPrice={state.minPrice}
             maxPrice={state.maxPrice}
@@ -62,37 +52,41 @@ function ProductsPageContent() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             priceRanges={PRODUCT_PRICE_RANGES as any}
             hasActiveFilters={state.isFiltersActive}
+            showStatusFilter={false}
             onSearchChange={actions.handleSearchChange}
             onCategoryChange={actions.handleCategoryChange}
-            onStatusChange={actions.handleStatusChange}
             onSortChange={actions.handleSortChange}
             onPriceRangeChange={actions.handlePriceRangeChange}
             onApplyFilter={actions.handleApplyFilter}
             onClearFilter={actions.handleClearFilter}
           />
 
-          {/* Product table */}
-          <ProductTable
+          {/* Trash table */}
+          <TrashProductTable
             products={state.products}
             totalPages={state.totalPages}
             currentPage={state.currentPage}
             onPageChange={actions.handlePageChange}
-            onDelete={actions.handleOpenDeleteDialog}
+            onRestore={actions.handleRestore}
+            onHardDelete={actions.handleOpenDeleteDialog}
             isLoading={state.fetching}
+            isRestoring={state.isRestoring}
           />
 
-          {/* Stats */}
-          <ProductStats data={state.meta} />
+          {/* Tổng quan */}
+          <p className="text-xs text-slate-400 font-medium text-center">
+            {state.meta?.total ?? 0} sản phẩm trong thùng rác
+          </p>
         </main>
       </div>
     </>
   );
 }
 
-export default function ProductsPage() {
+export default function TrashProductsPage() {
   return (
     <Suspense fallback={<Loading />}>
-      <ProductsPageContent />
+      <TrashProductsPageContent />
     </Suspense>
   );
 }

@@ -3,11 +3,12 @@ export const PRODUCT_CONFIG = {
   // Routes
   PRODUCTS_LIST_ROUTE: "/admin/products" as const,
   ADD_PRODUCT_ROUTE: "/admin/products/add" as const,
+  TRASH_ROUTE: "/admin/products/trash" as const,
 
   // UI config
   BACKGROUND_COLOR: "#f8f6f6",
   PRIMARY_COLOR: "#13ec5b",
-  DARK_PRIMARY: "#d42552",
+  DARK_PRIMARY: "#0fbf4a",
 
   // Time delays
   ALERT_DURATION: 5000,
@@ -28,6 +29,11 @@ export const PRODUCT_MESSAGES = {
   DELETE_CONFIRM_TITLE: "Xóa sản phẩm",
   DELETE_CONFIRM_MESSAGE:
     "Bạn có chắc chắn muốn xóa sản phẩm này không? Hành động này không thể hoàn tác.",
+  HARD_DELETE_CONFIRM_TITLE: "Xóa vĩnh viễn sản phẩm",
+  HARD_DELETE_SUCCESS: "Đã xóa vĩnh viễn sản phẩm khỏi hệ thống!",
+  HARD_DELETE_ERROR: "Không thể xóa vĩnh viễn sản phẩm. Vui lòng thử lại.",
+  RESTORE_SUCCESS: "Đã khôi phục sản phẩm!",
+  RESTORE_ERROR: "Không thể khôi phục sản phẩm. Vui lòng thử lại.",
   LOADING_PRODUCT: "Đang tải sản phẩm...",
   PRODUCT_NOT_FOUND: "Không tìm thấy sản phẩm",
   LOADING_ERROR: "Lỗi tải sản phẩm",

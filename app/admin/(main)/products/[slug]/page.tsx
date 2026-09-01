@@ -12,10 +12,8 @@ import {
   useDeleteProduct,
 } from "@/features/admin/products/hooks/useProducts";
 import { useProductForm } from "@/features/admin/products/hooks/useProductForm";
-import {
-  buildFormData,
-  logFormData,
-} from "@/features/admin/products/utils/formSubmission";
+import { logFormData } from "@/features/admin/products/utils/formSubmission";
+import { resolveThumbnailForSubmit } from "@/features/admin/products/utils/resolveThumbnail";
 
 // Components
 import {
@@ -76,8 +74,8 @@ export default function ProductDetailPage() {
     images,
     deletedImageIds,
     isDragging,
-    thumbnail,
-    isThumbDragging,
+    initialPrimaryImageId,
+    hadInitialThumbnail,
     loadingCategories,
   } = state;
 
@@ -90,18 +88,14 @@ export default function ProductDetailPage() {
     setComparePrice,
     setSku,
     setDeletedImageIds,
-    setThumbnail,
     setSelectedCategoryIds,
     addFiles,
     handleRemoveImage,
     reorderImages,
     setPrimaryImage,
-    handleThumbFile,
-    handleRemoveThumbnail,
     handleAddCategory,
     handleSelectCategory,
     setIsDragging,
-    setIsThumbDragging,
     validateForm,
     populateForm,
   } = actions;
@@ -160,11 +154,16 @@ export default function ProductDetailPage() {
           formDataToSend.append("categoryIds", id);
         });
 
-        // Xử lý thumbnail - upload file hoặc xóa nếu có file mới/cũ
-        if (thumbnail?.file) {
-          formDataToSend.append("thumbnail", thumbnail.file);
-        } else if (!thumbnail && product?.thumbnailUrl) {
-          // Thumbnail bị xóa (không có file mới, nhưng có file cũ)
+        // Xử lý thumbnail - suy ra từ ảnh đầu tiên trong thư viện (xem
+        // resolveThumbnail.ts để biết khi nào upload lại / bỏ qua / xoá)
+        const thumbnailResult = await resolveThumbnailForSubmit({
+          images,
+          initialPrimaryImageId,
+          hadInitialThumbnail,
+        });
+        if (thumbnailResult.file) {
+          formDataToSend.append("thumbnail", thumbnailResult.file);
+        } else if (thumbnailResult.clear) {
           formDataToSend.append("thumbnailEmpty", "true");
         }
 
@@ -339,12 +338,6 @@ export default function ProductDetailPage() {
             onSelectCategory={handleSelectCategory}
             onAddCategory={handleAddCategory}
             isLoadingCategories={loadingCategories}
-            thumbnail={thumbnail}
-            onThumbFile={handleThumbFile}
-            onRemoveThumbnail={handleRemoveThumbnail}
-            isThumbDragging={isThumbDragging}
-            onThumbDragEnter={() => setIsThumbDragging(true)}
-            onThumbDragLeave={() => setIsThumbDragging(false)}
             onDeleteProduct={() => setShowDeleteConfirm(true)}
             isDeletingProduct={isDeletingProduct}
           />

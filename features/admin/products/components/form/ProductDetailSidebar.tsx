@@ -1,7 +1,6 @@
-// Sidebar component - cột phải với status, category, thumbnail
-import { StatusSection, CategorySection, ThumbnailSection } from "./index";
-import { ProductCategory } from "../../types";
-import { ThumbnailData, UploadedImage } from "../../utils/formDataBuilder";
+// Sidebar component - cột phải với status, category
+import { Trash2 } from "lucide-react";
+import { StatusSection, CategorySection } from "./index";
 
 interface ProductDetailSidebarProps {
   status: any;
@@ -11,12 +10,6 @@ interface ProductDetailSidebarProps {
   onSelectCategory: any;
   onAddCategory: any;
   isLoadingCategories: boolean;
-  thumbnail: any;
-  onThumbFile: any;
-  onRemoveThumbnail: () => void;
-  isThumbDragging: boolean;
-  onThumbDragEnter: () => void;
-  onThumbDragLeave: () => void;
   onDeleteProduct?: () => void;
   isDeletingProduct?: boolean;
 }
@@ -30,12 +23,6 @@ export function ProductDetailSidebar({
   onSelectCategory,
   onAddCategory,
   isLoadingCategories,
-  thumbnail,
-  onThumbFile,
-  onRemoveThumbnail,
-  isThumbDragging,
-  onThumbDragEnter,
-  onThumbDragLeave,
   onDeleteProduct,
   isDeletingProduct,
 }: ProductDetailSidebarProps) {
@@ -53,26 +40,20 @@ export function ProductDetailSidebar({
         isLoadingCategories={isLoadingCategories}
       />
 
-      {/* Ảnh đại diện */}
-      <ThumbnailSection
-        thumbnail={thumbnail?.url ?? null}
-        onFileSelect={onThumbFile}
-        onRemove={onRemoveThumbnail}
-        isDragging={isThumbDragging}
-        onDragEnter={onThumbDragEnter}
-        onDragLeave={onThumbDragLeave}
-      />
-
-      {/* Nút xóa sản phẩm - chỉ hiển thị ở edit mode */}
+      {/* Nút xóa sản phẩm - chỉ hiển thị ở edit mode, tách biệt khỏi các
+          thao tác chỉnh sửa thường bằng đường kẻ phân cách phía trên */}
       {onDeleteProduct && (
-        <button
-          type="button"
-          onClick={onDeleteProduct}
-          disabled={isDeletingProduct}
-          className="w-full px-4 py-2 text-sm font-bold text-red-600 border border-red-300 rounded-lg hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        >
-          🗑️ Xóa sản phẩm
-        </button>
+        <div className="border-t border-slate-200 pt-6">
+          <button
+            type="button"
+            onClick={onDeleteProduct}
+            disabled={isDeletingProduct}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-bold text-danger border border-danger/40 rounded-lg hover:bg-danger/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <Trash2 size={16} />
+            Xóa sản phẩm
+          </button>
+        </div>
       )}
     </div>
   );

@@ -1,5 +1,8 @@
 "use client";
 import { forwardRef } from "react";
+import { ToggleLeft } from "lucide-react";
+
+import { SectionHeading } from "./SectionHeading";
 
 interface StatusSectionProps {
   status: "active" | "hidden" | "draft";
@@ -24,7 +27,7 @@ const StatusSection = forwardRef<HTMLDivElement, StatusSectionProps>(
         ref={ref}
         className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm"
       >
-        <h3 className="text-lg font-bold mb-6">📊 Trạng thái</h3>
+        <SectionHeading icon={ToggleLeft} title="Trạng thái" />
         <div className="space-y-3">
           {statuses.map((s) => (
             <label

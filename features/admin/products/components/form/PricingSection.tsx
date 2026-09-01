@@ -1,5 +1,8 @@
 "use client";
 import { forwardRef } from "react";
+import { Tag } from "lucide-react";
+
+import { SectionHeading } from "./SectionHeading";
 
 interface PricingSectionProps {
   price: string;
@@ -15,7 +18,7 @@ const PricingSection = forwardRef<HTMLDivElement, PricingSectionProps>(
         ref={ref}
         className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm"
       >
-        <h3 className="text-lg font-bold mb-6">💰 Giá bán</h3>
+        <SectionHeading icon={Tag} title="Giá bán" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">

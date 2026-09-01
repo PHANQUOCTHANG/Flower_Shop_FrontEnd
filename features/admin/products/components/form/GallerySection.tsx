@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import { forwardRef } from "react";
-import { GripVertical, Star, X } from "lucide-react";
+import { GripVertical, Images, Star, UploadCloud, X } from "lucide-react";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
+import { SectionHeading } from "./SectionHeading";
 
 export interface ProductImage {
   id?: string;
@@ -100,7 +101,11 @@ const GallerySection = forwardRef<HTMLDivElement, GallerySectionProps>(
         ref={ref}
         className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm"
       >
-        <h3 className="text-lg font-bold mb-6">🖼️ Thư viện ảnh</h3>
+        <SectionHeading icon={Images} title="Thư viện ảnh" />
+        <p className="text-sm text-slate-500 -mt-4 mb-6">
+          Ảnh đầu tiên là ảnh đại diện — hiển thị trong danh sách sản phẩm,
+          giỏ hàng và trang chi tiết.
+        </p>
 
         {/* Drag & Drop Area */}
         <div
@@ -123,7 +128,7 @@ const GallerySection = forwardRef<HTMLDivElement, GallerySectionProps>(
             id="gallery-upload"
           />
           <label htmlFor="gallery-upload" className="cursor-pointer block">
-            <div className="text-4xl mb-2">📤</div>
+            <UploadCloud className="mx-auto mb-2 text-slate-400" size={36} />
             <p className="text-sm font-semibold text-slate-700">
               Kéo ảnh vào đây hoặc nhấp để chọn
             </p>

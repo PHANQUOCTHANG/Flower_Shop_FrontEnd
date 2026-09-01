@@ -79,4 +79,38 @@ export const productService = {
     }
     return res.data;
   },
+
+  async getTrashProducts(params?: ProductsParams) {
+    const res = await api.get<ApiResponse<Product[]>>("/products/trash", {
+      params,
+    });
+    if (res.data.status !== "success") {
+      throw new Error(res.data.message || "Fetch failed");
+    }
+    return {
+      products: res.data.data ?? [],
+      meta: res.data.meta,
+      message: res.data.message,
+    };
+  },
+
+  async hardDeleteProduct(productId: string) {
+    const res = await api.delete<ApiResponse<null>>(
+      `/products/${productId}/permanent`,
+    );
+    if (res.data.status !== "success") {
+      throw new Error(res.data.message || "Delete failed");
+    }
+    return res.data;
+  },
+
+  async restoreProduct(productId: string) {
+    const res = await api.patch<ApiResponse<Product>>(
+      `/products/${productId}/restore`,
+    );
+    if (res.data.status !== "success") {
+      throw new Error(res.data.message || "Restore failed");
+    }
+    return res.data.data;
+  },
 };
