@@ -1,103 +1,117 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import { campaignService } from "@/features/campaign/services/campaignService";
+import React, { useState } from "react";
+import { CampaignFilterBar } from "@/features/admin/campaign/components/CampaignFilterBar";
+import { CampaignTable } from "@/features/admin/campaign/components/CampaignTable";
+import {
+  useCampaigns,
+  useDeleteCampaign,
+  useUpdateCampaignStatus,
+} from "@/features/admin/campaign/hooks/useCampaigns";
 import { SaleCampaign } from "@/types/campaign";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { DeleteConfirmDialog } from "@/components/ui/admin/DeleteConfirmDialog";
+import { Pagination } from "@/components/ui/Pagination";
+import Alert, { AlertType } from "@/components/ui/Alert";
+import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 
 export default function AdminCampaignsPage() {
-  const [campaigns, setCampaigns] = useState<SaleCampaign[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [status, setStatus] = useState("");
+  const [type, setType] = useState("");
+  const [page, setPage] = useState(1);
+  const [deletingCampaign, setDeletingCampaign] = useState<SaleCampaign | null>(null);
+  const [alert, setAlert] = useState<{ type: AlertType; message: string } | null>(null);
 
-  useEffect(() => {
-    fetchCampaigns();
-  }, []);
+  const { campaigns, totalPages, loading } = useCampaigns({
+    page,
+    limit: 10,
+    search: appliedSearch || undefined,
+    status: (status as any) || undefined,
+    type: (type as any) || undefined,
+  });
 
-  const fetchCampaigns = async () => {
+  const debouncedSearch = useDebouncedCallback((val: string) => {
+    setAppliedSearch(val);
+    setPage(1);
+  }, 500);
+
+  const handleSearchChange = (val: string) => {
+    setSearchKeyword(val);
+    debouncedSearch(val);
+  };
+
+  const { deleteCampaignAsync, isPending: isDeleting } = useDeleteCampaign();
+  const updateStatusMutation = useUpdateCampaignStatus();
+
+  const handleDelete = async () => {
+    if (!deletingCampaign) return;
     try {
-      const data = await campaignService.getCampaigns();
-      setCampaigns(data || []);
+      await deleteCampaignAsync(deletingCampaign.id);
+      setAlert({ type: "success", message: "Xóa chiến dịch thành công" });
+      setDeletingCampaign(null);
     } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+      console.error("Delete campaign error:", error);
+      setAlert({ type: "error", message: "Không thể xóa chiến dịch này." });
     }
   };
 
-  if (loading) return <div className="p-8 text-center">Đang tải...</div>;
+  const handleStatusChange = async (campaign: SaleCampaign, nextStatus: string) => {
+    try {
+      await updateStatusMutation.mutateAsync({ id: campaign.id, status: nextStatus });
+      setAlert({ type: "success", message: "Cập nhật trạng thái thành công" });
+    } catch (error: any) {
+      setAlert({
+        type: "error",
+        message: error?.response?.data?.message || error?.message || "Không thể đổi trạng thái",
+      });
+    }
+  };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Quản lý Khuyến mãi (Sale)</h1>
-        <Link
-          href="/admin/campaigns/add"
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-        >
-          <Plus size={20} />
-          <span>Tạo chiến dịch mới</span>
-        </Link>
-      </div>
+    <div className="flex flex-col min-h-screen bg-[#f6f8f6]">
+      {alert && (
+        <div className="fixed top-4 right-4 z-[200]">
+          <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} duration={3000} />
+        </div>
+      )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
-              <th className="p-4 font-semibold text-gray-600">Tên chiến dịch</th>
-              <th className="p-4 font-semibold text-gray-600">Loại</th>
-              <th className="p-4 font-semibold text-gray-600">Trạng thái</th>
-              <th className="p-4 font-semibold text-gray-600">Thời gian</th>
-              <th className="p-4 font-semibold text-gray-600 text-right">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {campaigns.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="p-8 text-center text-gray-500">
-                  Chưa có chiến dịch nào
-                </td>
-              </tr>
-            ) : (
-              campaigns.map((camp) => (
-                <tr key={camp.id} className="border-b border-gray-50 hover:bg-gray-50/50">
-                  <td className="p-4 font-medium text-gray-900">{camp.name}</td>
-                  <td className="p-4">
-                    <span className="px-2 py-1 bg-blue-50 text-blue-600 rounded-md text-sm">
-                      {camp.type}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    <span
-                      className={`px-2 py-1 rounded-md text-sm ${
-                        camp.status === "ACTIVE"
-                          ? "bg-green-50 text-green-600"
-                          : camp.status === "SCHEDULED"
-                          ? "bg-orange-50 text-orange-600"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {camp.status}
-                    </span>
-                  </td>
-                  <td className="p-4 text-sm text-gray-600">
-                    {new Date(camp.startDate).toLocaleDateString("vi-VN")} -{" "}
-                    {new Date(camp.endDate).toLocaleDateString("vi-VN")}
-                  </td>
-                  <td className="p-4 text-right space-x-2">
-                    <button className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
-                      <Edit size={18} />
-                    </button>
-                    <button className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors">
-                      <Trash2 size={18} />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <CampaignFilterBar
+        searchKeyword={searchKeyword}
+        onSearchChange={handleSearchChange}
+        status={status}
+        onStatusChange={(v) => {
+          setStatus(v);
+          setPage(1);
+        }}
+        type={type}
+        onTypeChange={(v) => {
+          setType(v);
+          setPage(1);
+        }}
+      />
+
+      <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-[1400px] mx-auto w-full">
+        <CampaignTable
+          campaigns={campaigns}
+          isLoading={loading}
+          onDelete={setDeletingCampaign}
+          onStatusChange={handleStatusChange}
+        />
+
+        {totalPages > 1 && (
+          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+        )}
+      </main>
+
+      <DeleteConfirmDialog
+        isOpen={!!deletingCampaign}
+        title="Xác nhận xóa chiến dịch"
+        itemName={deletingCampaign?.name}
+        onConfirm={handleDelete}
+        onCancel={() => setDeletingCampaign(null)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

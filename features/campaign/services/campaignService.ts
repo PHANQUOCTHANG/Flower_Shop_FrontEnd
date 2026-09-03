@@ -1,6 +1,8 @@
 import api from "@/lib/axios";
 import { SaleCampaign } from "@/types/campaign";
 
+// Service phía client (storefront) — chỉ 2 endpoint public. Các thao tác CRUD
+// dành cho admin nằm ở features/admin/campaign/services/campaignService.ts.
 export const campaignService = {
   getActiveCampaign: async (): Promise<SaleCampaign | null> => {
     try {
@@ -20,15 +22,4 @@ export const campaignService = {
     }>("/campaigns/active/items", { params: { page, limit } });
     return res.data;
   },
-
-  // Các hàm dành cho Admin
-  getCampaigns: async () => {
-    const res = await api.get("/campaigns");
-    return res.data.data;
-  },
-
-  createCampaign: async (data: any) => {
-    const res = await api.post("/campaigns", data);
-    return res.data.data;
-  }
 };

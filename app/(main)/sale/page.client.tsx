@@ -80,6 +80,11 @@ function SaleContent() {
           <p className="text-[#4c9a66] text-sm sm:text-base max-w-2xl">
             Săn ngay những ưu đãi hoa tươi cực hấp dẫn – số lượng có hạn, nhanh tay kẻo hết!
           </p>
+          {campaign?.description && (
+            <p className="text-[#1b0d11]/70 text-sm sm:text-base max-w-2xl mt-2">
+              {campaign.description}
+            </p>
+          )}
         </div>
 
         {/* Không có campaign active */}

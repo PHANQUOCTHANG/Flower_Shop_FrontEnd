@@ -2,98 +2,103 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { campaignService } from "@/features/campaign/services/campaignService";
+import { ArrowLeft } from "lucide-react";
+import { BasicInfoSection } from "@/features/admin/campaign/components/form/BasicInfoSection";
+import { ItemsSection } from "@/features/admin/campaign/components/form/ItemsSection";
+import { useCampaignForm } from "@/features/admin/campaign/hooks/useCampaignForm";
+import { useCreateCampaign } from "@/features/admin/campaign/hooks/useCampaigns";
 import Alert from "@/components/ui/Alert";
 
 export default function AddCampaignPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    name: "",
-    type: "FLASH_SALE",
-    status: "ACTIVE",
-    startDate: new Date().toISOString().slice(0, 16),
-    endDate: new Date(Date.now() + 86400000).toISOString().slice(0, 16),
-  });
-  const [loading, setLoading] = useState(false);
+  const form = useCampaignForm();
+  const { createCampaignAsync, isPending } = useCreateCampaign();
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+
+    const validationError = form.validate();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     try {
-      await campaignService.createCampaign({
-        ...formData,
-        startDate: new Date(formData.startDate).toISOString(),
-        endDate: new Date(formData.endDate).toISOString(),
-      });
+      // Tạo mới luôn ở trạng thái DRAFT — admin chủ động kích hoạt sau khi đã
+      // kiểm tra đủ sản phẩm/giá, tránh case ACTIVE ngay nhưng chưa có items.
+      await createCampaignAsync({ ...form.toDto(), status: "DRAFT" });
       router.push("/admin/campaigns");
     } catch (err: any) {
-      setError(err?.response?.data?.message || "Có lỗi xảy ra khi tạo chiến dịch");
-    } finally {
-      setLoading(false);
+      setError(err?.response?.data?.message || err?.message || "Có lỗi xảy ra khi tạo chiến dịch");
     }
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Tạo chiến dịch mới</h1>
-      
-      {error && <div className="mb-6"><Alert type="error" message={error} onClose={() => setError(null)} /></div>}
+    <div className="flex flex-col min-h-screen bg-[#f6f8f6]">
+      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/80 backdrop-blur-xl px-4 sm:px-6 md:px-8 py-4">
+        <div className="flex items-center gap-3 max-w-[900px] mx-auto">
+          <button
+            onClick={() => router.push("/admin/campaigns")}
+            className="p-2 text-slate-500 hover:bg-slate-100 rounded-xl transition-all"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <h1 className="text-slate-900 text-lg sm:text-2xl font-black uppercase tracking-tight">
+            Tạo chiến dịch mới
+          </h1>
+        </div>
+      </header>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Tên chiến dịch</label>
-          <input
-            type="text"
-            required
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder="VD: Siêu Sale 11/11"
+      <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-[900px] mx-auto w-full">
+        {error && (
+          <div className="mb-6">
+            <Alert type="error" message={error} onClose={() => setError(null)} />
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <BasicInfoSection
+            name={form.name}
+            onNameChange={form.setName}
+            description={form.description}
+            onDescriptionChange={form.setDescription}
+            type={form.type}
+            onTypeChange={form.setType}
+            startDate={form.startDate}
+            onStartDateChange={form.setStartDate}
+            endDate={form.endDate}
+            onEndDateChange={form.setEndDate}
+            bannerUrl={form.bannerUrl}
+            onBannerUrlChange={form.setBannerUrl}
           />
-        </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Thời gian bắt đầu</label>
-            <input
-              type="datetime-local"
-              required
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg"
-              value={formData.startDate}
-              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Thời gian kết thúc</label>
-            <input
-              type="datetime-local"
-              required
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg"
-              value={formData.endDate}
-              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-            />
-          </div>
-        </div>
+          <ItemsSection
+            items={form.items}
+            onAddProduct={form.addProductAsItem}
+            onUpdateItem={form.updateItem}
+            onRemoveItem={form.removeItem}
+          />
 
-        <div className="pt-4 flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="px-6 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50"
-          >
-            Hủy
-          </button>
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-          >
-            {loading ? "Đang tạo..." : "Tạo chiến dịch"}
-          </button>
-        </div>
-      </form>
+          <div className="flex justify-end gap-3 pb-6">
+            <button
+              type="button"
+              onClick={() => router.push("/admin/campaigns")}
+              className="px-6 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              disabled={isPending}
+              className="px-6 py-2.5 bg-[#13ec5b] text-[#102216] rounded-xl text-sm font-black hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100"
+            >
+              {isPending ? "Đang tạo..." : "Tạo chiến dịch"}
+            </button>
+          </div>
+        </form>
+      </main>
     </div>
   );
 }
