@@ -7,6 +7,7 @@ import { CheckCircle2, Truck, Image as ImageIcon } from "lucide-react";
 import { checkoutEventTracker } from "@/features/checkout/hooks/checkoutEventTracker";
 import { useCartStore } from "@/stores/cart.store";
 import { useOrderById } from "@/features/admin/orders/hooks/useOrder";
+import { checkoutService } from "@/features/checkout/services/checkoutService";
 
 // Handle format currency
 const formatPrice = (price: number) => {
@@ -40,7 +41,42 @@ export default function OrderCompletedPageClient() {
   
   const orderId = searchParams.get("id");
   const vnpayStatus = searchParams.get("vnpay"); // "success" | "failed" | null
-  const { order, isLoading: isOrderLoading } = useOrderById(orderId);
+  const { order, isLoading: isOrderLoading, refetch: refetchOrder } = useOrderById(orderId);
+
+  // ── Polling dự phòng cho ZaloPay ──────────────────────────────────────────
+  // Trường hợp trình duyệt chặn popup, ZaloPay điều hướng thẳng trình duyệt về
+  // đây (redirecturl) trước khi callback server-to-server kịp xử lý xong →
+  // paymentStatus lúc trang này mount có thể vẫn là "unpaid". Hỏi lại định kỳ
+  // để cập nhật UI ngay khi thanh toán được xác nhận, không cần F5 thủ công.
+  useEffect(() => {
+    if (!orderId || order?.paymentMethod !== "zalopay" || order?.paymentStatus !== "unpaid") return;
+
+    let cancelled = false;
+    let attempts = 0;
+    const MAX_ATTEMPTS = 30; // 30 * 4s = 2 phút
+
+    const interval = setInterval(async () => {
+      attempts += 1;
+      if (attempts > MAX_ATTEMPTS) {
+        clearInterval(interval);
+        return;
+      }
+      try {
+        const result = await checkoutService.queryZalopayStatus(orderId);
+        if (!cancelled && result.paymentStatus === "paid") {
+          clearInterval(interval);
+          refetchOrder();
+        }
+      } catch {
+        // Bỏ qua lỗi tạm thời, thử lại ở lần poll kế tiếp
+      }
+    }, 4000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [orderId, order?.paymentMethod, order?.paymentStatus, refetchOrder]);
 
   useEffect(() => {
     // 1. Clear cart store items
@@ -88,7 +124,7 @@ export default function OrderCompletedPageClient() {
           <div className="px-4 py-1.5 bg-[#13ec5b]/10 rounded-full text-[#0d9e3e] text-xs font-bold tracking-widest uppercase">
             Mã đơn hàng: {order?.slug ? `#${order.slug.toUpperCase()}` : `#FLWR-${orderId?.substring(0,5).toUpperCase() || '12345'}`}
           </div>
-          {/* VNPay payment status badge */}
+          {/* VNPay payment status badge — dựa vào query param được backend ký kèm redirect */}
           {vnpayStatus === "success" && (
             <div className="mt-2 px-4 py-1.5 bg-blue-50 rounded-full text-blue-600 text-xs font-bold tracking-wide flex items-center gap-1.5">
               <CheckCircle2 size={14} /> Đã thanh toán qua VNPay
@@ -97,6 +133,18 @@ export default function OrderCompletedPageClient() {
           {vnpayStatus === "failed" && (
             <div className="mt-2 px-4 py-1.5 bg-red-50 rounded-full text-red-500 text-xs font-bold tracking-wide">
               ⚠ Thanh toán VNPay không thành công — vui lòng thử lại hoặc chọn phương thức khác
+            </div>
+          )}
+          {/* ZaloPay payment status badge — dựa vào paymentStatus thật trong DB
+              (redirect của ZaloPay không được ký nên không dùng query param để xác nhận) */}
+          {order?.paymentMethod === "zalopay" && order?.paymentStatus === "paid" && (
+            <div className="mt-2 px-4 py-1.5 bg-blue-50 rounded-full text-blue-600 text-xs font-bold tracking-wide flex items-center gap-1.5">
+              <CheckCircle2 size={14} /> Đã thanh toán qua ZaloPay
+            </div>
+          )}
+          {order?.paymentMethod === "zalopay" && order?.paymentStatus === "unpaid" && (
+            <div className="mt-2 px-4 py-1.5 bg-amber-50 rounded-full text-amber-600 text-xs font-bold tracking-wide">
+              ⏳ Đang chờ xác nhận thanh toán ZaloPay — trang sẽ tự cập nhật khi hoàn tất
             </div>
           )}
         </div>

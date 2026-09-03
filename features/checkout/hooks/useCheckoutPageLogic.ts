@@ -35,7 +35,7 @@ export function useCheckoutPageLogic() {
   // --- Trạng thái Địa chỉ & Thanh toán (Selection State) ---
   const [selectedAddressId, setSelectedAddressId] = useState<string | undefined>();
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<"bank" | "cod" | "vnpay">("cod");
+  const [paymentMethod, setPaymentMethod] = useState<"bank" | "cod" | "vnpay" | "zalopay">("cod");
   const [paymentStatus] = useState<"unpaid" | "paid">("unpaid");
 
   // --- Trạng thái Giao diện (UI State) ---

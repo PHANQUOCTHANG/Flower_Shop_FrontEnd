@@ -11,7 +11,7 @@ interface OrderSummaryCheckoutProps {
   total: number;
   onConfirmOrder: () => void;
   isLoading?: boolean;
-  paymentMethod: "bank" | "cod" | "vnpay";
+  paymentMethod: "bank" | "cod" | "vnpay" | "zalopay";
 }
 
 export const OrderSummaryCheckout: React.FC<OrderSummaryCheckoutProps> = ({

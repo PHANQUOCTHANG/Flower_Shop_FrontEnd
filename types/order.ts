@@ -57,7 +57,7 @@ export interface CreateOrderData {
   totalPrice: number;
   shippingAddress: string;
   shippingPhone: string;
-  paymentMethod: "bank" | "cod" | "vnpay";
+  paymentMethod: "bank" | "cod" | "vnpay" | "zalopay";
   paymentStatus: "unpaid" | "paid";
   name: string;
   note?: string;
@@ -84,7 +84,8 @@ export interface CreateOrderResponse {
     jobId?: string;
     status?: string;
     id?: string;       // khi normal flow
-    orderId?: string;  // khi fallback (Redis lỗi)
-    vnpayUrl?: string; // khi paymentMethod = vnpay
+    orderId?: string;    // khi fallback (Redis lỗi)
+    vnpayUrl?: string;   // khi paymentMethod = vnpay
+    zalopayUrl?: string; // khi paymentMethod = zalopay
   };
 }

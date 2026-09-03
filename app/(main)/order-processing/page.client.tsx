@@ -36,6 +36,8 @@ export default function OrderProcessingPageClient() {
   const [resolvedOrderId, setResolvedOrderId] = useState<string | null>(null);
   const [activeJobId, setActiveJobId] = useState<string | null>(urlJobId);
   const [errorMsg, setErrorMsg] = useState<string>("");
+  // Gateway đang chờ thanh toán — dùng để quyết định có cần polling ZaloPay hay không
+  const [waitingGateway, setWaitingGateway] = useState<"vnpay" | "zalopay" | null>(null);
 
   // ── Cleanup timers on unmount ────────────────────────────────────────────────
   useEffect(() => {
@@ -72,18 +74,20 @@ export default function OrderProcessingPageClient() {
     checkoutService
       .createOrder(pendingFormData)
       .then((response) => {
-        // ★ VNPay: redirect sang cổng thanh toán VNPay
-        if (response.data?.vnpayUrl) {
-          const newWindow = window.open(response.data.vnpayUrl, "_blank");
-          
+        // ★ VNPay/ZaloPay: redirect sang cổng thanh toán online
+        const onlinePaymentUrl = response.data?.vnpayUrl || response.data?.zalopayUrl;
+        if (onlinePaymentUrl) {
+          const newWindow = window.open(onlinePaymentUrl, "_blank");
+
           if (!newWindow || newWindow.closed || typeof newWindow.closed === "undefined") {
             // Popup chặn → Fallback mở ở tab hiện tại
-            window.location.href = response.data.vnpayUrl;
+            window.location.href = onlinePaymentUrl;
           } else {
             // Mở tab mới thành công → Giữ lại trang hiện tại và chờ socket
             const orderId = response.data?.orderId || response.data?.id;
             if (orderId) {
               setResolvedOrderId(orderId);
+              setWaitingGateway(response.data?.zalopayUrl ? "zalopay" : "vnpay");
               setSubmitStatus("waiting_payment");
             }
           }
@@ -126,10 +130,10 @@ export default function OrderProcessingPageClient() {
     },
   });
 
-  // ── Socket listener cho VNPay IPN (order:payment_updated) ───────────────────
+  // ── Socket listener cho VNPay/ZaloPay IPN/callback (order:payment_updated) ──
   useEffect(() => {
     if (submitStatus !== "waiting_payment" || !resolvedOrderId) return;
-    
+
     import("@/lib/socket").then(({ getSocket, initializeSocket }) => {
       import("@/stores/auth.store").then(({ useAuthStore }) => {
         const token = useAuthStore.getState().accessToken;
@@ -152,6 +156,39 @@ export default function OrderProcessingPageClient() {
       });
     });
   }, [submitStatus, resolvedOrderId]);
+
+  // ── Polling dự phòng cho ZaloPay (order:payment_updated có thể không tới khi
+  //    test bằng app_id demo dùng chung — server không tự cấu hình được callback
+  //    URL trỏ về máy dev) — hỏi lại mỗi 4s trong tối đa 2 phút.
+  useEffect(() => {
+    if (submitStatus !== "waiting_payment" || !resolvedOrderId || waitingGateway !== "zalopay") return;
+
+    let cancelled = false;
+    let attempts = 0;
+    const MAX_ATTEMPTS = 30; // 30 * 4s = 2 phút
+
+    const interval = setInterval(async () => {
+      attempts += 1;
+      if (attempts > MAX_ATTEMPTS) {
+        clearInterval(interval);
+        return;
+      }
+      try {
+        const result = await checkoutService.queryZalopayStatus(resolvedOrderId);
+        if (!cancelled && result.paymentStatus === "paid") {
+          setSubmitStatus("completed");
+          clearInterval(interval);
+        }
+      } catch {
+        // Bỏ qua lỗi tạm thời, thử lại ở lần poll kế tiếp
+      }
+    }, 4000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [submitStatus, resolvedOrderId, waitingGateway]);
 
   // ── Khi completed → dọn cart + redirect sang order-completed ─────────────────
   useEffect(() => {
@@ -177,7 +214,12 @@ export default function OrderProcessingPageClient() {
       case "queued":
         return { jobId: activeJobId || "direct", status: "queued", message: "Đơn hàng đang chờ xử lý...", data: undefined };
       case "waiting_payment":
-        return { jobId: "direct", status: "processing", message: "Đang chờ bạn thanh toán VNPay ở cửa sổ mới...", data: undefined };
+        return {
+          jobId: "direct",
+          status: "processing",
+          message: `Đang chờ bạn thanh toán ${waitingGateway === "zalopay" ? "ZaloPay" : "VNPay"} ở cửa sổ mới...`,
+          data: undefined,
+        };
       case "completed":
         return { jobId: "direct", status: "completed", message: "Đặt hàng thành công!", data: resolvedOrderId ? { orderId: resolvedOrderId, totalPrice: 0 } : undefined };
       case "failed":

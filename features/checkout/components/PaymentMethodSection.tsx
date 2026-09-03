@@ -1,9 +1,9 @@
 import React from "react";
-import { CreditCard, Landmark, ShoppingBag, QrCode } from "lucide-react";
+import { CreditCard, Landmark, ShoppingBag, QrCode, Wallet } from "lucide-react";
 
 interface PaymentMethodSectionProps {
-  paymentMethod: "bank" | "cod" | "vnpay";
-  onPaymentMethodChange: (method: "bank" | "cod" | "vnpay") => void;
+  paymentMethod: "bank" | "cod" | "vnpay" | "zalopay";
+  onPaymentMethodChange: (method: "bank" | "cod" | "vnpay" | "zalopay") => void;
 }
 
 const PAYMENT_METHODS = [
@@ -24,6 +24,12 @@ const PAYMENT_METHODS = [
     title: "Thanh toán qua VNPay",
     desc: "ATM / Visa / MasterCard / QR Pay",
     icon: QrCode,
+  },
+  {
+    id: "zalopay" as const,
+    title: "Thanh toán qua ZaloPay",
+    desc: "Ví ZaloPay / ATM / Visa / MasterCard",
+    icon: Wallet,
   },
 ];
 

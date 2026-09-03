@@ -76,4 +76,15 @@ export const checkoutService = {
       throw error;
     }
   },
+
+  // Hỏi chủ động trạng thái thanh toán ZaloPay — dùng làm fallback khi callback
+  // server-to-server chưa tới (đặc biệt khi test bằng app_id demo dùng chung)
+  queryZalopayStatus: async (
+    orderId: string,
+  ): Promise<{ status: string; paymentStatus: string }> => {
+    const response = await axios.get<{ data: { status: string; paymentStatus: string } }>(
+      `/zalopay/query/${orderId}`,
+    );
+    return response.data.data;
+  },
 };
